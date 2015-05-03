@@ -96,7 +96,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/hello-world/" data-id="ci98hri9f0001121yld0eqx48" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/03/hello-world/" data-id="ci98i9ho400032j1yasdm0kno" class="article-share-link">Share</a>
       
       
     </footer>
@@ -128,27 +128,23 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Git安装">Git安装</h1><pre><code>在网上看其它文章布置hexo都是先装git的，由于装Xcode的时已经自带装过git了，因此此处就没有探究了。此处只是准备运行至通过本地能够查看hexo服务，也不清楚不安装git会对此处有影响。
-</code></pre><h1 id="Node环境搭建">Node环境搭建</h1><p>参考：<a href="http://www.cnblogs.com/zhangran/p/3679333.html" target="_blank" rel="external">http://www.cnblogs.com/zhangran/p/3679333.html</a></p>
-<h3 id="安装Homebrew">安装Homebrew</h3><pre><code>安装homebrew 只需要在terminal下执行（不过在执行以下命令的时候为提示地址以过期，根据新地址进行安装）：
-</code></pre><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby <span class="operator">-e</span> <span class="string">"<span class="variable">$(curl -fsSkL https://raw.github.com/Homebrew/homebrew/go/install)</span>"</span></span><br></pre></td></tr></table></figure>
-<pre><code>安装完成后，执行 brew doctor 命令。这是homebrew 完成后必须做的一件事，检查homebrew各模块是否正常。
-</code></pre><h3 id="安装Node">安装Node</h3><pre><code><span class="number">1</span>.执行 brew install <span class="keyword">node</span>, 自动安装<span class="keyword">node</span>和npm(npm是<span class="keyword">node</span>包分发管理工具)。
-</code></pre><h1 id="hexo环境搭建">hexo环境搭建</h1><pre><code>参考文章：<span class="symbol">http:</span>/<span class="regexp">/www.cnblogs.com/zhcncn</span><span class="regexp">/p/</span><span class="number">4097881</span>.html
-</code></pre><h3 id="安装hexo">安装hexo</h3><pre><code>执行下面的命令安装<span class="rule"><span class="attribute">hexo</span>:<span class="value"></span></span>
-</code></pre><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="keyword">install</span> -g hexo</span><br></pre></td></tr></table></figure>
+        <h1 id="Git安装">Git安装</h1><p>在网上看其它文章布置hexo都是先装git的，由于装Xcode的时已经自带装过git了，因此此处就没有探究了。此处只是准备运行至通过本地能够查看hexo服务，也不清楚不安装git会对此处有影响。</p>
+<h1 id="Node环境搭建">Node环境搭建</h1><p>参考：<a href="http://www.cnblogs.com/zhangran/p/3679333.html" target="_blank" rel="external">http://www.cnblogs.com/zhangran/p/3679333.html</a></p>
+<h3 id="安装Homebrew">安装Homebrew</h3><p>安装homebrew 只需要在terminal下执行（不过在执行以下命令的时候为提示地址以过期，根据新地址进行安装）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby <span class="operator">-e</span> <span class="string">"<span class="variable">$(curl -fsSkL https://raw.github.com/Homebrew/homebrew/go/install)</span>"</span></span><br></pre></td></tr></table></figure></p>
+<p>安装完成后，执行 brew doctor 命令。这是homebrew 完成后必须做的一件事，检查homebrew各模块是否正常。</p>
+<h3 id="安装Node">安装Node</h3><p>1.执行 brew install node, 自动安装node和npm(npm是node包分发管理工具)。</p>
+<h1 id="hexo环境搭建">hexo环境搭建</h1><p>参考文章：<a href="http://www.cnblogs.com/zhcncn/p/4097881.html" target="_blank" rel="external">http://www.cnblogs.com/zhcncn/p/4097881.html</a></p>
+<h3 id="安装hexo">安装hexo</h3><p>执行下面的命令安装hexo:<br><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="keyword">install</span> -g hexo</span><br></pre></td></tr></table></figure></p>
 <h3 id="初始化本地hexo">初始化本地hexo</h3><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">mkdir</span> Hexo  <span class="comment">//建一个存放资源，名为Hexo的文件夹</span></span><br><span class="line">hexo init</span><br></pre></td></tr></table></figure>
-<pre><code>根据提示在目标文件夹建立网站所需要的文件。在Hexo文件下执行以下命令:
-</code></pre><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="keyword">install</span></span><br></pre></td></tr></table></figure>
-<pre><code>会自动在Hexo目录中安装node_modules。
-</code></pre><h3 id="启动hexo本地预览">启动hexo本地预览</h3><pre><code>运行以下命令：
-</code></pre><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">hexo</span> server 或者 hexo s</span><br><span class="line">[<span class="built_in">info</span>] Hexo is running at <span class="url">http://localhost:4000/.</span> Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure>
+<p>根据提示在目标文件夹建立网站所需要的文件。在Hexo文件下执行以下命令:<br><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="keyword">install</span></span><br></pre></td></tr></table></figure></p>
+<p>会自动在Hexo目录中安装node_modules。</p>
+<h3 id="启动hexo本地预览">启动hexo本地预览</h3><p>运行以下命令：<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">hexo</span> server 或者 hexo s</span><br><span class="line">[<span class="built_in">info</span>] Hexo is running at <span class="url">http://localhost:4000/.</span> Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure></p>
 <p>表明Hexo Server 已经启动，可以通过 <a href="http://localhost:4000/进行访问。" target="_blank" rel="external">http://localhost:4000/进行访问。</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/Hexo-安装与使用/" data-id="ci98hri8i0000121y0t4gg3ab" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/03/Hexo-安装与使用/" data-id="ci98i9hna00002j1yay8xscdh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
