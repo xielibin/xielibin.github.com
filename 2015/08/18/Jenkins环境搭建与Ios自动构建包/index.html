@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Jenkins环境搭建与Ios自动构建包 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本文介绍采用Tomcat的方式运行Jenkins。
+安装Tomcat在本机环境安装Tomcat，完成后启动服务并访问http://localhost:8080能够看到Tomcat页面，即Tomcat成功安装。
+启动Jenkins服务
+1.在http://mirror.xmission.com/jenkins/war/去下载需要的war包，本该下载的是http://ftp-nyc.osuosl.or">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jenkins环境搭建与Ios自动构建包">
+<meta property="og:url" content="http://yoursite.com/2015/08/18/Jenkins环境搭建与Ios自动构建包/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="本文介绍采用Tomcat的方式运行Jenkins。
+安装Tomcat在本机环境安装Tomcat，完成后启动服务并访问http://localhost:8080能够看到Tomcat页面，即Tomcat成功安装。
+启动Jenkins服务
+1.在http://mirror.xmission.com/jenkins/war/去下载需要的war包，本该下载的是http://ftp-nyc.osuosl.or">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Jenkins环境搭建与Ios自动构建包">
+<meta name="twitter:description" content="本文介绍采用Tomcat的方式运行Jenkins。
+安装Tomcat在本机环境安装Tomcat，完成后启动服务并访问http://localhost:8080能够看到Tomcat页面，即Tomcat成功安装。
+启动Jenkins服务
+1.在http://mirror.xmission.com/jenkins/war/去下载需要的war包，本该下载的是http://ftp-nyc.osuosl.or">
+  
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="q" value="site:http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Jenkins环境搭建与Ios自动构建包" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/08/18/Jenkins环境搭建与Ios自动构建包/" class="article-date">
+  <time datetime="2015-08-18T06:23:22.000Z" itemprop="datePublished">2015-08-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Jenkins环境搭建与Ios自动构建包
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文介绍采用Tomcat的方式运行Jenkins。</p>
+<h3 id="安装Tomcat">安装Tomcat</h3><p>在本机环境安装Tomcat，完成后启动服务并访问<a href="http://localhost:8080能够看到Tomcat页面，即Tomcat成功安装。" target="_blank" rel="external">http://localhost:8080能够看到Tomcat页面，即Tomcat成功安装。</a></p>
+<h3 id="启动Jenkins服务">启动Jenkins服务</h3><hr>
+<p>1.在<a href="http://mirror.xmission.com/jenkins/war/去下载需要的war包，本该下载的是http://ftp-nyc.osuosl.org/pub/jenkins/war/1.613/jenkins.war。" target="_blank" rel="external">http://mirror.xmission.com/jenkins/war/去下载需要的war包，本该下载的是http://ftp-nyc.osuosl.org/pub/jenkins/war/1.613/jenkins.war。</a></p>
+<hr>
+<p>2.将jenkins解压后放入/Library/Tomcat/webapps下，即能正常访问<a href="http://localhost:8080/jenkins" target="_blank" rel="external">http://localhost:8080/jenkins</a></p>
+<hr>
+<p>3.可以根据需求新建Job了.</p>
+<h3 id="Jenkins插件管理">Jenkins插件管理</h3><h4 id="安装方式一">安装方式一</h4><p>1.直接在启动的Jenkins服务下进行可视化下载安装，重新启动服务后生效。（我在采用此方式的时，有多数插件都不能成功安装，于是我采用的第二种方式）</p>
+<h4 id="安装方式二">安装方式二</h4><hr>
+<p>1.Jenkins服务启动后，会自动在~/目录下生成一个.jenkins的目录，在此目录下有一个plugins的目录应该是负责插件的。</p>
+<hr>
+<p>2.进入该目录可以看见已经安装的部分插件了。</p>
+<hr>
+<p>3.进入该网址（<a href="http://mirror.xmission.com/jenkins/plugins/）可以直接下载需要的插件" target="_blank" rel="external">http://mirror.xmission.com/jenkins/plugins/）可以直接下载需要的插件</a></p>
+<hr>
+<p>4.将下载好的插件直接放入到~/.jenkins/plugins目录下，重新启动服务即可生效（需要注意一点有些插件功能需要依赖于其它插件，所以一定要明确需要的依赖插件）</p>
+<h3 id="iOS自动构建">iOS自动构建</h3><hr>
+<p>1.本文涉及的插件及参考文档已分享至该链接，可下载<a href="http://pan.baidu.com/s/1kTBzeYz。" target="_blank" rel="external">http://pan.baidu.com/s/1kTBzeYz。</a></p>
+<hr>
+<p>2.在~/.jenkins/jobs下管理新建的所有Job，可以将Job文件夹复制出来，在其它地方使用，在此帖一个已经配置好的范例（此范例是第三方管理工具CocoaPods时的配置情况）,<a href="http://pan.baidu.com/s/1dl5CU。" target="_blank" rel="external">http://pan.baidu.com/s/1dl5CU。</a></p>
+<hr>
+<p>3.当然可以结合Apple提供的items-service协议，在Tomcat下新建一个服务，提供一个下载页面，这样就可以完成自动构建+下载安装。</p>
+<h3 id="其它">其它</h3><p>1.考虑结合版本管理</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/08/18/Jenkins环境搭建与Ios自动构建包/" data-id="cidh2uxhm0006yi1yvcy1n8ai" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/05/03/运用github-pages发布本地hexo/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">运用github pages发布本地hexo</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/工具/" style="font-size: NaNpx;">工具</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2015/08/18/Jenkins环境搭建与Ios自动构建包/">Jenkins环境搭建与Ios自动构建包</a>
+          </li>
+        
+          <li>
+            <a href="/2015/05/03/运用github-pages发布本地hexo/">运用github pages发布本地hexo</a>
+          </li>
+        
+          <li>
+            <a href="/2015/05/03/hello-world/">Hello World</a>
+          </li>
+        
+          <li>
+            <a href="/2015/05/03/Hexo-安装与使用/">Hexo安装与本地预览</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2015 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
+  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+
+
+<script src="/js/script.js" type="text/javascript"></script>
+
+  </div>
+</body>
+</html>
