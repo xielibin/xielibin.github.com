@@ -91,11 +91,11 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>本文介绍采用Tomcat的方式运行Jenkins。</p>
-<h3 id="安装Tomcat">安装Tomcat</h3><p>在本机环境安装Tomcat，完成后启动服务并访问<a href="http://localhost:8080能够看到Tomcat页面，即Tomcat成功安装。" target="_blank" rel="external">http://localhost:8080能够看到Tomcat页面，即Tomcat成功安装。</a></p>
+<h3 id="安装Tomcat">安装Tomcat</h3><p>在本机环境安装Tomcat，完成后启动服务并访问<a href="http://localhost:8080" target="_blank" rel="external">http://localhost:8080</a>能够看到Tomcat页面，即Tomcat成功安装。</p>
 <h3 id="启动Jenkins服务">启动Jenkins服务</h3><hr>
-<p>1.在<a href="http://mirror.xmission.com/jenkins/war/去下载需要的war包，本该下载的是http://ftp-nyc.osuosl.org/pub/jenkins/war/1.613/jenkins.war。" target="_blank" rel="external">http://mirror.xmission.com/jenkins/war/去下载需要的war包，本该下载的是http://ftp-nyc.osuosl.org/pub/jenkins/war/1.613/jenkins.war。</a></p>
+<p>1.在<a href="http://mirror.xmission.com/jenkins/war/" target="_blank" rel="external">http://mirror.xmission.com/jenkins/war/</a>去下载需要的war包，本该下载的是<a href="http://ftp-nyc.osuosl.org/pub/jenkins/war/1.613/jenkins.war" target="_blank" rel="external">http://ftp-nyc.osuosl.org/pub/jenkins/war/1.613/jenkins.war</a>。</p>
 <hr>
-<p>2.将jenkins解压后放入/Library/Tomcat/webapps下，即能正常访问<a href="http://localhost:8080/jenkins" target="_blank" rel="external">http://localhost:8080/jenkins</a></p>
+<p>2.将jenkins解压后放入/Library/Tomcat/webapps下，即能正常访问<a href="http://localhost:8080/jenkins" target="_blank" rel="external">http://localhost:8080/jenkins</a>.</p>
 <hr>
 <p>3.可以根据需求新建Job了.</p>
 <h3 id="Jenkins插件管理">Jenkins插件管理</h3><h4 id="安装方式一">安装方式一</h4><p>1.直接在启动的Jenkins服务下进行可视化下载安装，重新启动服务后生效。（我在采用此方式的时，有多数插件都不能成功安装，于是我采用的第二种方式）</p>
@@ -104,13 +104,13 @@
 <hr>
 <p>2.进入该目录可以看见已经安装的部分插件了。</p>
 <hr>
-<p>3.进入该网址（<a href="http://mirror.xmission.com/jenkins/plugins/）可以直接下载需要的插件" target="_blank" rel="external">http://mirror.xmission.com/jenkins/plugins/）可以直接下载需要的插件</a></p>
+<p>3.进入该网址<a href="http://mirror.xmission.com/jenkins/plugins/" target="_blank" rel="external">http://mirror.xmission.com/jenkins/plugins/</a>可以直接下载需要的插件</p>
 <hr>
 <p>4.将下载好的插件直接放入到~/.jenkins/plugins目录下，重新启动服务即可生效（需要注意一点有些插件功能需要依赖于其它插件，所以一定要明确需要的依赖插件）</p>
 <h3 id="iOS自动构建">iOS自动构建</h3><hr>
-<p>1.本文涉及的插件及参考文档已分享至该链接，可下载<a href="http://pan.baidu.com/s/1kTBzeYz。" target="_blank" rel="external">http://pan.baidu.com/s/1kTBzeYz。</a></p>
+<p>1.本文涉及的插件及参考文档已分享至该链接，可下载<a href="http://pan.baidu.com/s/1kTBzeYz" target="_blank" rel="external">http://pan.baidu.com/s/1kTBzeYz</a>。</p>
 <hr>
-<p>2.在~/.jenkins/jobs下管理新建的所有Job，可以将Job文件夹复制出来，在其它地方使用，在此帖一个已经配置好的范例（此范例是第三方管理工具CocoaPods时的配置情况）,<a href="http://pan.baidu.com/s/1dl5CU。" target="_blank" rel="external">http://pan.baidu.com/s/1dl5CU。</a></p>
+<p>2.在~/.jenkins/jobs下管理新建的所有Job，可以将Job文件夹复制出来，在其它地方使用，在此帖一个已经配置好的范例（此范例是第三方管理工具CocoaPods时的配置情况）,<a href="http://pan.baidu.com/s/1dl5CU" target="_blank" rel="external">http://pan.baidu.com/s/1dl5CU</a>。</p>
 <hr>
 <p>3.当然可以结合Apple提供的items-service协议，在Tomcat下新建一个服务，提供一个下载页面，这样就可以完成自动构建+下载安装。</p>
 <h3 id="其它">其它</h3><p>1.考虑结合版本管理</p>
@@ -118,7 +118,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/08/18/Jenkins环境搭建与Ios自动构建包/" data-id="cidh2uxhm0006yi1yvcy1n8ai" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/08/18/Jenkins环境搭建与Ios自动构建包/" data-id="cidh3790200061u1ykn14el9b" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
