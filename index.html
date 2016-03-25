@@ -21,7 +21,7 @@
     <link rel="icon" href="/favicon.png">
   
   <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
   
 
 </head>
@@ -53,13 +53,61 @@
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="q" value="site:http://yoursite.com"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
       </div>
     </div>
   </div>
 </header>
       <div class="outer">
         <section id="main">
+  
+    <article id="post-Swift-元类型简介" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/25/Swift-元类型简介/" class="article-date">
+  <time datetime="2016-03-25T12:24:18.000Z" itemprop="datePublished">2016-03-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/25/Swift-元类型简介/">Swift 元类型简介</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文主要是对Swift元类型知识小记。</p>
+<p>先来一段代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">let v : String.Type = String.self</span><br><span class="line">(v).init(1) //&quot;1&quot;</span><br><span class="line"></span><br><span class="line">let vv : Any = String.self</span><br><span class="line">(vv as! String.Type).init(&quot;23&quot;)  // &quot;2&quot;</span><br></pre></td></tr></table></figure>
+<p>上面一段代码关注的点： .Type 和 .self 操作。<br>.Type 用于类型名称后面 用于声明场景，表示某个类型的元类型。<br>.self 用于类型名称后面 表示取出该类型。</p>
+<hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">typealias AnyClass = AnyObject.Type</span><br></pre></td></tr></table></figure>
+<p>AnyObject是为了和Object-C相通提出的解决方案。<br>AnyObject的元类型是声明为 AnyClass。<br>在Swift里面用Any表示任何。</p>
+<hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">let vv : Any = String.self</span><br><span class="line">(vv as! String.Type).init(&quot;23&quot;)  // &quot;2&quot;</span><br><span class="line"></span><br><span class="line">let vvv : Any.Type = String.self</span><br><span class="line">(vvv as! String.Type).init(&quot;2344&quot;)   // &quot;2344&quot;</span><br><span class="line"></span><br><span class="line">vv is Any.Type  // true</span><br><span class="line">vvv is Any      // &quot;is&quot; test is always true</span><br></pre></td></tr></table></figure>
+<p>这个地方就有点荤菜了<br>Any可以表示任何东西。<br>Any.Type还是只能用作.Type 作用。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/03/25/Swift-元类型简介/" data-id="cim7ok0w10001rjzlfnh9xxlz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-Jenkins环境搭建与iOS自动构建包-0" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -84,15 +132,18 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>本文介绍采用Tomcat的方式运行Jenkins。</p>
-<h3 id="安装Tomcat">安装Tomcat</h3><p>在本机环境安装Tomcat，完成后启动服务并访问<a href="http://localhost:8080" target="_blank" rel="external">http://localhost:8080</a>能够看到Tomcat页面，即Tomcat成功安装。</p>
-<h3 id="启动Jenkins服务">启动Jenkins服务</h3><hr>
+<p>###安装Tomcat<br>在本机环境安装Tomcat，完成后启动服务并访问<a href="http://localhost:8080" target="_blank" rel="external">http://localhost:8080</a>能够看到Tomcat页面，即Tomcat成功安装。</p>
+<p>###启动Jenkins服务</p>
+<hr>
 <p>1.在<a href="http://mirror.xmission.com/jenkins/war/" target="_blank" rel="external">http://mirror.xmission.com/jenkins/war/</a>去下载需要的war包，本该下载的是<a href="http://ftp-nyc.osuosl.org/pub/jenkins/war/1.613/jenkins.war" target="_blank" rel="external">http://ftp-nyc.osuosl.org/pub/jenkins/war/1.613/jenkins.war</a>。</p>
 <hr>
 <p>2.将jenkins解压后放入/Library/Tomcat/webapps下，即能正常访问<a href="http://localhost:8080/jenkins" target="_blank" rel="external">http://localhost:8080/jenkins</a>.</p>
 <hr>
 <p>3.可以根据需求新建Job了.</p>
-<h3 id="Jenkins插件管理">Jenkins插件管理</h3><h4 id="安装方式一">安装方式一</h4><p>1.直接在启动的Jenkins服务下进行可视化下载安装，重新启动服务后生效。（我在采用此方式的时，有多数插件都不能成功安装，于是我采用的第二种方式）</p>
-<h4 id="安装方式二">安装方式二</h4><hr>
+<p>###Jenkins插件管理</p>
+<p>####安装方式一<br>1.直接在启动的Jenkins服务下进行可视化下载安装，重新启动服务后生效。（我在采用此方式的时，有多数插件都不能成功安装，于是我采用的第二种方式）</p>
+<p>####安装方式二</p>
+<hr>
 <p>1.Jenkins服务启动后，会自动在~/目录下生成一个.jenkins的目录，在此目录下有一个plugins的目录应该是负责插件的。</p>
 <hr>
 <p>2.进入该目录可以看见已经安装的部分插件了。</p>
@@ -100,18 +151,19 @@
 <p>3.进入该网址<a href="http://mirror.xmission.com/jenkins/plugins/" target="_blank" rel="external">http://mirror.xmission.com/jenkins/plugins/</a>可以直接下载需要的插件</p>
 <hr>
 <p>4.将下载好的插件直接放入到~/.jenkins/plugins目录下，重新启动服务即可生效（需要注意一点有些插件功能需要依赖于其它插件，所以一定要明确需要的依赖插件）</p>
-<h3 id="iOS自动构建">iOS自动构建</h3><hr>
+<p>###iOS自动构建</p>
+<hr>
 <p>1.本文涉及的插件及参考文档已分享至该链接，可下载<a href="http://pan.baidu.com/s/1kTBzeYz" target="_blank" rel="external">http://pan.baidu.com/s/1kTBzeYz</a>。</p>
 <hr>
 <p>2.在~/.jenkins/jobs下管理新建的所有Job，可以将Job文件夹复制出来，在其它地方使用，在此帖一个已经配置好的范例（此范例是第三方管理工具CocoaPods时的配置情况）,<a href="http://pan.baidu.com/s/1dl5CU" target="_blank" rel="external">http://pan.baidu.com/s/1dl5CU</a>。</p>
 <hr>
 <p>3.当然可以结合Apple提供的items-service协议，在Tomcat下新建一个服务，提供一个下载页面，这样就可以完成自动构建+下载安装。</p>
-<h3 id="其它">其它</h3><p>1.考虑结合版本管理</p>
+<p>###其它<br>1.考虑结合版本管理</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/" data-id="cidh3i7lw0006321yqxosclaw" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/" data-id="cim7ok0vw0000rjzlebr48ahj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
@@ -145,36 +197,41 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="设置GitHub">设置GitHub</h1><ul>
+        <p>#设置GitHub</p>
+<ul>
 <li>github帐号就不用多说了，注册吧！</li>
 <li>建立与github用户名对应的仓库，仓库名为【your_user_name.github.io】（说明github.com已经废弃）。</li>
 <li>添加SSH公钥到github (虽然说这里添加了，最后在hexo deploy 时还是输入的用户名、密码发布的，奇怪）</li>
 </ul>
 <hr>
 <p>添加SSH公钥参考:github help -&gt; Generating SSH keys<br>URL:<a href="https://help.github.com/articles/generating-ssh-keys/" target="_blank" rel="external">https://help.github.com/articles/generating-ssh-keys/</a></p>
-<h4 id="步骤1：检查本地的SSH_keys">步骤1：检查本地的SSH keys</h4><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ls</span> -al ~/<span class="class">.ssh</span></span><br><span class="line"><span class="id">#List</span> the files <span class="keyword">in</span> your <span class="class">.ssh</span> directory. <span class="keyword">if</span> they exist.</span><br></pre></td></tr></table></figure>
+<p>####步骤1：检查本地的SSH keys<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ls -al ~/.ssh</span><br><span class="line">#List the files in your .ssh directory. if they exist.</span><br></pre></td></tr></table></figure></p>
 <p>公钥与私钥情况</p>
 <blockquote>
 <p>id_ras  //私钥<br>id_ras.pub //公钥</p>
 </blockquote>
-<h4 id="步骤2：生成新的SSH_key">步骤2：生成新的SSH key</h4><p>执行下面的命令：<br><figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ssh</span>-keygen -t rsa -C <span class="string">"your_email<span class="variable">@example</span>.com"</span></span><br></pre></td></tr></table></figure></p>
-<p>保存至文件（默认是保存至~/.ssh/id_rsa，可以指定存储文件路径）：<br><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enter <span class="built_in">file</span> <span class="operator">in</span> which <span class="built_in">to</span> save <span class="operator">the</span> key (/Users/you/.ssh/id_rsa): [Press enter]</span><br></pre></td></tr></table></figure></p>
-<p>设置passphrase（此处就直接回车吧）：<br><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Enter passphrase (<span class="constant">empty</span> <span class="keyword">for</span> no passphrase): [Type <span class="operator">a</span> passphrase]</span><br><span class="line"><span class="comment"># Enter same passphrase again: [Type passphrase again]</span></span><br></pre></td></tr></table></figure></p>
-<p>在设置passphrase后，将打印出类似如下内容：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Your identification has been saved <span class="keyword">in</span> <span class="regexp">/Users/</span>you<span class="regexp">/.ssh/</span>id_rsa.</span><br><span class="line"># Your <span class="keyword">public</span> key has been saved <span class="keyword">in</span> <span class="regexp">/Users/</span>you<span class="regexp">/.ssh/</span>id_rsa.pub.</span><br><span class="line"># The key fingerprint <span class="string">is:</span></span><br><span class="line"># <span class="number">01</span>:<span class="number">0</span><span class="string">f:</span><span class="string">f4:</span><span class="number">3</span><span class="string">b:</span><span class="string">ca:</span><span class="number">85</span>:<span class="string">d6:</span><span class="number">17</span>:<span class="string">a1:</span><span class="number">7</span><span class="string">d:</span><span class="string">f0:</span><span class="number">68</span>:<span class="number">9</span><span class="string">d:</span><span class="string">f0:</span><span class="string">a2:</span>db your_email<span class="annotation">@example</span>.com</span><br></pre></td></tr></table></figure></p>
-<h4 id="步骤3：添加key至ssh-agent">步骤3：添加key至ssh-agent</h4><p>To configure the ssh-agent program to use the SSH key you’ve generated:</p>
+<p>####步骤2：生成新的SSH key</p>
+<p>执行下面的命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ssh-keygen -t rsa -C &quot;your_email@example.com&quot;</span><br></pre></td></tr></table></figure></p>
+<p>保存至文件（默认是保存至~/.ssh/id_rsa，可以指定存储文件路径）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enter file in which to save the key (/Users/you/.ssh/id_rsa): [Press enter]</span><br></pre></td></tr></table></figure></p>
+<p>设置passphrase（此处就直接回车吧）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Enter passphrase (empty for no passphrase): [Type a passphrase]</span><br><span class="line"># Enter same passphrase again: [Type passphrase again]</span><br></pre></td></tr></table></figure></p>
+<p>在设置passphrase后，将打印出类似如下内容：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Your identification has been saved in /Users/you/.ssh/id_rsa.</span><br><span class="line"># Your public key has been saved in /Users/you/.ssh/id_rsa.pub.</span><br><span class="line"># The key fingerprint is:</span><br><span class="line"># 01:0f:f4:3b:ca:85:d6:17:a1:7d:f0:68:9d:f0:a2:db your_email@example.com</span><br></pre></td></tr></table></figure></p>
+<p>####步骤3：添加key至ssh-agent<br>To configure the ssh-agent program to use the SSH key you’ve generated:</p>
 <ul>
 <li><p>Ensure ssh-agent is enabled:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># start the ssh-agent in the background</span></span><br><span class="line"><span class="built_in">eval</span> <span class="string">"<span class="variable">$(ssh-agent -s)</span>"</span></span><br><span class="line"><span class="comment"># Agent pid 59566</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># start the ssh-agent in the background</span><br><span class="line">eval &quot;$(ssh-agent -s)&quot;</span><br><span class="line"># Agent pid 59566</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>Add your generated SSH key to the ssh-agent:</p>
-<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-<span class="keyword">add</span> ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-add ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<h4 id="步骤4：添加SSH_key_至_github_帐户">步骤4：添加SSH key 至 github 帐户</h4><p>复制出刚才生成的公钥：<br><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$pbcopy</span> &lt; ~<span class="regexp">/.ssh/id</span>_rsa.pub</span><br><span class="line"><span class="comment"># Copies the contents of the id_rsa.pub file to your clipboard</span></span><br></pre></td></tr></table></figure></p>
+<p>####步骤4：添加SSH key 至 github 帐户</p>
+<p>复制出刚才生成的公钥：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$pbcopy &lt; ~/.ssh/id_rsa.pub</span><br><span class="line"># Copies the contents of the id_rsa.pub file to your clipboard</span><br></pre></td></tr></table></figure></p>
 <p>在用户设置的SSH-keys里添加。</p>
-<h4 id="步骤5：测试连接">步骤5：测试连接</h4><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ssh</span> -<span class="constant">T </span>git<span class="variable">@github</span>.com</span><br><span class="line"><span class="comment"># Attempts to ssh to GitHub</span></span><br></pre></td></tr></table></figure>
+<p>####步骤5：测试连接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ssh -T git@github.com</span><br><span class="line"># Attempts to ssh to GitHub</span><br></pre></td></tr></table></figure>
 <hr>
-<h1 id="设置Github_Pages">设置Github Pages</h1><ol>
+<p>#设置Github Pages</p>
+<ol>
 <li>进入【your_user_name.github.io】仓库</li>
 <li>点击仓库右侧的setting</li>
 <li>根据需要修改后，点击Automatic page generator</li>
@@ -183,24 +240,26 @@
 <li>在浏览器中访问 <a href="http://your_user_name.github.io，可以看到github" target="_blank" rel="external">http://your_user_name.github.io，可以看到github</a> pages</li>
 </ol>
 <hr>
-<h1 id="hexo_部暑到_github">hexo 部暑到 github</h1><p>先找到本地hexo目录下_config.yml文件，找到文件最后的内容：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## <span class="string">Docs:</span> <span class="string">http:</span><span class="comment">//hexo.io/docs/deployment.html</span></span><br><span class="line"><span class="string">deploy:</span></span><br><span class="line"><span class="label">  type:</span></span><br></pre></td></tr></table></figure></p>
-<p>改为：<br><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## <span class="string">Docs:</span> <span class="string">http:</span><span class="comment">//hexo.io/docs/deployment.html</span></span><br><span class="line"><span class="string">deploy:</span></span><br><span class="line"><span class="label">  type:</span> git</span><br><span class="line"><span class="label">  repository:</span> <span class="string">https:</span><span class="comment">//github.com/your_user_name/your_user_name.github.io.git</span></span><br><span class="line"><span class="label">  branch:</span> master</span><br></pre></td></tr></table></figure></p>
-<h5 id="出现的问题">出现的问题</h5><ul>
-<li>由于我的node是3.x版本的所以type配置为git，看之前网上文章都说是配置为github，不知为何变了<br>直接设置为type: git 后运行 hexo deploy 会出现以下错误：<figure class="highlight monkey"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ERROR</span> Deployer <span class="keyword">not</span> found: git</span><br></pre></td></tr></table></figure>
+<p>#hexo 部暑到 github</p>
+<p>先找到本地hexo目录下_config.yml文件，找到文件最后的内容：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## Docs: http://hexo.io/docs/deployment.html</span><br><span class="line">deploy:</span><br><span class="line">  type:</span><br></pre></td></tr></table></figure></p>
+<p>改为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## Docs: http://hexo.io/docs/deployment.html</span><br><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: https://github.com/your_user_name/your_user_name.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure></p>
+<p>#####出现的问题</p>
+<ul>
+<li>由于我的node是3.x版本的所以type配置为git，看之前网上文章都说是配置为github，不知为何变了<br>直接设置为type: git 后运行 hexo deploy 会出现以下错误：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR Deployer not found: git</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<p>参考：<a href="http://blog.163.com/gis_warrior/blog/static/19361717320153100184696/" target="_blank" rel="external">http://blog.163.com/gis_warrior/blog/static/19361717320153100184696/</a><br>运行命令如下：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="operator"><span class="keyword">install</span> hexo-deployer-git <span class="comment">--save</span></span></span><br></pre></td></tr></table></figure></p>
+<p>参考：<a href="http://blog.163.com/gis_warrior/blog/static/19361717320153100184696/" target="_blank" rel="external">http://blog.163.com/gis_warrior/blog/static/19361717320153100184696/</a><br>运行命令如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure></p>
 <ul>
-<li>参考其它文章都设置repository为git@github.com:your_user_name/your_user_name.github.io.git，但运行命令hexo deploy，hexo会generate, 但是最后报如下错误：<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator"><span class="keyword">create</span> <span class="keyword">mode</span> <span class="number">100644</span> <span class="keyword">index</span>.html</span><br><span class="line"> <span class="keyword">create</span> <span class="keyword">mode</span> <span class="number">100644</span> js/script.js</span><br><span class="line"> <span class="keyword">delete</span> <span class="keyword">mode</span> <span class="number">100644</span> placeholder</span><br><span class="line">Warning: Permanently added the RSA host <span class="keyword">key</span> <span class="keyword">for</span> IP address <span class="string">'192.30.252.129'</span> <span class="keyword">to</span> the list <span class="keyword">of</span> known <span class="keyword">hosts</span>.</span><br><span class="line">Permission denied (publickey).</span><br><span class="line">fatal: Could <span class="keyword">not</span> <span class="keyword">read</span> <span class="keyword">from</span> remote repository.</span><br><span class="line"></span><br><span class="line">Please make sure you have the correct access rights</span><br><span class="line"><span class="keyword">and</span> the repository <span class="keyword">exists</span>.</span><br><span class="line">FATAL Something<span class="string">'s wrong. Maybe you can find the solution here: http://hexo.io/docs/troubleshooting.html</span><br><span class="line">Error: Warning: Permanently added the RSA host key for IP address '</span><span class="number">192.30</span>.252.129<span class="string">' to the list of known hosts.</span><br><span class="line">Permission denied (publickey).</span><br><span class="line">fatal: Could not read from remote repository.</span><br><span class="line"></span><br><span class="line">Please make sure you have the correct access rights</span><br><span class="line">and the repository exists.</span><br><span class="line"></span><br><span class="line">    at ChildProcess.&lt;anonymous&gt; (/Users/computer_user_name/Desktop/Blog_hexo/node_modules/hexo-deployer-git/node_modules/hexo-util/lib/spawn.js:42:17)</span><br><span class="line">    at ChildProcess.emit (events.js:110:17)</span><br><span class="line">    at maybeClose (child_process.js:1015:16)</span><br><span class="line">    at Socket.&lt;anonymous&gt; (child_process.js:1183:11)</span><br><span class="line">    at Socket.emit (events.js:107:17)</span><br><span class="line">    at Pipe.close (net.js:485:12)</span></span></span><br></pre></td></tr></table></figure>
+<li>参考其它文章都设置repository为git@github.com:your_user_name/your_user_name.github.io.git，但运行命令hexo deploy，hexo会generate, 但是最后报如下错误：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">create mode 100644 index.html</span><br><span class="line"> create mode 100644 js/script.js</span><br><span class="line"> delete mode 100644 placeholder</span><br><span class="line">Warning: Permanently added the RSA host key for IP address &apos;192.30.252.129&apos; to the list of known hosts.</span><br><span class="line">Permission denied (publickey).</span><br><span class="line">fatal: Could not read from remote repository.</span><br><span class="line"></span><br><span class="line">Please make sure you have the correct access rights</span><br><span class="line">and the repository exists.</span><br><span class="line">FATAL Something&apos;s wrong. Maybe you can find the solution here: http://hexo.io/docs/troubleshooting.html</span><br><span class="line">Error: Warning: Permanently added the RSA host key for IP address &apos;192.30.252.129&apos; to the list of known hosts.</span><br><span class="line">Permission denied (publickey).</span><br><span class="line">fatal: Could not read from remote repository.</span><br><span class="line"></span><br><span class="line">Please make sure you have the correct access rights</span><br><span class="line">and the repository exists.</span><br><span class="line"></span><br><span class="line">    at ChildProcess.&lt;anonymous&gt; (/Users/computer_user_name/Desktop/Blog_hexo/node_modules/hexo-deployer-git/node_modules/hexo-util/lib/spawn.js:42:17)</span><br><span class="line">    at ChildProcess.emit (events.js:110:17)</span><br><span class="line">    at maybeClose (child_process.js:1015:16)</span><br><span class="line">    at Socket.&lt;anonymous&gt; (child_process.js:1183:11)</span><br><span class="line">    at Socket.emit (events.js:107:17)</span><br><span class="line">    at Pipe.close (net.js:485:12)</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>改为：repository: <a href="https://github.com/your_user_name/your_user_name.github.io.git" target="_blank" rel="external">https://github.com/your_user_name/your_user_name.github.io.git</a> 后运行 hexo deploy 正常。<br>只是此时让我输入github的用户名和密码，只输入一次，后面deploy都不用输入。不知是否是由于本人生成SSH key时未保存至~/.ssh/id_rsa中的原因。</p>
-<h1 id="最后测试">最后测试</h1><p>在浏览器中打开<a href="http://your_user_name.github.io，可以正常访问。" target="_blank" rel="external">http://your_user_name.github.io，可以正常访问。</a></p>
+<p>#最后测试<br>在浏览器中打开<a href="http://your_user_name.github.io，可以正常访问。" target="_blank" rel="external">http://your_user_name.github.io，可以正常访问。</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/运用github-pages发布本地hexo/" data-id="cidh3i7ln0003321ys588zwcl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/03/运用github-pages发布本地hexo/" data-id="cim7ok0wa0006rjzledmsctk2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
@@ -235,19 +294,19 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>Welcome to <a href="http://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="http://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="http://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick_Start">Quick Start</h2><h3 id="Create_a_new_post">Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
 <p>More info: <a href="http://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run_server">Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
 <p>More info: <a href="http://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate_static_files">Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
 <p>More info: <a href="http://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy_to_remote_sites">Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
 <p>More info: <a href="http://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/hello-world/" data-id="cidh3i7lu0005321yg1qhsomz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/03/hello-world/" data-id="cim7ok0w80004rjzl8prybwzs" class="article-share-link">Share</a>
       
       
     </footer>
@@ -279,23 +338,27 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Git安装">Git安装</h1><p>在网上看其它文章布置hexo都是先装git的，由于装Xcode的时已经自带装过git了，因此此处就没有探究了。此处只是准备运行至通过本地能够查看hexo服务，也不清楚不安装git会对此处有影响。</p>
-<h1 id="Node环境搭建">Node环境搭建</h1><p>参考：<a href="http://www.cnblogs.com/zhangran/p/3679333.html" target="_blank" rel="external">http://www.cnblogs.com/zhangran/p/3679333.html</a></p>
-<h3 id="安装Homebrew">安装Homebrew</h3><p>安装homebrew 只需要在terminal下执行（不过在执行以下命令的时候为提示地址以过期，根据新地址进行安装）：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby <span class="operator">-e</span> <span class="string">"<span class="variable">$(curl -fsSkL https://raw.github.com/Homebrew/homebrew/go/install)</span>"</span></span><br></pre></td></tr></table></figure></p>
+        <p>#Git安装<br>在网上看其它文章布置hexo都是先装git的，由于装Xcode的时已经自带装过git了，因此此处就没有探究了。此处只是准备运行至通过本地能够查看hexo服务，也不清楚不安装git会对此处有影响。</p>
+<p>#Node环境搭建</p>
+<p>参考：<a href="http://www.cnblogs.com/zhangran/p/3679333.html" target="_blank" rel="external">http://www.cnblogs.com/zhangran/p/3679333.html</a></p>
+<p>###安装Homebrew<br>安装homebrew 只需要在terminal下执行（不过在执行以下命令的时候为提示地址以过期，根据新地址进行安装）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby -e &quot;$(curl -fsSkL https://raw.github.com/Homebrew/homebrew/go/install)&quot;</span><br></pre></td></tr></table></figure></p>
 <p>安装完成后，执行 brew doctor 命令。这是homebrew 完成后必须做的一件事，检查homebrew各模块是否正常。</p>
-<h3 id="安装Node">安装Node</h3><p>1.执行 brew install node, 自动安装node和npm(npm是node包分发管理工具)。</p>
-<h1 id="hexo环境搭建">hexo环境搭建</h1><p>参考文章：<a href="http://www.cnblogs.com/zhcncn/p/4097881.html" target="_blank" rel="external">http://www.cnblogs.com/zhcncn/p/4097881.html</a></p>
-<h3 id="安装hexo">安装hexo</h3><p>执行下面的命令安装hexo:<br><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="keyword">install</span> -g hexo</span><br></pre></td></tr></table></figure></p>
-<h3 id="初始化本地hexo">初始化本地hexo</h3><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">mkdir</span> Hexo  <span class="comment">//建一个存放资源，名为Hexo的文件夹</span></span><br><span class="line">hexo init</span><br></pre></td></tr></table></figure>
-<p>根据提示在目标文件夹建立网站所需要的文件。在Hexo文件下执行以下命令:<br><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="keyword">install</span></span><br></pre></td></tr></table></figure></p>
+<p>###安装Node<br>1.执行 brew install node, 自动安装node和npm(npm是node包分发管理工具)。</p>
+<p>#hexo环境搭建</p>
+<p>参考文章：<a href="http://www.cnblogs.com/zhcncn/p/4097881.html" target="_blank" rel="external">http://www.cnblogs.com/zhcncn/p/4097881.html</a></p>
+<p>###安装hexo</p>
+<p>执行下面的命令安装hexo:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo</span><br></pre></td></tr></table></figure></p>
+<p>###初始化本地hexo</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir Hexo  //建一个存放资源，名为Hexo的文件夹</span><br><span class="line">hexo init</span><br></pre></td></tr></table></figure>
+<p>根据提示在目标文件夹建立网站所需要的文件。在Hexo文件下执行以下命令:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure></p>
 <p>会自动在Hexo目录中安装node_modules。</p>
-<h3 id="启动hexo本地预览">启动hexo本地预览</h3><p>运行以下命令：<br><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">hexo</span> server 或者 hexo s</span><br><span class="line">[<span class="built_in">info</span>] Hexo is running at <span class="url">http://localhost:4000/.</span> Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure></p>
+<p>###启动hexo本地预览<br>运行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo server 或者 hexo s</span><br><span class="line">[info] Hexo is running at http://localhost:4000/. Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure></p>
 <p>表明Hexo Server 已经启动，可以通过 <a href="http://localhost:4000/进行访问。" target="_blank" rel="external">http://localhost:4000/进行访问。</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/Hexo-安装与使用/" data-id="cidh3i7ks0000321yl5sapuf1" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/03/Hexo-安装与使用/" data-id="cim7ok0w70003rjzl94v98mrn" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
@@ -318,7 +381,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -327,7 +390,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/工具/" style="font-size: NaNpx;">工具</a>
+      <a href="/tags/Swift/" style="font-size: 10px;">Swift</a> <a href="/tags/工具/" style="font-size: 20px;">工具</a>
     </div>
   </div>
 
@@ -336,7 +399,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -346,6 +409,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/03/25/Swift-元类型简介/">Swift 元类型简介</a>
+          </li>
         
           <li>
             <a href="/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/">Jenkins环境搭建与iOS自动构建包</a>
@@ -375,7 +442,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2015 John Doe<br>
+      &copy; 2016 XieLibin<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
@@ -393,11 +460,11 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
 
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
-  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
 
 
-<script src="/js/script.js" type="text/javascript"></script>
+<script src="/js/script.js"></script>
 
   </div>
 </body>
