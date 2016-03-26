@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Mirror | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在OC中有很强大的runtime机制，能够运用语言的运行时特性发挥强大的能力。Swift作为静态语言，目前没有提供强大的运行时特性，官方标准库提供Mirror struct 用作反射能够进行查询。
+参考链接，该文里还有一个关于CoreData数据结构转化的 Custom例子
+
+###Mirror 官方描述：
+123456789/// Representation of the sub-struct">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mirror">
+<meta property="og:url" content="http://yoursite.com/2016/03/26/Mirror/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="在OC中有很强大的runtime机制，能够运用语言的运行时特性发挥强大的能力。Swift作为静态语言，目前没有提供强大的运行时特性，官方标准库提供Mirror struct 用作反射能够进行查询。
+参考链接，该文里还有一个关于CoreData数据结构转化的 Custom例子
+
+###Mirror 官方描述：
+123456789/// Representation of the sub-struct">
+<meta property="og:updated_time" content="2016-03-26T09:20:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mirror">
+<meta name="twitter:description" content="在OC中有很强大的runtime机制，能够运用语言的运行时特性发挥强大的能力。Swift作为静态语言，目前没有提供强大的运行时特性，官方标准库提供Mirror struct 用作反射能够进行查询。
+参考链接，该文里还有一个关于CoreData数据结构转化的 Custom例子
+
+###Mirror 官方描述：
+123456789/// Representation of the sub-struct">
+  
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Mirror" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/26/Mirror/" class="article-date">
+  <time datetime="2016-03-26T07:57:22.000Z" itemprop="datePublished">2016-03-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Mirror
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在OC中有很强大的runtime机制，能够运用语言的运行时特性发挥强大的能力。Swift作为静态语言，目前没有提供强大的运行时特性，官方标准库提供Mirror struct 用作反射能够进行查询。</p>
+<p><a href="https://appventure.me/2015/10/24/swift-reflection-api-what-you-can-do/#fn.2" target="_blank" rel="external">参考链接</a>，该文里还有一个关于CoreData数据结构转化的 Custom例子</p>
+<hr>
+<p>###Mirror 官方描述：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">/// Representation of the sub-structure and optional &quot;display style&quot;</span><br><span class="line">/// of any arbitrary subject instance.</span><br><span class="line">///</span><br><span class="line">/// Describes the parts---such as stored properties, collection</span><br><span class="line">/// elements, tuple elements, or the active enumeration case---that</span><br><span class="line">/// make up a particular instance.  May also supply a &quot;display style&quot;</span><br><span class="line">/// property that suggests how this structure might be rendered.</span><br><span class="line">///</span><br><span class="line">/// Mirrors are used by playgrounds and the debugger.</span><br></pre></td></tr></table></figure>
+<p>#####构造一个测试数据结构对Mirror属性进行说明：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">struct MI &#123;</span><br><span class="line">    let value : String</span><br><span class="line">    </span><br><span class="line">    func test() &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let mi = MI(value: &quot;instanceValue&quot;)</span><br></pre></td></tr></table></figure>
+<p>#####初始化一个Mirror实例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">/// Reflect upon the given `subject`.</span><br><span class="line">///</span><br><span class="line">/// If the dynamic type of `subject` conforms to `CustomReflectable`,</span><br><span class="line">/// the resulting mirror is determined by its `customMirror` method.</span><br><span class="line">/// Otherwise, the result is generated by the language.</span><br><span class="line"></span><br><span class="line">public init(reflecting subject: Any)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">let mmi = Mirror(reflecting: mi)  //Mirror for MI</span><br></pre></td></tr></table></figure>
+<hr>
+<p>###SubjectType</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">/// The static type of the subject being reflected.</span><br><span class="line">///</span><br><span class="line">/// This type may differ from the subject&apos;s dynamic type when `self`</span><br><span class="line">/// is the `superclassMirror()` of another mirror.</span><br><span class="line"></span><br><span class="line">public let subjectType: Any.Type</span><br></pre></td></tr></table></figure>
+<p>对象的类型（.Type）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mmi.subjectType   //MI.Type</span><br><span class="line"></span><br><span class="line">print(mmi.subjectType)    //&quot;MI\n&quot;</span><br></pre></td></tr></table></figure>
+<p>###children<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public typealias Child = (label: String?, value: Any)</span><br><span class="line"></span><br><span class="line">public typealias Children = AnyForwardCollection&lt;Child&gt;</span><br><span class="line"></span><br><span class="line">/// A collection of `Child` elements describing the structure of the</span><br><span class="line">/// reflected subject.</span><br><span class="line"></span><br><span class="line">public let children: Children</span><br></pre></td></tr></table></figure></p>
+<p>对象结构</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mmi.children.count  // 1</span><br><span class="line"></span><br><span class="line">for (l, v) in mmi.children &#123;</span><br><span class="line">    print(l)          //   &quot;Optional(&quot;value&quot;)\n&quot;</span><br><span class="line">    print(v)		  //    &quot;instanceValue\n&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>###displayStyle</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">/// A suggestion of how a `Mirror`&apos;s is to be interpreted.</span><br><span class="line">   ///</span><br><span class="line">   /// Playgrounds and the debugger will show a representation similar</span><br><span class="line">   /// to the one used for instances of the kind indicated by the</span><br><span class="line">   /// `DisplayStyle` case name when the `Mirror` is used for display.</span><br><span class="line">   </span><br><span class="line">   public enum DisplayStyle &#123;</span><br><span class="line">       case Struct</span><br><span class="line">       case Class</span><br><span class="line">       case Enum</span><br><span class="line">       case Tuple</span><br><span class="line">       case Optional</span><br><span class="line">       case Collection</span><br><span class="line">       case Dictionary</span><br><span class="line">       case Set</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">   /// Suggests a display style for the reflected subject.</span><br><span class="line">   </span><br><span class="line">   public let displayStyle: Mirror.DisplayStyle?</span><br></pre></td></tr></table></figure>
+<p>对象反射 display style ,对于不支持的 Type ，返回 nil</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mmi.displayStyle     // Struct</span><br></pre></td></tr></table></figure>
+<h3 id="superclassMirror-gt-Mirror"><a href="#superclassMirror-gt-Mirror" class="headerlink" title="superclassMirror() -&gt; Mirror?"></a>superclassMirror() -&gt; Mirror?</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">/// Representation of ancestor classes.</span><br><span class="line">    ///</span><br><span class="line">    /// A `CustomReflectable` class can control how its mirror will</span><br><span class="line">    /// represent ancestor classes by initializing the mirror with a</span><br><span class="line">    /// `AncestorRepresentation`.  This setting has no effect on mirrors</span><br><span class="line">    /// reflecting value type instances.</span><br><span class="line">    </span><br><span class="line">    public enum AncestorRepresentation &#123;</span><br><span class="line">        /// Generate a default mirror for all ancestor classes.  This is the</span><br><span class="line">        /// default behavior.</span><br><span class="line">        ///</span><br><span class="line">        /// - Note: This option bypasses any implementation of `customMirror`</span><br><span class="line">        ///   that may be supplied by a `CustomReflectable` ancestor, so this</span><br><span class="line">        ///   is typically not the right option for a `customMirror`implementation </span><br><span class="line">        /// Generate a default mirror for all ancestor classes.</span><br><span class="line">        ///</span><br><span class="line">        /// This case is the default.</span><br><span class="line">        ///</span><br><span class="line">        /// - Note: This option generates default mirrors even for</span><br><span class="line">        ///   ancestor classes that may implement `CustomReflectable`&apos;s</span><br><span class="line">        ///   `customMirror` requirement.  To avoid dropping an ancestor class</span><br><span class="line">        /// customization, an override of `customMirror()` should pass</span><br><span class="line">        /// `ancestorRepresentation: .Customized(super.customMirror)` when</span><br><span class="line">        /// initializing its `Mirror`.</span><br><span class="line">        case Generated</span><br><span class="line">        /// Use the nearest ancestor&apos;s implementation of `customMirror()` to</span><br><span class="line">        /// create a mirror for that ancestor.  Other classes derived from</span><br><span class="line">        /// such an ancestor are given a default mirror.</span><br><span class="line">        ///</span><br><span class="line">        /// The payload for this option should always be</span><br><span class="line">        /// &quot;`super.customMirror`&quot;:</span><br><span class="line">        ///</span><br><span class="line">        ///     func customMirror() -&gt; Mirror &#123;</span><br><span class="line">        ///       return Mirror(</span><br><span class="line">        ///         self,</span><br><span class="line">        ///         children: [&quot;someProperty&quot;: self.someProperty],</span><br><span class="line">        ///         ancestorRepresentation: .Customized(super.customMirror)) // &lt;==</span><br><span class="line">        ///     &#125;</span><br><span class="line">        case Customized(() -&gt; Mirror)</span><br><span class="line">        /// Suppress the representation of all ancestor classes.  The</span><br><span class="line">        /// resulting `Mirror`&apos;s `superclassMirror()` is `nil`.</span><br><span class="line">        case Suppressed</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>针对class类型返回 super的Mirror</p>
+<p>Generated 是默认值</p>
+<p>Customized(() -&gt; Mirror) 用最近的实现了 customMirror() 返回 mirror 作为 派生类 的默认mirror.</p>
+<p>Suppressed 忽略 <code>superclassMirror()</code> is <code>nil</code></p>
+<hr>
+<p>##Custom Mirror</p>
+<p>实现以下方法即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">extension Mirror : CustomReflectable &#123;</span><br><span class="line">    @warn_unused_result</span><br><span class="line">    public func customMirror() -&gt; Mirror</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Custom Code :</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">extension MI : CustomReflectable &#123;</span><br><span class="line">    func customMirror() -&gt; Mirror &#123;</span><br><span class="line">        let children = DictionaryLiteral&lt;String, Any&gt;(dictionaryLiteral: **(&quot;customValue&quot;, &quot;custom:\(self.value)&quot;)**)</span><br><span class="line">        </span><br><span class="line">        return Mirror.init(MI.self, children: children, displayStyle: .Struct, ancestorRepresentation: .Suppressed)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>children 变化：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mmi.children.count</span><br><span class="line"></span><br><span class="line">for (l, v) in mmi.children &#123;</span><br><span class="line">    print(l)			// **&quot;Optional(&quot;customValue&quot;)\n&quot;**</span><br><span class="line">    print(v)			// **&quot;custom:instanceValue\n&quot;**</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/03/26/Mirror/" data-id="cim8xf5rl00032jzljd1616v0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/03/25/Go-Revel框架小记开始/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Go Revel框架小记开始</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Revel/">Revel</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Revel/" style="font-size: 10px;">Revel</a> <a href="/tags/Swift/" style="font-size: 15px;">Swift</a> <a href="/tags/工具/" style="font-size: 20px;">工具</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/03/26/Mirror/">Mirror</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/25/Go-Revel框架小记开始/">Go Revel框架小记开始</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/25/Swift-元类型简介/">Swift 元类型简介</a>
+          </li>
+        
+          <li>
+            <a href="/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/">Jenkins环境搭建与iOS自动构建包</a>
+          </li>
+        
+          <li>
+            <a href="/2015/05/03/运用github-pages发布本地hexo/">运用github pages发布本地hexo</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 XieLibin<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
