@@ -61,6 +61,84 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Revel-新建一个应用" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/27/Revel-新建一个应用/" class="article-date">
+  <time datetime="2016-03-27T13:14:47.000Z" itemprop="datePublished">2016-03-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/27/Revel-新建一个应用/">Revel-新建一个应用</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>运用Go内建命令获得Revel framework，参考地址: <a href="https://revel.github.io/tutorial/gettingstarted.html" target="_blank" rel="external">https://revel.github.io/tutorial/gettingstarted.html</a></p>
+<p>其中Revel命令行相关的文件单独放在了./src/cmd/revel目录下，简单需要用的两个命令参数：</p>
+<ol>
+<li>revel new ： 新建一个应用</li>
+<li>revel run ： 运行一个应用</li>
+</ol>
+<p>今天的任务记录下 new 执行操作，主要内容为./src/cmd/revel/new.go 文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">var cmdNew = &amp;Command&#123;</span><br><span class="line">	UsageLine: &quot;new [path] [skeleton]&quot;,</span><br><span class="line">	Short:     &quot;create a skeleton Revel application&quot;,</span><br><span class="line">	Long: `</span><br><span class="line">New creates a few files to get a new Revel application running quickly.</span><br><span class="line"></span><br><span class="line">It puts all of the files in the given import path, taking the final element in</span><br><span class="line">the path to be the app name.</span><br><span class="line"></span><br><span class="line">Skeleton is an optional argument, provided as an import path</span><br><span class="line"></span><br><span class="line">For example:</span><br><span class="line"></span><br><span class="line">    revel new import/path/helloworld</span><br><span class="line"></span><br><span class="line">    revel new import/path/helloworld import/path/skeleton</span><br><span class="line">`,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func init() &#123;</span><br><span class="line">	cmdNew.Run = newApp</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func newApp(args []string)</span><br></pre></td></tr></table></figure>
+<p>这里介绍了new 命令调用方式，revel 命令会对整个参数作处理，并将new后的参数作为newApp的参数运行newApp func。</p>
+<h2 id="initGoPaths-func"><a href="#initGoPaths-func" class="headerlink" title="initGoPaths func"></a>initGoPaths func</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">func initGoPaths() &#123;</span><br><span class="line">	// lookup go path</span><br><span class="line">	gopath = build.Default.GOPATH</span><br><span class="line">	if gopath == &quot;&quot; &#123;</span><br><span class="line">		errorf(&quot;Abort: GOPATH environment variable is not set. &quot; +</span><br><span class="line">			&quot;Please refer to http://golang.org/doc/code.html to configure your Go environment.&quot;)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	// set go src path</span><br><span class="line">	srcRoot = filepath.Join(filepath.SplitList(gopath)[0], &quot;src&quot;)</span><br><span class="line"></span><br><span class="line">	// check for go executable</span><br><span class="line">	var err error</span><br><span class="line">	gocmd, err = exec.LookPath(&quot;go&quot;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		errorf(&quot;Go executable not found in PATH.&quot;)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在go/build下定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var Default Context = defaultContext()</span><br><span class="line"></span><br><span class="line">Default is the default Context for builds. It uses the GOARCH, GOOS, GOROOT, and GOPATH environment variables if set, or else the compiled code&apos;s GOARCH, GOOS, and GOROOT.</span><br></pre></td></tr></table></figure>
+<p>所以 <code>gopath = build.Default.GOPATH</code> 是判定系统是否设置了GOPATH</p>
+<p><code>srcRoot = filepath.Join(filepath.SplitList(gopath)[0], &quot;src&quot;)</code>将第0个GOPATH追加/src作为新应用的source目录。</p>
+<p>文档定义exec.LookPath:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">func LookPath(file string) (string, error)</span><br><span class="line"></span><br><span class="line">LookPath searches for an executable binary named file in the directories named by the PATH environment variable. If file contains a slash, it is tried directly and the PATH is not consulted. The result may be an absolute path or a path relative to the current directory.</span><br></pre></td></tr></table></figure>
+<p><code>gocmd, err = exec.LookPath(&quot;go&quot;)</code> 找到go命令的执行路径。</p>
+<h2 id="setApplicationPath-func"><a href="#setApplicationPath-func" class="headerlink" title="setApplicationPath func"></a>setApplicationPath func</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">func setApplicationPath(args []string) &#123;</span><br><span class="line">	var err error</span><br><span class="line">	importPath = args[0]</span><br><span class="line">	if filepath.IsAbs(importPath) &#123;</span><br><span class="line">		errorf(&quot;Abort: &apos;%s&apos; looks like a directory.  Please provide a Go import path instead.&quot;,</span><br><span class="line">			importPath)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	_, err = build.Import(importPath, &quot;&quot;, build.FindOnly)</span><br><span class="line">	if err == nil &#123;</span><br><span class="line">		errorf(&quot;Abort: Import path %s already exists.\n&quot;, importPath)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	revelPkg, err = build.Import(revel.REVEL_IMPORT_PATH, &quot;&quot;, build.FindOnly)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		errorf(&quot;Abort: Could not find Revel source code: %s\n&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	appPath = filepath.Join(srcRoot, filepath.FromSlash(importPath))</span><br><span class="line">	appName = filepath.Base(appPath)</span><br><span class="line">	basePath = filepath.ToSlash(filepath.Dir(importPath))</span><br><span class="line"></span><br><span class="line">	if basePath == &quot;.&quot; &#123;</span><br><span class="line">		// we need to remove the a single &apos;.&apos; when</span><br><span class="line">		// the app is in the $GOROOT/src directory</span><br><span class="line">		basePath = &quot;&quot;</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		// we need to append a &apos;/&apos; when the app is</span><br><span class="line">		// is a subdirectory such as $GOROOT/src/path/to/revelapp</span><br><span class="line">		basePath += &quot;/&quot;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>importPath = args[0]</code>可用于被其它应用导入引用的目录。</p>
+<p>build.Import定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">func (ctxt *Context) Import(path string, srcDir string, mode ImportMode) (*Package, error)</span><br><span class="line"></span><br><span class="line">If an error occurs, Import returns a non-nil error and a non-nil *Package containing partial information.</span><br></pre></td></tr></table></figure>
+<p><code>_, err = build.Import(importPath, &quot;&quot;, build.FindOnly)</code>判定准备新建的应用路径是否已经存在。</p>
+<p>在revel.go文件下定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">const (</span><br><span class="line">	REVEL_IMPORT_PATH = &quot;github.com/revel/revel&quot;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><code>revelPkg, err = build.Import(revel.REVEL_IMPORT_PATH, &quot;&quot;, build.FindOnly)</code> 判定是否已经获取的revel framework 资源。</p>
+<p><code>appPath = filepath.Join(srcRoot, filepath.FromSlash(importPath))</code> 生成完整的appPath。</p>
+<p><code>appName = filepath.Base(appPath)</code> 获取应用的名称。</p>
+<p><code>basePath = filepath.ToSlash(filepath.Dir(importPath))</code>应用的相对src 目录。</p>
+<h2 id="setSkeletonPath"><a href="#setSkeletonPath" class="headerlink" title="setSkeletonPath"></a>setSkeletonPath</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">func setSkeletonPath(args []string) &#123;</span><br><span class="line">	var err error</span><br><span class="line">	if len(args) == 2 &#123; // user specified</span><br><span class="line">		skeletonName := args[1]</span><br><span class="line">		_, err = build.Import(skeletonName, &quot;&quot;, build.FindOnly)</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			// Execute &quot;go get &lt;pkg&gt;&quot;</span><br><span class="line">			getCmd := exec.Command(gocmd, &quot;get&quot;, &quot;-d&quot;, skeletonName)</span><br><span class="line">			fmt.Println(&quot;Exec:&quot;, getCmd.Args)</span><br><span class="line">			getOutput, err := getCmd.CombinedOutput()</span><br><span class="line"></span><br><span class="line">			// check getOutput for no buildible string</span><br><span class="line">			bpos := bytes.Index(getOutput, []byte(&quot;no buildable Go source files in&quot;))</span><br><span class="line">			if err != nil &amp;&amp; bpos == -1 &#123;</span><br><span class="line">				errorf(&quot;Abort: Could not find or &apos;go get&apos; Skeleton  source code: %s\n%s\n&quot;, getOutput, skeletonName)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		// use the</span><br><span class="line">		skeletonPath = filepath.Join(srcRoot, skeletonName)</span><br><span class="line"></span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		// use the revel default</span><br><span class="line">		skeletonPath = filepath.Join(revelPkg.Dir, &quot;skeleton&quot;)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>newApp第二个参数是用于导入skelenton的，如果没有第二个参数则用revel框架默认自带的资源在/src/github.com/revel/revel/skeleton下。</p>
+<p>先用<code>_, err = build.Import(skeletonName, &quot;&quot;, build.FindOnly)</code>直接导入本地资源，如果不存在这里就要用到之前准备好的gocomd路径调用系统go命令以get的方式从网上拉取资源。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">getCmd := exec.Command(gocmd, &quot;get&quot;, &quot;-d&quot;, skeletonName)</span><br><span class="line">fmt.Println(&quot;Exec:&quot;, getCmd.Args)</span><br><span class="line">getOutput, err := getCmd.CombinedOutput()</span><br><span class="line"></span><br><span class="line">// check getOutput for no buildible string</span><br><span class="line">bpos := bytes.Index(getOutput, []byte(&quot;no buildable Go source files in&quot;))</span><br><span class="line">if err != nil &amp;&amp; bpos == -1 &#123;</span><br><span class="line">	errorf(&quot;Abort: Could not find or &apos;go get&apos; Skeleton  source code: %s\n%s\n&quot;, getOutput, skeletonName)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后得到 skeletonPath :</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">skeletonPath = filepath.Join(srcRoot, skeletonName) //有参数</span><br><span class="line">skeletonPath = filepath.Join(revelPkg.Dir, &quot;skeleton&quot;) //无参数，默认</span><br></pre></td></tr></table></figure>
+<h2 id="copyNewAppFiles"><a href="#copyNewAppFiles" class="headerlink" title="copyNewAppFiles"></a>copyNewAppFiles</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">func copyNewAppFiles() &#123;</span><br><span class="line">	var err error</span><br><span class="line">	err = os.MkdirAll(appPath, 0777)</span><br><span class="line">	panicOnError(err, &quot;Failed to create directory &quot;+appPath)</span><br><span class="line"></span><br><span class="line">	mustCopyDir(appPath, skeletonPath, map[string]interface&#123;&#125;&#123;</span><br><span class="line">		// app.conf</span><br><span class="line">		&quot;AppName&quot;:  appName,</span><br><span class="line">		&quot;BasePath&quot;: basePath,</span><br><span class="line">		&quot;Secret&quot;:   generateSecret(),</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	// Dotfiles are skipped by mustCopyDir, so we have to explicitly copy the .gitignore.</span><br><span class="line">	gitignore := &quot;.gitignore&quot;</span><br><span class="line">	mustCopyFile(filepath.Join(appPath, gitignore), filepath.Join(skeletonPath, gitignore))</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法主要是建一个appPath的目录，设置权限为0777。<br>调用mustCopyDir方法复制文件，该定义在/cmd/revel/util.go文件里。</p>
+<h1 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h1><p>根据模板生成主要包括app、conf、messages、public、tests文件夹和README.ME文件。</p>
+<p>最开始我是很纠结的，就是木有找到main方法的入口，非常让我郁闷，都开始怀疑不需要main包也能运行（当然这是说笑，只是研究到点上而已）。</p>
+<p>不过最终我找到该文件，是在调用run或者build时在Build阶段由framework在app目录下自动生成子目录。</p>
+<p>1.会生成一个tmp文件夹 里面有main.go。<br>2.还会生成一个routes文件 里面有routes.go。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/03/27/Revel-新建一个应用/" data-id="cimanqjow0004d0zly59bhuc1" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-后端小记开始" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/03/27/后端小记开始/" class="article-date">
@@ -97,7 +175,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/27/后端小记开始/" data-id="cimakznti0004b6zlg4myqn9h" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/27/后端小记开始/" data-id="cimanqjp30009d0zlahuswd0r" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -141,7 +219,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/26/观察者模式/" data-id="cimakzntq000ab6zlfzszq5zb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/26/观察者模式/" data-id="cimanqjp7000cd0zl1o4zmrfa" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DesignPattern/">DesignPattern</a></li></ul>
@@ -208,7 +286,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/26/Mirror/" data-id="cimakzntk0006b6zl9o2lft0t" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/26/Mirror/" data-id="cimanqjop0001d0zlmqytgc4x" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -256,7 +334,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/25/Swift-元类型简介/" data-id="cimakznt40000b6zlosodxh2y" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/25/Swift-元类型简介/" data-id="cimanqjoz0006d0zlwft9fuds" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -322,7 +400,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/" data-id="cimakznta0001b6zl7fbp9uel" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/" data-id="cimanqjov0003d0zl254m1kna" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
@@ -418,7 +496,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/运用github-pages发布本地hexo/" data-id="cimakzntu000db6zl1vla9zs1" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/03/运用github-pages发布本地hexo/" data-id="cimanqjpb000dd0zlpuh3xhtk" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
@@ -465,7 +543,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/hello-world/" data-id="cimakzntn0008b6zl6s78c77x" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/03/hello-world/" data-id="cimanqjp10008d0zl4lquxs35" class="article-share-link">Share</a>
       
       
     </footer>
@@ -517,7 +595,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/Hexo-安装与使用/" data-id="cimakzntg0003b6zlkps07vvs" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/03/Hexo-安装与使用/" data-id="cimanqjok0000d0zl6j4p9zb4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
@@ -540,7 +618,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DesignPattern/">DesignPattern</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DesignPattern/">DesignPattern</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -549,7 +627,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/DesignPattern/" style="font-size: 10px;">DesignPattern</a> <a href="/tags/Swift/" style="font-size: 15px;">Swift</a> <a href="/tags/后端/" style="font-size: 10px;">后端</a> <a href="/tags/工具/" style="font-size: 20px;">工具</a>
+      <a href="/tags/DesignPattern/" style="font-size: 10px;">DesignPattern</a> <a href="/tags/Swift/" style="font-size: 15px;">Swift</a> <a href="/tags/后端/" style="font-size: 15px;">后端</a> <a href="/tags/工具/" style="font-size: 20px;">工具</a>
     </div>
   </div>
 
@@ -558,7 +636,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -568,6 +646,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/03/27/Revel-新建一个应用/">Revel-新建一个应用</a>
+          </li>
         
           <li>
             <a href="/2016/03/27/后端小记开始/">后端小记开始</a>
@@ -583,10 +665,6 @@
         
           <li>
             <a href="/2016/03/25/Swift-元类型简介/">Swift 元类型简介</a>
-          </li>
-        
-          <li>
-            <a href="/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/">Jenkins环境搭建与iOS自动构建包</a>
           </li>
         
       </ul>
