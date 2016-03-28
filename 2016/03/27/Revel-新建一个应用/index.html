@@ -11,7 +11,7 @@
 revel new ： 新建一个应用
 revel run ： 运行一个应用
 
-今天的任务记录下 new 执行操作，主要内容">
+Revel应用main package 在/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Revel-new准备了什么？">
 <meta property="og:url" content="http://yoursite.com/2016/03/27/Revel-新建一个应用/index.html">
@@ -22,8 +22,8 @@ revel run ： 运行一个应用
 revel new ： 新建一个应用
 revel run ： 运行一个应用
 
-今天的任务记录下 new 执行操作，主要内容">
-<meta property="og:updated_time" content="2016-03-28T13:10:27.000Z">
+Revel应用main package 在/">
+<meta property="og:updated_time" content="2016-03-28T15:26:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Revel-new准备了什么？">
 <meta name="twitter:description" content="运用Go内建命令获得Revel framework，参考地址: https://revel.github.io/tutorial/gettingstarted.html
@@ -32,7 +32,7 @@ revel run ： 运行一个应用
 revel new ： 新建一个应用
 revel run ： 运行一个应用
 
-今天的任务记录下 new 执行操作，主要内容">
+Revel应用main package 在/">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -106,7 +106,11 @@ revel run ： 运行一个应用
 <li>revel new ： 新建一个应用</li>
 <li>revel run ： 运行一个应用</li>
 </ol>
-<p>今天的任务记录下 new 执行操作，主要内容为./src/cmd/revel/new.go 文件。</p>
+<h3 id="Revel应用"><a href="#Revel应用" class="headerlink" title="Revel应用"></a>Revel应用</h3><p>main package 在/revel/cmd/revel/rev.go文件内。</p>
+<figure class="highlight plain"><figcaption><span>Cribbed from the genius organization of the "go" command.</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">type Command struct &#123;</span><br><span class="line">	Run                    func(args []string)</span><br><span class="line">	UsageLine, Short, Long string</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func (cmd *Command) Name() string &#123;</span><br><span class="line">	name := cmd.UsageLine</span><br><span class="line">	i := strings.Index(name, &quot; &quot;)</span><br><span class="line">	if i &gt;= 0 &#123;</span><br><span class="line">		name = name[:i]</span><br><span class="line">	&#125;</span><br><span class="line">	return name</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var commands = []*Command&#123;</span><br><span class="line">	cmdNew,</span><br><span class="line">	cmdRun,</span><br><span class="line">	cmdBuild,</span><br><span class="line">	cmdPackage,</span><br><span class="line">	cmdClean,</span><br><span class="line">	cmdTest,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">func main() &#123;</span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	flag.Usage = func() &#123; usage(1) &#125;</span><br><span class="line">	flag.Parse()</span><br><span class="line">	args := flag.Args()</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	for _, cmd := range commands &#123;</span><br><span class="line">		if cmd.Name() == args[0] &#123;</span><br><span class="line">			cmd.Run(args[1:])</span><br><span class="line">			return</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行指定命令 …</p>
+<h2 id="New"><a href="#New" class="headerlink" title="New"></a>New</h2><p>今天的任务记录下 new 执行操作，主要内容为./src/cmd/revel/new.go 文件。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">var cmdNew = &amp;Command&#123;</span><br><span class="line">	UsageLine: &quot;new [path] [skeleton]&quot;,</span><br><span class="line">	Short:     &quot;create a skeleton Revel application&quot;,</span><br><span class="line">	Long: `</span><br><span class="line">New creates a few files to get a new Revel application running quickly.</span><br><span class="line"></span><br><span class="line">It puts all of the files in the given import path, taking the final element in</span><br><span class="line">the path to be the app name.</span><br><span class="line"></span><br><span class="line">Skeleton is an optional argument, provided as an import path</span><br><span class="line"></span><br><span class="line">For example:</span><br><span class="line"></span><br><span class="line">    revel new import/path/helloworld</span><br><span class="line"></span><br><span class="line">    revel new import/path/helloworld import/path/skeleton</span><br><span class="line">`,</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func init() &#123;</span><br><span class="line">	cmdNew.Run = newApp</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func newApp(args []string)</span><br></pre></td></tr></table></figure>
 <p>这里介绍了new 命令调用方式，revel 命令会对整个参数作处理，并将new后的参数作为newApp的参数运行newApp func。</p>
 <h2 id="initGoPaths-func"><a href="#initGoPaths-func" class="headerlink" title="initGoPaths func"></a>initGoPaths func</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">func initGoPaths() &#123;</span><br><span class="line">	// lookup go path</span><br><span class="line">	gopath = build.Default.GOPATH</span><br><span class="line">	if gopath == &quot;&quot; &#123;</span><br><span class="line">		errorf(&quot;Abort: GOPATH environment variable is not set. &quot; +</span><br><span class="line">			&quot;Please refer to http://golang.org/doc/code.html to configure your Go environment.&quot;)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	// set go src path</span><br><span class="line">	srcRoot = filepath.Join(filepath.SplitList(gopath)[0], &quot;src&quot;)</span><br><span class="line"></span><br><span class="line">	// check for go executable</span><br><span class="line">	var err error</span><br><span class="line">	gocmd, err = exec.LookPath(&quot;go&quot;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		errorf(&quot;Go executable not found in PATH.&quot;)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -144,7 +148,7 @@ revel run ： 运行一个应用
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/27/Revel-新建一个应用/" data-id="cimc0jfka00047dzlqzo60dt6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/27/Revel-新建一个应用/" data-id="cimc5gqlf000ifczlcnw4fgk6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -185,7 +189,7 @@ revel run ： 运行一个应用
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DesignPattern/">DesignPattern</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DesignPattern/">DesignPattern</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -194,7 +198,7 @@ revel run ： 运行一个应用
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/DesignPattern/" style="font-size: 10px;">DesignPattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/后端/" style="font-size: 15px;">后端</a> <a href="/tags/工具/" style="font-size: 20px;">工具</a>
+      <a href="/tags/DesignPattern/" style="font-size: 10px;">DesignPattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 20px;">工具</a>
     </div>
   </div>
 
@@ -203,7 +207,7 @@ revel run ： 运行一个应用
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -213,6 +217,10 @@ revel run ： 运行一个应用
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/03/28/Revel-run干了什么？/">Revel-run干了什么？</a>
+          </li>
         
           <li>
             <a href="/2016/03/28/Bond-Observable/">Bond-Observable</a>
@@ -228,10 +236,6 @@ revel run ： 运行一个应用
         
           <li>
             <a href="/2016/03/26/观察者模式/">观察者模式</a>
-          </li>
-        
-          <li>
-            <a href="/2016/03/26/Mirror/">Mirror</a>
           </li>
         
       </ul>

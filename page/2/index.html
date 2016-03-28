@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Tag: 工具 | Hexo</title>
+  <title>Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/tags/工具/index.html">
+<meta property="og:url" content="http://yoursite.com/page/2/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description">
 <meta name="twitter:card" content="summary">
@@ -61,74 +61,64 @@
       <div class="outer">
         <section id="main">
   
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2015" class="archive-year">2015</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/" class="archive-article-date">
-  <time datetime="2015-08-18T08:32:00.000Z" itemprop="datePublished">Aug 18</time>
+    <article id="post-Hexo-安装与使用" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/03/Hexo-安装与使用/" class="article-date">
+  <time datetime="2015-05-03T12:37:33.000Z" itemprop="datePublished">2015-05-03</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/">Jenkins环境搭建与iOS自动构建包</a>
+      <a class="article-title" href="/2015/05/03/Hexo-安装与使用/">Hexo安装与本地预览</a>
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/03/运用github-pages发布本地hexo/" class="archive-article-date">
-  <time datetime="2015-05-03T14:01:31.000Z" itemprop="datePublished">May 3</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/03/运用github-pages发布本地hexo/">运用github pages发布本地hexo</a>
-    </h1>
-  
+        <p>#Git安装<br>在网上看其它文章布置hexo都是先装git的，由于装Xcode的时已经自带装过git了，因此此处就没有探究了。此处只是准备运行至通过本地能够查看hexo服务，也不清楚不安装git会对此处有影响。</p>
+<p>#Node环境搭建</p>
+<p>参考：<a href="http://www.cnblogs.com/zhangran/p/3679333.html" target="_blank" rel="external">http://www.cnblogs.com/zhangran/p/3679333.html</a></p>
+<p>###安装Homebrew<br>安装homebrew 只需要在terminal下执行（不过在执行以下命令的时候为提示地址以过期，根据新地址进行安装）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby -e &quot;$(curl -fsSkL https://raw.github.com/Homebrew/homebrew/go/install)&quot;</span><br></pre></td></tr></table></figure></p>
+<p>安装完成后，执行 brew doctor 命令。这是homebrew 完成后必须做的一件事，检查homebrew各模块是否正常。</p>
+<p>###安装Node<br>1.执行 brew install node, 自动安装node和npm(npm是node包分发管理工具)。</p>
+<p>#hexo环境搭建</p>
+<p>参考文章：<a href="http://www.cnblogs.com/zhcncn/p/4097881.html" target="_blank" rel="external">http://www.cnblogs.com/zhcncn/p/4097881.html</a></p>
+<p>###安装hexo</p>
+<p>执行下面的命令安装hexo:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo</span><br></pre></td></tr></table></figure></p>
+<p>###初始化本地hexo</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir Hexo  //建一个存放资源，名为Hexo的文件夹</span><br><span class="line">hexo init</span><br></pre></td></tr></table></figure>
+<p>根据提示在目标文件夹建立网站所需要的文件。在Hexo文件下执行以下命令:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure></p>
+<p>会自动在Hexo目录中安装node_modules。</p>
+<p>###启动hexo本地预览<br>运行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo server 或者 hexo s</span><br><span class="line">[info] Hexo is running at http://localhost:4000/. Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure></p>
+<p>表明Hexo Server 已经启动，可以通过 <a href="http://localhost:4000/进行访问。" target="_blank" rel="external">http://localhost:4000/进行访问。</a></p>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/03/Hexo-安装与使用/" class="archive-article-date">
-  <time datetime="2015-05-03T12:37:33.000Z" itemprop="datePublished">May 3</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/03/Hexo-安装与使用/">Hexo安装与本地预览</a>
-    </h1>
-  
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/03/Hexo-安装与使用/" data-id="cimc5gqkf0001fczlfxi3ecok" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
 
-    </header>
+    </footer>
   </div>
+  
 </article>
+
+
   
   
-    </div></section>
+    <nav id="page-nav">
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    </nav>
   
 </section>
         
