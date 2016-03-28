@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Bond-Observable | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Swift Bond是一个binding framework，与ReactiveCocoa、RxSwift都有相通之处。
+运用Swift Bond可以让UI管理更容易，同时它的核心概念部分是纯Swift写的，可以参考用于完成其它任务。在raywenderlich有一文讲解Swift Bond的用法，同时运用Bond讲解如何实现MVVM。
+这里说明Swift Bond最基础的Observable处理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bond-Observable">
+<meta property="og:url" content="http://yoursite.com/2016/03/28/Bond-Observable/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Swift Bond是一个binding framework，与ReactiveCocoa、RxSwift都有相通之处。
+运用Swift Bond可以让UI管理更容易，同时它的核心概念部分是纯Swift写的，可以参考用于完成其它任务。在raywenderlich有一文讲解Swift Bond的用法，同时运用Bond讲解如何实现MVVM。
+这里说明Swift Bond最基础的Observable处理">
+<meta property="og:updated_time" content="2016-03-28T09:40:58.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Bond-Observable">
+<meta name="twitter:description" content="Swift Bond是一个binding framework，与ReactiveCocoa、RxSwift都有相通之处。
+运用Swift Bond可以让UI管理更容易，同时它的核心概念部分是纯Swift写的，可以参考用于完成其它任务。在raywenderlich有一文讲解Swift Bond的用法，同时运用Bond讲解如何实现MVVM。
+这里说明Swift Bond最基础的Observable处理">
+  
+    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Bond-Observable" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/28/Bond-Observable/" class="article-date">
+  <time datetime="2016-03-28T08:35:09.000Z" itemprop="datePublished">2016-03-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Bond-Observable
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Swift Bond是一个binding framework，与ReactiveCocoa、RxSwift都有相通之处。</p>
+<p>运用Swift Bond可以让UI管理更容易，同时它的核心概念部分是纯Swift写的，可以参考用于完成其它任务。<br>在raywenderlich<a href="https://www.raywenderlich.com/123108/bond-tutorial" target="_blank" rel="external">有一文</a>讲解Swift Bond的用法，同时运用Bond讲解如何实现MVVM。</p>
+<p>这里说明Swift Bond最基础的Observable处理流程。</p>
+<h1 id="EventProducerType"><a href="#EventProducerType" class="headerlink" title="EventProducerType"></a>EventProducerType</h1><p>这是框架最为核心的protocol：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public protocol EventProducerType &#123;</span><br><span class="line">  </span><br><span class="line">  /// Type of event objects or values that the observable generates.</span><br><span class="line">  typealias EventType</span><br><span class="line">  </span><br><span class="line">  /// Maximum number of past events that will be sent to each new observer upon registering.</span><br><span class="line">  /// Actual number of sent events may be less if not enough events were generated previously.</span><br><span class="line">  var replayLength: Int &#123; get &#125;</span><br><span class="line">  </span><br><span class="line">  /// Registers the given observer and returns a disposable that can cancel observing.</span><br><span class="line">  func observe(observer: EventType -&gt; Void) -&gt; DisposableType</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>replayLength</code>属性结合<code>public struct Buffer&lt;EventType&gt;</code>主要功能记录主题对象最近的事件值。</p>
+<p><code>func observe(observer: EventType -&gt; Void)</code>增加新的观察对象。</p>
+<p><code>public class EventProducer&lt;Event&gt;: EventProducerType</code> 是框架内直接实现的 EventProducerType 的类，<code>public final class Observable&lt;Wrapped&gt;: EventProducer&lt;Wrapped&gt;</code>是继承 EventProducer 而来，被定义为final，在应用内简单使用 Observable 类定义主题对象就行。</p>
+<h1 id="Buffer"><a href="#Buffer" class="headerlink" title="Buffer"></a>Buffer</h1><p>Buffer定义了一个size大小FIFO的队列用于记录主题对象最近size次事件值。</p>
+<p>push func管理队列值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public mutating func push(event: EventType) &#123;</span><br><span class="line">    if size == 1 &#123;</span><br><span class="line">      if buffer.count == 0 &#123;</span><br><span class="line">        buffer.append(event)</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        buffer[0] = event;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      buffer.append(event)</span><br><span class="line">      if buffer.count &gt; size &#123;</span><br><span class="line">        buffer.removeFirst()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>replayTo func 重放输出事件值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public func replayTo(sink: EventType -&gt; Void) &#123;</span><br><span class="line">  for event in buffer &#123;</span><br><span class="line">    sink(event)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="Observable"><a href="#Observable" class="headerlink" title="Observable"></a>Observable</h1><p>观察主题对象类，直接初始化使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public init(_ value: Wrapped) &#123;</span><br><span class="line">  super.init(replayLength: 1)</span><br><span class="line">  next(value)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public func next(event: Event) &#123;</span><br><span class="line">  replayBuffer?.push(event)</span><br><span class="line">  dispatchNext(event)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>1.定义一个length为1的Buffer<br>2.分发初始值：push到Buffer，分发</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public var value: Wrapped &#123;</span><br><span class="line">  get &#123;</span><br><span class="line">    // We&apos;ve created buffer of size 1 and we own it so it is safe</span><br><span class="line">    // to force unwrap both the buffer and the last element.</span><br><span class="line">    return replayBuffer!.last!</span><br><span class="line">  &#125;</span><br><span class="line">  set &#123;</span><br><span class="line">    next(newValue)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>定义一个value变量用于存储当前事件值，运用Swift的属性观察机制触发事件分发。</p>
+<h1 id="运行调用observe"><a href="#运行调用observe" class="headerlink" title="运行调用observe"></a>运行调用observe</h1><p>要注册观察者需要调用 EventProducerType 的 <code>func observe(observer: EventType -&gt; Void) -&gt; DisposableType</code>，此方法在 EventProducer 内实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public func observe(observer: Event -&gt; Void) -&gt; DisposableType &#123;</span><br><span class="line">  </span><br><span class="line">  if lifecycle == .Managed &#123;</span><br><span class="line">    selfReference?.retain()</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  let eventProducerBaseDisposable = addObserver(observer)</span><br><span class="line">  </span><br><span class="line">  replayBuffer?.replayTo(observer)</span><br><span class="line">  </span><br><span class="line">  let observerDisposable = BlockDisposable &#123; [weak self] in</span><br><span class="line">    eventProducerBaseDisposable.dispose()</span><br><span class="line">    </span><br><span class="line">    if let unwrappedSelf = self &#123;</span><br><span class="line">      if unwrappedSelf.observers.count == 0 &#123;</span><br><span class="line">        unwrappedSelf.selfReference?.release()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  deinitDisposable += observerDisposable</span><br><span class="line">  return observerDisposable</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此方法内大部分代码都是管理引用，<code>let eventProducerBaseDisposable = addObserver(observer)</code> 增加观察都对象 和 <code>replayBuffer?.replayTo(observer)</code> 将Buffer里的事件值向新增加的观察都观象重放输入。</p>
+<p>在 EventProducer 内实现标准的观察者主题的方法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">private func dispatchNext(event: Event) &#123;</span><br><span class="line">  guard !isDispatchInProgress else &#123; return &#125;</span><br><span class="line">  </span><br><span class="line">  lock.lock()</span><br><span class="line">  isDispatchInProgress = true</span><br><span class="line">  for (_, send) in observers &#123;</span><br><span class="line">    send(event)</span><br><span class="line">  &#125;</span><br><span class="line">  isDispatchInProgress = false</span><br><span class="line">  lock.unlock()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private func addObserver(observer: Event -&gt; Void) -&gt; DisposableType &#123;</span><br><span class="line">  lock.lock()</span><br><span class="line">  let token = nextToken</span><br><span class="line">  nextToken = nextToken + 1</span><br><span class="line">  lock.unlock()</span><br><span class="line">  </span><br><span class="line">  observers[token] = observer</span><br><span class="line">  return EventProducerDisposable(eventProducer: self, token: token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private func removeObserver(disposable: EventProducerDisposable&lt;Event&gt;) &#123;</span><br><span class="line">  observers.removeValueForKey(disposable.token)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="运行代码"><a href="#运行代码" class="headerlink" title="运行代码"></a>运行代码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">class BindViewModel &#123;</span><br><span class="line">    let object = Observable&lt;String&gt;(&quot;init&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class BindViewController : UIViewController &#123;</span><br><span class="line">    </span><br><span class="line">    let viewModel = BindViewModel()</span><br><span class="line">    </span><br><span class="line">    override func viewDidLoad() &#123;</span><br><span class="line">        super.viewDidLoad()</span><br><span class="line">        </span><br><span class="line">        viewModel.object.observe &#123; (eventValue) -&gt; Void in</span><br><span class="line">            print(eventValue)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func action() &#123;</span><br><span class="line">        viewModel.object.value = &quot;1&quot;</span><br><span class="line">        viewModel.object.value = &quot;2&quot;</span><br><span class="line">        viewModel.object.value = &quot;3&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">运行输出：</span><br><span class="line">init</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+<h4 id="observeNew"><a href="#observeNew" class="headerlink" title="observeNew"></a>observeNew</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public func observeNew(observer: EventType -&gt; Void) -&gt; DisposableType &#123;</span><br><span class="line">  var skip: Int = replayLength</span><br><span class="line">  return observe &#123; value in</span><br><span class="line">    if skip &gt; 0 &#123;</span><br><span class="line">      skip--</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      observer(value)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此方法为 EventProducerType extension方法，对observe封装一层，让新注册的观察者对象skip replayLength次事件值的分发，可以理解为跳过主题对象Buffer存储的旧事件，只有在注册后的新值才会被分发，，，结合名称就很好理解了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">class BindViewModel &#123;</span><br><span class="line">    let object = Observable&lt;String&gt;(&quot;init&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class BindViewController : UIViewController &#123;</span><br><span class="line">    </span><br><span class="line">    let viewModel = BindViewModel()</span><br><span class="line">    </span><br><span class="line">    override func viewDidLoad() &#123;</span><br><span class="line">        super.viewDidLoad()</span><br><span class="line">        </span><br><span class="line">        viewModel.object.observeNew &#123; (eventValue) -&gt; Void in</span><br><span class="line">            print(eventValue)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func action() &#123;</span><br><span class="line">        viewModel.object.value = &quot;1&quot;</span><br><span class="line">        viewModel.object.value = &quot;2&quot;</span><br><span class="line">        viewModel.object.value = &quot;3&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">运行输出：</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/03/28/Bond-Observable/" data-id="cimbt1kpm000074zl878qazck" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/03/27/Revel-新建一个应用/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Revel-新建一个应用</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DesignPattern/">DesignPattern</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/DesignPattern/" style="font-size: 10px;">DesignPattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/后端/" style="font-size: 15px;">后端</a> <a href="/tags/工具/" style="font-size: 20px;">工具</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/03/28/Bond-Observable/">Bond-Observable</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/27/Revel-新建一个应用/">Revel-新建一个应用</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/27/后端小记开始/">后端小记开始</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/26/观察者模式/">观察者模式</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/26/Mirror/">Mirror</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 XieLibin<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
