@@ -7,20 +7,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="Swift Bond是一个binding framework，与ReactiveCocoa、RxSwift都有相通之处。
 github : https://github.com/SwiftBond/Bond
-运用Swift Bond可以让UI管理更容易，同时它的核心概念部分是纯Swift写的，可以参考用于完成其它任务。在raywenderlich有一文讲解Swift Bond的用法，同时运用Bon">
+运用Swift Bond可以让UI管理更容易，同时它的核心概念部分是纯Swift写的，可以参考用于完成其它任务。在raywenderlich有一文(https://www.raywenderl">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Bond-Observable">
 <meta property="og:url" content="http://yoursite.com/2016/03/28/Bond-Observable/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="Swift Bond是一个binding framework，与ReactiveCocoa、RxSwift都有相通之处。
 github : https://github.com/SwiftBond/Bond
-运用Swift Bond可以让UI管理更容易，同时它的核心概念部分是纯Swift写的，可以参考用于完成其它任务。在raywenderlich有一文讲解Swift Bond的用法，同时运用Bon">
-<meta property="og:updated_time" content="2016-03-28T09:48:43.000Z">
+运用Swift Bond可以让UI管理更容易，同时它的核心概念部分是纯Swift写的，可以参考用于完成其它任务。在raywenderlich有一文(https://www.raywenderl">
+<meta property="og:updated_time" content="2016-03-29T06:42:38.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Bond-Observable">
 <meta name="twitter:description" content="Swift Bond是一个binding framework，与ReactiveCocoa、RxSwift都有相通之处。
 github : https://github.com/SwiftBond/Bond
-运用Swift Bond可以让UI管理更容易，同时它的核心概念部分是纯Swift写的，可以参考用于完成其它任务。在raywenderlich有一文讲解Swift Bond的用法，同时运用Bon">
+运用Swift Bond可以让UI管理更容易，同时它的核心概念部分是纯Swift写的，可以参考用于完成其它任务。在raywenderlich有一文(https://www.raywenderl">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -90,7 +90,7 @@ github : https://github.com/SwiftBond/Bond
       
         <p>Swift Bond是一个binding framework，与ReactiveCocoa、RxSwift都有相通之处。</p>
 <p>github : <a href="https://github.com/SwiftBond/Bond" target="_blank" rel="external">https://github.com/SwiftBond/Bond</a></p>
-<p>运用Swift Bond可以让UI管理更容易，同时它的核心概念部分是纯Swift写的，可以参考用于完成其它任务。<br>在raywenderlich<a href="https://www.raywenderlich.com/123108/bond-tutorial" target="_blank" rel="external">有一文</a>讲解Swift Bond的用法，同时运用Bond讲解如何实现MVVM。</p>
+<p>运用Swift Bond可以让UI管理更容易，同时它的核心概念部分是纯Swift写的，可以参考用于完成其它任务。<br>在raywenderlich有一文(<a href="https://www.raywenderlich.com/123108/bond-tutorial)讲解Swift" target="_blank" rel="external">https://www.raywenderlich.com/123108/bond-tutorial)讲解Swift</a> Bond的用法，同时运用Bond讲解如何实现MVVM。</p>
 <p>这里说明Swift Bond最基础的Observable处理流程。</p>
 <h1 id="EventProducerType"><a href="#EventProducerType" class="headerlink" title="EventProducerType"></a>EventProducerType</h1><p>这是框架最为核心的protocol：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public protocol EventProducerType &#123;</span><br><span class="line">  </span><br><span class="line">  /// Type of event objects or values that the observable generates.</span><br><span class="line">  typealias EventType</span><br><span class="line">  </span><br><span class="line">  /// Maximum number of past events that will be sent to each new observer upon registering.</span><br><span class="line">  /// Actual number of sent events may be less if not enough events were generated previously.</span><br><span class="line">  var replayLength: Int &#123; get &#125;</span><br><span class="line">  </span><br><span class="line">  /// Registers the given observer and returns a disposable that can cancel observing.</span><br><span class="line">  func observe(observer: EventType -&gt; Void) -&gt; DisposableType</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -120,7 +120,7 @@ github : https://github.com/SwiftBond/Bond
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/28/Bond-Observable/" data-id="cimcssfb1000du8zlg3kxbytj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/28/Bond-Observable/" data-id="cimd89zzt0000l0zlhi6q7x3y" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -161,7 +161,7 @@ github : https://github.com/SwiftBond/Bond
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DesignPattern/">DesignPattern</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DesignPattern/">DesignPattern</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -170,7 +170,7 @@ github : https://github.com/SwiftBond/Bond
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/DesignPattern/" style="font-size: 10px;">DesignPattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 20px;">工具</a>
+      <a href="/tags/DesignPattern/" style="font-size: 10px;">DesignPattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/后端/" style="font-size: 15px;">后端</a> <a href="/tags/工具/" style="font-size: 15px;">工具</a>
     </div>
   </div>
 
@@ -179,7 +179,7 @@ github : https://github.com/SwiftBond/Bond
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -189,6 +189,10 @@ github : https://github.com/SwiftBond/Bond
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/03/29/Bond-Chain调用/">Bond-Chain调用</a>
+          </li>
         
           <li>
             <a href="/2016/03/28/Revel-run干了什么？/">Revel-run干了什么？</a>
@@ -204,10 +208,6 @@ github : https://github.com/SwiftBond/Bond
         
           <li>
             <a href="/2016/03/27/后端小记开始/">后端小记开始</a>
-          </li>
-        
-          <li>
-            <a href="/2016/03/26/观察者模式/">观察者模式</a>
           </li>
         
       </ul>
