@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Linux Server Install - USB 安装 | 天晷</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="测试环境服务器OS安装也得上了，此处只能省略N字了，，，
+云服务器也是摆弄过很久了，自己也装过Linux双系统，但说实话直接用台式机装单系统Linux还是第一次，随便记下，下次操作的时候能快点
+采用USB驱动安装的方式，典型的台式机（有点年龄了）
+资源准备：1.U盘 大小得够用 2G以上应该没有问题
+2.Ubuntu ISO镜像文件下载： http://www.ubuntu.com/downloa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux Server Install - USB 安装">
+<meta property="og:url" content="http://yoursite.com/2016/03/30/Linux-Server-Install/index.html">
+<meta property="og:site_name" content="天晷">
+<meta property="og:description" content="测试环境服务器OS安装也得上了，此处只能省略N字了，，，
+云服务器也是摆弄过很久了，自己也装过Linux双系统，但说实话直接用台式机装单系统Linux还是第一次，随便记下，下次操作的时候能快点
+采用USB驱动安装的方式，典型的台式机（有点年龄了）
+资源准备：1.U盘 大小得够用 2G以上应该没有问题
+2.Ubuntu ISO镜像文件下载： http://www.ubuntu.com/downloa">
+<meta property="og:updated_time" content="2016-03-30T06:42:02.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux Server Install - USB 安装">
+<meta name="twitter:description" content="测试环境服务器OS安装也得上了，此处只能省略N字了，，，
+云服务器也是摆弄过很久了，自己也装过Linux双系统，但说实话直接用台式机装单系统Linux还是第一次，随便记下，下次操作的时候能快点
+采用USB驱动安装的方式，典型的台式机（有点年龄了）
+资源准备：1.U盘 大小得够用 2G以上应该没有问题
+2.Ubuntu ISO镜像文件下载： http://www.ubuntu.com/downloa">
+  
+    <link rel="alternative" href="/atom.xml" title="天晷" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天晷</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">脑容量有限，清理出来装灵感吧！</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Linux-Server-Install" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/30/Linux-Server-Install/" class="article-date">
+  <time datetime="2016-03-30T06:08:02.000Z" itemprop="datePublished">2016-03-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Linux Server Install - USB 安装
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>测试环境服务器OS安装也得上了，此处只能省略N字了，，，</p>
+<p>云服务器也是摆弄过很久了，自己也装过Linux双系统，但说实话直接用台式机装单系统Linux还是第一次，随便记下，下次操作的时候能快点</p>
+<p>采用USB驱动安装的方式，典型的台式机（有点年龄了）</p>
+<p>资源准备：<br>1.U盘 大小得够用 2G以上应该没有问题</p>
+<p>2.Ubuntu ISO镜像文件下载： <a href="http://www.ubuntu.com/download/server" target="_blank" rel="external">http://www.ubuntu.com/download/server</a></p>
+<p>3.能运行的机子，这个也是必须的  当然这个时候还是需要键盘 和 显示器</p>
+<p>Ubuntu官网：<a href="http://www.ubuntu.com/" target="_blank" rel="external">http://www.ubuntu.com/</a> ， 当然这里面也能找到 桌面版的  。。。。</p>
+<h2 id="Mac下ISO写入U盘"><a href="#Mac下ISO写入U盘" class="headerlink" title="Mac下ISO写入U盘"></a>Mac下ISO写入U盘</h2><p>记住 diskutil 、 dd 、iostat 命令</p>
+<h5 id="查看磁盘信息"><a href="#查看磁盘信息" class="headerlink" title="查看磁盘信息"></a>查看磁盘信息</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">**-MacBook-Air:~ **$ diskutil list</span><br><span class="line">/dev/disk0 (internal):</span><br><span class="line">   #:                       TYPE NAME                    SIZE       IDENTIFIER</span><br><span class="line">   0:      GUID_partition_scheme                         121.3 GB   disk0</span><br><span class="line">   1:                        EFI EFI                     314.6 MB   disk0s1</span><br><span class="line">   2:          Apple_CoreStorage Macintosh HD            120.4 GB   disk0s2</span><br><span class="line">   3:                 Apple_Boot Recovery HD             650.0 MB   disk0s3</span><br><span class="line">/dev/disk1 (internal, virtual):</span><br><span class="line">   #:                       TYPE NAME                    SIZE       IDENTIFIER</span><br><span class="line">   0:                  Apple_HFS Macintosh HD           +120.0 GB   disk1</span><br><span class="line">                                 Logical Volume on disk0s2</span><br><span class="line">                                 2A870B27-0CF6-4C3E-8F78-DCAB3D741849</span><br><span class="line">                                 Unlocked Encrypted</span><br><span class="line">/dev/disk2 (external, physical):</span><br><span class="line">   #:                       TYPE NAME                    SIZE       IDENTIFIER</span><br><span class="line">   0:     FDisk_partition_scheme                        *8.0 GB     disk2</span><br><span class="line">   1:                 DOS_FAT_32 KINGSTON                8.0 GB     disk2s1</span><br></pre></td></tr></table></figure>
+<p>看到我们的U盘挂载为 /dev/disk2</p>
+<h5 id="Unmount-U盘"><a href="#Unmount-U盘" class="headerlink" title="Unmount U盘"></a>Unmount U盘</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">**-MacBook-Air:~ **$ diskutil unmountDisk /dev/disk2</span><br><span class="line">Unmount of all volumes on disk2 was successful</span><br></pre></td></tr></table></figure>
+<h5 id="dd命令将ISO写入U盘"><a href="#dd命令将ISO写入U盘" class="headerlink" title="dd命令将ISO写入U盘"></a>dd命令将ISO写入U盘</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">XieLibins-MacBook-Air:~ xielibin$ sudo dd if=~/Downloads/ubuntu-14.04.4-server-amd64.iso of=/dev/disk2</span><br><span class="line">1185792+0 records in</span><br><span class="line">1185792+0 records out</span><br><span class="line">607125504 bytes transferred in 513.156579 secs (1183119 bytes/sec)</span><br></pre></td></tr></table></figure>
+<p>这个执行的过程有点长，可以查看进度：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">XieLibins-MacBook-Air:~ xielibin$ iostat -w 2</span><br><span class="line"></span><br><span class="line">     disk0           disk2           disk3       cpu     load average</span><br><span class="line">    KB/t tps  MB/s     KB/t tps  MB/s     KB/t tps  MB/s  us sy id   1m   5m   15m</span><br><span class="line">    37.69   5  0.18     4.36   1  0.01   336.10   0  0.02   6  3 91  1.04 1.86 1.81</span><br><span class="line">    0.00   0  0.00     4.00 583  2.28     0.00   0  0.00  10  7 83  1.04 1.85 1.81</span><br><span class="line">    0.00   0  0.00     4.00 340  1.33   512.00   3  1.50  12  6 81  1.04 1.85 1.81</span><br></pre></td></tr></table></figure>
+<h5 id="eject-U盘"><a href="#eject-U盘" class="headerlink" title="eject U盘"></a>eject U盘</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">**-MacBook-Air:~ **$ diskutil eject /dev/disk2</span><br><span class="line">Disk /dev/disk2 ejected</span><br></pre></td></tr></table></figure>
+<h2 id="设置-USB-启动"><a href="#设置-USB-启动" class="headerlink" title="设置 USB 启动"></a>设置 USB 启动</h2><p>常规方式进入 BIOS 设置， 设置 USB 为首选启动 ， F10 保存</p>
+<p>U盘在插入的状态下，将会自动进入 Ubuntu 安装 。。。。。。</p>
+<h2 id="自动安装过程"><a href="#自动安装过程" class="headerlink" title="自动安装过程"></a>自动安装过程</h2><p>在这个过程里面基本上都是自动的，也要注意以下几个点：</p>
+<ol>
+<li><p>磁盘选择情况 </p>
+</li>
+<li><p>登录用户 一定要记住密码</p>
+</li>
+<li><p>其它部分根据提示设置即可，当然也要根据实际的需要改变一些设置，毕竟Linux自己可定制性很强嘛 。。。。</p>
+</li>
+</ol>
+<h2 id="完成安装"><a href="#完成安装" class="headerlink" title="完成安装"></a>完成安装</h2><p>这次安装完成了，还是遇到点小麻烦</p>
+<p>居然启动不起来，来了一个 reboot and select proper boot device</p>
+<p>想想肯定是引导有问题，所以重新选择到Disk （此处被忽悠了一下，这个选项变成灰白色，还以为不能操作。。。。且Driver 下面也是灰白 ，没有选择到正确选项 ，卡住了我）</p>
+<p>正常选择Disk 后，再重新启动 就进入到Ubuntu 启动流程， 输入用户名 和 密码  。。。。。</p>
+<p>最后拔掉除了网线 和 电源线 以外的其它线缆  。。。。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/03/30/Linux-Server-Install/" data-id="cimehj8a10003edzlu116bolx" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OS/">OS</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/03/29/Mustache-模板解析/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Mustache-模板解析</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DesignPattern/">DesignPattern</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/DesignPattern/" style="font-size: 10px;">DesignPattern</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 15px;">工具</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/03/30/Linux-Server-Install/">Linux Server Install - USB 安装</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/Mustache-模板解析/">Mustache-模板解析</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/29/Bond-Chain调用/">Bond-Chain调用</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/28/Revel-run干了什么？/">Revel-run干了什么？</a>
+          </li>
+        
+          <li>
+            <a href="/2016/03/28/Bond-Observable/">Bond-Observable</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 天晷<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

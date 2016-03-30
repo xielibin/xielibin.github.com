@@ -3,27 +3,17 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Swift 元类型简介 | 天晷</title>
+  <title>Tag: OS | 天晷</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="本文主要是对Swift元类型知识小记。
-先来一段代码：
-12345let v : String.Type = String.self(v).init(1) //&amp;quot;1&amp;quot;let vv : Any = String.self(vv as! String.Type).init(&amp;quot;23&amp;quot;)  // &amp;quot;2&amp;quot;
-上面一段代码关注的点： .Type 和 .">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Swift 元类型简介">
-<meta property="og:url" content="http://yoursite.com/2016/03/25/Swift-元类型简介/index.html">
+  <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="天晷">
+<meta property="og:url" content="http://yoursite.com/tags/OS/index.html">
 <meta property="og:site_name" content="天晷">
-<meta property="og:description" content="本文主要是对Swift元类型知识小记。
-先来一段代码：
-12345let v : String.Type = String.self(v).init(1) //&amp;quot;1&amp;quot;let vv : Any = String.self(vv as! String.Type).init(&amp;quot;23&amp;quot;)  // &amp;quot;2&amp;quot;
-上面一段代码关注的点： .Type 和 .">
-<meta property="og:updated_time" content="2016-03-25T12:58:11.000Z">
+<meta property="og:description">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift 元类型简介">
-<meta name="twitter:description" content="本文主要是对Swift元类型知识小记。
-先来一段代码：
-12345let v : String.Type = String.self(v).init(1) //&amp;quot;1&amp;quot;let vv : Any = String.self(vv as! String.Type).init(&amp;quot;23&amp;quot;)  // &amp;quot;2&amp;quot;
-上面一段代码关注的点： .Type 和 .">
+<meta name="twitter:title" content="天晷">
+<meta name="twitter:description">
   
     <link rel="alternative" href="/atom.xml" title="天晷" type="application/atom+xml">
   
@@ -73,73 +63,39 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-Swift-元类型简介" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/03/25/Swift-元类型简介/" class="article-date">
-  <time datetime="2016-03-25T12:24:18.000Z" itemprop="datePublished">2016-03-25</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
+        <section id="main">
   
-    <h1 class="article-title" itemprop="name">
-      Swift 元类型简介
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2016" class="archive-year">2016</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2016/03/30/Linux-Server-Install/" class="archive-article-date">
+  <time datetime="2016-03-30T06:08:02.000Z" itemprop="datePublished">Mar 30</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2016/03/30/Linux-Server-Install/">Linux Server Install - USB 安装</a>
     </h1>
   
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文主要是对Swift元类型知识小记。</p>
-<p>先来一段代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">let v : String.Type = String.self</span><br><span class="line">(v).init(1) //&quot;1&quot;</span><br><span class="line"></span><br><span class="line">let vv : Any = String.self</span><br><span class="line">(vv as! String.Type).init(&quot;23&quot;)  // &quot;2&quot;</span><br></pre></td></tr></table></figure>
-<p>上面一段代码关注的点： .Type 和 .self 操作。<br>.Type 用于类型名称后面 用于声明场景，表示某个类型的元类型。<br>.self 用于类型名称后面 表示取出该类型。</p>
-<hr>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">typealias AnyClass = AnyObject.Type</span><br></pre></td></tr></table></figure>
-<p>AnyObject是为了和Object-C相通提出的解决方案。<br>AnyObject的元类型是声明为 AnyClass。<br>在Swift里面用Any表示任何。</p>
-<hr>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">let vv : Any = String.self</span><br><span class="line">(vv as! String.Type).init(&quot;23&quot;)  // &quot;2&quot;</span><br><span class="line"></span><br><span class="line">let vvv : Any.Type = String.self</span><br><span class="line">(vvv as! String.Type).init(&quot;2344&quot;)   // &quot;2344&quot;</span><br><span class="line"></span><br><span class="line">vv is Any.Type  // true</span><br><span class="line">vvv is Any      // &quot;is&quot; test is always true</span><br></pre></td></tr></table></figure>
-<p>这个地方就有点荤菜了<br>Any可以表示任何东西。<br>Any.Type还是只能用作.Type 作用。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/25/Swift-元类型简介/" data-id="cimehj8b5000fedzle8ywbrza" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
-
-    </footer>
+    </header>
   </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2016/03/26/Mirror/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          Mirror
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">Jenkins环境搭建与iOS自动构建包</div>
-    </a>
-  
-</nav>
-
-  
 </article>
-
+  
+  
+    </div></section>
+  
 </section>
         
           <aside id="sidebar">
