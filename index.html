@@ -65,6 +65,105 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Bond-BindTo-实现" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/30/Bond-BindTo-实现/" class="article-date">
+  <time datetime="2016-03-30T09:42:50.000Z" itemprop="datePublished">2016-03-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/30/Bond-BindTo-实现/">Bond-BindTo 实现</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Bond 对 UIKit 进行了扩展，让我们能更快更方便的操作UI，来看下如下代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let colorObservable = Observable&lt;UIColor&gt;(UIColor.blackColor())</span><br><span class="line">colorObservable.bindTo(textField.bnd_textColor)</span><br><span class="line"></span><br><span class="line">colorObservable.value = UIColor.redColor()</span><br></pre></td></tr></table></figure>
+<p>以后只要根据业务逻辑改变 <code>colorObservable.value</code> 就能间接的设置 textField 的textColor 了，包括很常用 的 button.bnd_enabled 功能。</p>
+<h2 id="Extension-NSObject"><a href="#Extension-NSObject" class="headerlink" title="Extension NSObject"></a>Extension NSObject</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">public extension NSObject &#123;</span><br><span class="line">  </span><br><span class="line">  internal var bnd_associatedObservables: [String:AnyObject] &#123;</span><br><span class="line">    get &#123;</span><br><span class="line">      return objc_getAssociatedObject(self, &amp;AssociatedKeys.AssociatedObservablesKey) as? [String:AnyObject] ?? [:]</span><br><span class="line">    &#125;</span><br><span class="line">    set(observable) &#123;</span><br><span class="line">      objc_setAssociatedObject(self, &amp;AssociatedKeys.AssociatedObservablesKey, observable, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  public func bnd_associatedObservableForValueForKey&lt;T&gt;(key: String, initial: T? = nil, set: (T -&gt; Void)? = nil) -&gt; Observable&lt;T&gt; &#123;</span><br><span class="line">    if let observable: AnyObject = bnd_associatedObservables[key] &#123;</span><br><span class="line">      return observable as! Observable&lt;T&gt;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      let observable = Observable&lt;T&gt;(initial ?? self.valueForKey(key) as! T)</span><br><span class="line">      bnd_associatedObservables[key] = observable</span><br><span class="line">      </span><br><span class="line">      observable</span><br><span class="line">        .observeNew &#123; [weak self] (value: T) in</span><br><span class="line">          if let set = set &#123;</span><br><span class="line">            set(value)</span><br><span class="line">          &#125; else &#123;</span><br><span class="line">            if let value = value as? AnyObject &#123;</span><br><span class="line">              self?.setValue(value, forKey: key)</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">              self?.setValue(nil, forKey: key)</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      </span><br><span class="line">      return observable</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  ......  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先<code>var bnd_associatedObservables</code>定义了一个 OC 运行时 存储 观察主题 的 Dictionary 。</p>
+<p>其次 bnd_associatedObservableForValueForKey 根据 key 直接返回一个存在的观察主题对象 或者 实例化一个新的。</p>
+<p>简单看下实例化过程：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let observable = Observable&lt;T&gt;(initial ?? self.valueForKey(key) as! T)</span><br><span class="line">bnd_associatedObservables[key] = observable</span><br></pre></td></tr></table></figure>
+<ol>
+<li>如果有传入初始化的值 则使用初始化值，没有则通过 KVC 取出对应属性的当前值 ； 作为Observable 的初始值。</li>
+<li>保存到 bnd_associatedObservables。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">observable</span><br><span class="line">  .observeNew &#123; [weak self] (value: T) in</span><br><span class="line">    if let set = set &#123;</span><br><span class="line">      set(value)</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      if let value = value as? AnyObject &#123;</span><br><span class="line">        self?.setValue(value, forKey: key)</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        self?.setValue(nil, forKey: key)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>为刚才的主题对象增加一个Block观察对象（只接收注册后的值）</li>
+<li>如果初始化时传入了自定义的set 闭包， 则调用 set。</li>
+<li>如果没有传set 则 采用 KVC方式设置key 对应属性的值。</li>
+</ol>
+<p>所以继承至NSObject的类都能调用此方法，Bond内 扩展 UITextField textColor：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public var bnd_textColor: Observable&lt;UIColor?&gt; &#123;</span><br><span class="line">  return bnd_associatedObservableForValueForKey(&quot;textColor&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如上就能完成开始时的调用。</p>
+<p><strong>但是这样Oberservable并没有驱动性，如何才能有驱动性呢？</strong></p>
+<h4 id="具有驱动性的"><a href="#具有驱动性的" class="headerlink" title="具有驱动性的"></a>具有驱动性的</h4><h5 id="NSNotificationCenter"><a href="#NSNotificationCenter" class="headerlink" title="NSNotificationCenter"></a>NSNotificationCenter</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">extension NSNotificationCenter &#123;</span><br><span class="line">  </span><br><span class="line">  public func bnd_notification(name: String, object: AnyObject?) -&gt; EventProducer&lt;NSNotification&gt; &#123;</span><br><span class="line">    return EventProducer &#123; sink in</span><br><span class="line">      let subscription = NSNotificationCenter.defaultCenter().addObserverForName(name, object: object, queue: nil, usingBlock: &#123; notification in</span><br><span class="line">        sink(notification)</span><br><span class="line">      &#125;)</span><br><span class="line">      return BlockDisposable &#123;</span><br><span class="line">        NSNotificationCenter.defaultCenter().removeObserver(subscription)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>利用注册 NotificationCenter 的 sink 驱动 EventProducer 分发事件。</li>
+<li>dispose 自动移出 observer。</li>
+</ol>
+<h5 id="UIControl"><a href="#UIControl" class="headerlink" title="UIControl"></a>UIControl</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">@objc class UIControlBondHelper: NSObject</span><br><span class="line">&#123;</span><br><span class="line">  weak var control: UIControl?</span><br><span class="line">  let sink: UIControlEvents -&gt; Void</span><br><span class="line">  </span><br><span class="line">  init(control: UIControl, sink: UIControlEvents -&gt; Void) &#123;</span><br><span class="line">    self.control = control</span><br><span class="line">    self.sink = sink</span><br><span class="line">    super.init()</span><br><span class="line">    control.addTarget(self, action: Selector(&quot;eventHandlerTouchDown&quot;), forControlEvents: UIControlEvents.TouchDown)</span><br><span class="line">    ....... </span><br><span class="line">   &#125;</span><br><span class="line">  </span><br><span class="line">  func eventHandlerTouchDown() &#123;</span><br><span class="line">    sink(.TouchDown)</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  .......</span><br><span class="line">    </span><br><span class="line">  deinit &#123;</span><br><span class="line">    control?.removeTarget(self, action: nil, forControlEvents: UIControlEvents.AllEvents)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">extension UIControl &#123;</span><br><span class="line">	......	</span><br><span class="line">	</span><br><span class="line">      var capturedSink: (UIControlEvents -&gt; Void)! = nil</span><br><span class="line">      </span><br><span class="line">      let bnd_controlEvent = EventProducer&lt;UIControlEvents&gt; &#123; sink in</span><br><span class="line">        capturedSink = sink</span><br><span class="line">        return nil</span><br><span class="line">      &#125;</span><br><span class="line">      </span><br><span class="line">      let controlHelper = UIControlBondHelper(control: self, sink: capturedSink)</span><br><span class="line">      </span><br><span class="line">      objc_setAssociatedObject(self, &amp;AssociatedKeys.ControlBondHelperKey, controlHelper, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)</span><br><span class="line">      objc_setAssociatedObject(self, &amp;AssociatedKeys.ControlEventKey, bnd_controlEvent, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)</span><br><span class="line">      </span><br><span class="line">      .....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>产生bnd_controlEvent 观察主题对象，并将驱动 sink 赋值给 capturedSink。</li>
+<li>实例化 controlHelper 并将 capturedSink 传递到 helper内的sink， 最后event产生 调用 sink 驱动事件分发。</li>
+</ol>
+<p>其中UITextField 的 bnd_text 如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">public var bnd_text: Observable&lt;String?&gt; &#123;</span><br><span class="line">  if let bnd_text: AnyObject = objc_getAssociatedObject(self, &amp;AssociatedKeys.TextKey) &#123;</span><br><span class="line">    return bnd_text as! Observable&lt;String?&gt;</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    let bnd_text = Observable&lt;String?&gt;(self.text)</span><br><span class="line">    objc_setAssociatedObject(self, &amp;AssociatedKeys.TextKey, bnd_text, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)</span><br><span class="line">    </span><br><span class="line">    var updatingFromSelf: Bool = false</span><br><span class="line">    </span><br><span class="line">    bnd_text.observeNew &#123; [weak self] (text: String?) in</span><br><span class="line">      if !updatingFromSelf &#123;</span><br><span class="line">        self?.text = text</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    self.bnd_controlEvent.filter &#123; $0 == UIControlEvents.EditingChanged &#125;.observe &#123; [weak self, weak bnd_text] event in</span><br><span class="line">      guard let unwrappedSelf = self, let bnd_text = bnd_text else &#123; return &#125;</span><br><span class="line">      updatingFromSelf = true</span><br><span class="line">      bnd_text.next(unwrappedSelf.text)</span><br><span class="line">      updatingFromSelf = false</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return bnd_text</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="BindableType"><a href="#BindableType" class="headerlink" title="BindableType"></a>BindableType</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public protocol BindableType &#123;</span><br><span class="line">  typealias Element</span><br><span class="line">  </span><br><span class="line">  /// Returns a sink that can be used to dispatch events to the receiver.</span><br><span class="line">  /// Can accept a disposable that will be disposed on receiver&apos;s deinit.</span><br><span class="line">  func sink(disconnectDisposable: DisposableType?) -&gt; (Element -&gt; Void)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>EventProducer 实现了 协议 :</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">extension EventProducer: BindableType &#123;</span><br><span class="line">  </span><br><span class="line">  /// Creates a new sink that can be used to update the receiver.</span><br><span class="line">  /// Optionally accepts a disposable that will be disposed on receiver&apos;s deinit.</span><br><span class="line">  public func sink(disconnectDisposable: DisposableType?) -&gt; Event -&gt; Void &#123;</span><br><span class="line">    </span><br><span class="line">    if let disconnectDisposable = disconnectDisposable &#123;</span><br><span class="line">      deinitDisposable += disconnectDisposable</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return &#123; [weak self] value in</span><br><span class="line">      self?.next(value)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>解释为：被绑定者自己的分发被封装成一个sink 驱动 传出作为返回</strong></p>
+<p>再有绑定者的 BindTo 定义如下： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">/// Establishes a one-way binding between the source and the bindable&apos;s sink</span><br><span class="line">/// and returns a disposable that can cancel observing.</span><br><span class="line">public func bindTo&lt;B: BindableType where B.Element == EventType&gt;(bindable: B) -&gt; DisposableType &#123;</span><br><span class="line">  let disposable = SerialDisposable(otherDisposable: nil)</span><br><span class="line">  let sink = bindable.sink(disposable)</span><br><span class="line">  disposable.otherDisposable = observe &#123; value in</span><br><span class="line">    sink(value)</span><br><span class="line">  &#125;</span><br><span class="line">  return disposable</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><code>let sink = bindable.sink(disposable)</code>，接收被绑定都返回的sink。</li>
+<li><code>observe { value in sink(value) }</code>，绑定者注册一个Block观察者， 被在事件响应内 调用sink 完成事件链。</li>
+</ol>
+<h2 id="bidirectionalBindTo"><a href="#bidirectionalBindTo" class="headerlink" title="bidirectionalBindTo"></a>bidirectionalBindTo</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public extension EventProducerType where Self: BindableType &#123;</span><br><span class="line">  </span><br><span class="line">  /// Establishes a one-way binding between the source and the bindable&apos;s sink</span><br><span class="line">  /// and returns a disposable that can cancel observing.</span><br><span class="line">  public func bidirectionalBindTo&lt;B: BindableType where B: EventProducerType, B.EventType == Element, B.Element == EventType&gt;(bindable: B) -&gt; DisposableType &#123;</span><br><span class="line">    let d1 = bindTo(bindable)</span><br><span class="line">    let d2 = bindable.bindTo(self)</span><br><span class="line">    return CompositeDisposable([d1, d2])</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将两个满足 BindableType 的Observable 进行相互绑定。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let obser1 = Observable&lt;String&gt;(&quot;&quot;)</span><br><span class="line">let obser2 = Observable&lt;String&gt;(&quot;&quot;)</span><br><span class="line"></span><br><span class="line">obser1.bidirectionalBindTo(obser2)</span><br></pre></td></tr></table></figure>
+<h4 id="Quertion"><a href="#Quertion" class="headerlink" title="?Quertion"></a>?Quertion</h4><p>相互绑定根据上面的定义不会产生无限相互调用吗？</p>
+<p>直接从 bindTo 来看，无论如何都没有解决 这个潜在会存在的问题。</p>
+<p>解决问题的代码在 EventProducer.swift 的 dispatchNext 里：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">private func dispatchNext(event: Event) &#123;</span><br><span class="line">  guard !isDispatchInProgress else &#123; return &#125;</span><br><span class="line">  </span><br><span class="line">  lock.lock()</span><br><span class="line">  isDispatchInProgress = true</span><br><span class="line">  for (_, send) in observers &#123;</span><br><span class="line">    send(event)</span><br><span class="line">  &#125;</span><br><span class="line">  isDispatchInProgress = false</span><br><span class="line">  lock.unlock()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>isDispatchInProgress 让正在分发事件的对象，不再分发其它事件。。。这里会不会漏掉一部分事件呢？对于这里的加锁，需要再仔细考虑一下</p>
+<ol>
+<li>obser1 内存地址 –0670， obser2 内存地址 –1ff0</li>
+<li><code>obser1.value = &quot;123&quot;</code>, 驱动事件 </li>
+<li>obser1 –0670 先进入 <code>dispatchNext(event: Event) // event &quot;123&quot;</code> 并进入for 分发</li>
+<li>obser2 –1ff0 进入 <code>dispatchNext(event: Event) // event &quot;123&quot;</code>  并进入 for 分发</li>
+<li>obser1 –0670 再次进入 <code>dispatchNext(event: Event) // event &quot;123&quot;</code> 直接 return 停止二次到来事件分发</li>
+<li>obser2 –1ff0 先完成分发 并结束 dispatchNext。</li>
+<li>obser1 –0670 完成颁发 并结束 dispatchNext。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/03/30/Bond-BindTo-实现/" data-id="cimeqccwm00089lzlx4up64s7" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Linux-Server-Install" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/03/30/Linux-Server-Install/" class="article-date">
@@ -124,7 +223,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/30/Linux-Server-Install/" data-id="cimeinmbg0006qyzl9aaao2ce" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/30/Linux-Server-Install/" data-id="cimeqccwf00049lzl9tfl2hk7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OS/">OS</a></li></ul>
@@ -158,7 +257,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>关于 revel 生成 main.go 和 routes.go 两个文件，用了模板解析进行解析，这里用的到的模板规则叫做 mustache。</p>
+        <p>关于 revel 生成 main.go 和 routes.go 两个文件，用了模板进行解析，这里用的到的模板规则叫做 mustache。</p>
+<p>看了mustache定义后，可以想象一下运用场景。。。。</p>
 <p>各种语言解析库集合参考地址：<a href="http://mustache.github.io/" target="_blank" rel="external">http://mustache.github.io/</a><br>mustache 手册参考地址：<a href="http://mustache.github.io/mustache.5.html" target="_blank" rel="external">http://mustache.github.io/mustache.5.html</a></p>
 <p>引用一下手册里的解释：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">NAME</span><br><span class="line">mustache - Logic-less templates.</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">A typical Mustache template:</span><br><span class="line"></span><br><span class="line">Hello &#123;&#123;name&#125;&#125;</span><br><span class="line">You have just won &#123;&#123;value&#125;&#125; dollars!</span><br><span class="line">&#123;&#123;#in_ca&#125;&#125;</span><br><span class="line">Well, &#123;&#123;taxed_value&#125;&#125; dollars, after taxes.</span><br><span class="line">&#123;&#123;/in_ca&#125;&#125;</span><br><span class="line">Given the following hash:</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;name&quot;: &quot;Chris&quot;,</span><br><span class="line">  &quot;value&quot;: 10000,</span><br><span class="line">  &quot;taxed_value&quot;: 10000 - (10000 * 0.4),</span><br><span class="line">  &quot;in_ca&quot;: true</span><br><span class="line">&#125;</span><br><span class="line">Will produce the following:</span><br><span class="line"></span><br><span class="line">Hello Chris</span><br><span class="line">You have just won 10000 dollars!</span><br><span class="line">Well, 6000.0 dollars, after taxes.</span><br><span class="line">DESCRIPTION</span><br><span class="line">Mustache can be used for HTML, config files, source code - anything. It works by expanding tags in a template using values provided in a hash or object.</span><br><span class="line"></span><br><span class="line">We call it &quot;logic-less&quot; because there are no if statements, else clauses, or for loops. Instead there are only tags. Some tags are replaced with a value, some nothing, and others a series of values. This document explains the different types of Mustache tags.</span><br></pre></td></tr></table></figure>
@@ -174,7 +274,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/29/Mustache-模板解析/" data-id="cimeinmbm000aqyzlkg3unm8v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/29/Mustache-模板解析/" data-id="cimeqccxe000o9lzl1edczlpq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -253,7 +353,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/29/Bond-Chain调用/" data-id="cimeinmb30000qyzljdy3utbf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/29/Bond-Chain调用/" data-id="cimeqccw700019lzlv8ihe599" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -349,7 +449,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/28/Revel-run干了什么？/" data-id="cimeinmbt000eqyzly0ibbnmr" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/28/Revel-run干了什么？/" data-id="cimeqccwp000a9lzljgihhita" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -415,7 +515,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/28/Bond-Observable/" data-id="cimeinmb80001qyzls0p42pzi" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/28/Bond-Observable/" data-id="cimeqccw100009lzl418spznj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -497,7 +597,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/27/Revel-新建一个应用/" data-id="cimeinmbq000cqyzlh8cm9mcy" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/27/Revel-新建一个应用/" data-id="cimeqccxc000m9lzld6vbkc0z" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -545,7 +645,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/27/后端小记开始/" data-id="cimeinmby000iqyzl05m6aixz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/27/后端小记开始/" data-id="cimeqccx3000h9lzllcr2z1o5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -589,7 +689,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/26/观察者模式/" data-id="cimeinmc1000lqyzltrouj8mh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/26/观察者模式/" data-id="cimeqccxi000q9lzlnv6fsp88" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DesignPattern/">DesignPattern</a></li></ul>
@@ -656,55 +756,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/26/Mirror/" data-id="cimeinmbj0008qyzld8am7h73" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Swift-元类型简介" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/03/25/Swift-元类型简介/" class="article-date">
-  <time datetime="2016-03-25T12:24:18.000Z" itemprop="datePublished">2016-03-25</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/03/25/Swift-元类型简介/">Swift 元类型简介</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文主要是对Swift元类型知识小记。</p>
-<p>先来一段代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">let v : String.Type = String.self</span><br><span class="line">(v).init(1) //&quot;1&quot;</span><br><span class="line"></span><br><span class="line">let vv : Any = String.self</span><br><span class="line">(vv as! String.Type).init(&quot;23&quot;)  // &quot;2&quot;</span><br></pre></td></tr></table></figure>
-<p>上面一段代码关注的点： .Type 和 .self 操作。<br>.Type 用于类型名称后面 用于声明场景，表示某个类型的元类型。<br>.self 用于类型名称后面 表示取出该类型。</p>
-<hr>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">typealias AnyClass = AnyObject.Type</span><br></pre></td></tr></table></figure>
-<p>AnyObject是为了和Object-C相通提出的解决方案。<br>AnyObject的元类型是声明为 AnyClass。<br>在Swift里面用Any表示任何。</p>
-<hr>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">let vv : Any = String.self</span><br><span class="line">(vv as! String.Type).init(&quot;23&quot;)  // &quot;2&quot;</span><br><span class="line"></span><br><span class="line">let vvv : Any.Type = String.self</span><br><span class="line">(vvv as! String.Type).init(&quot;2344&quot;)   // &quot;2344&quot;</span><br><span class="line"></span><br><span class="line">vv is Any.Type  // true</span><br><span class="line">vvv is Any      // &quot;is&quot; test is always true</span><br></pre></td></tr></table></figure>
-<p>这个地方就有点荤菜了<br>Any可以表示任何东西。<br>Any.Type还是只能用作.Type 作用。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/25/Swift-元类型简介/" data-id="cimeinmbw000hqyzlzxgjkv4q" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/26/Mirror/" data-id="cimeqccwv000c9lzlccztteps" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -731,7 +783,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DesignPattern/">DesignPattern</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DesignPattern/">DesignPattern</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -740,7 +792,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/DesignPattern/" style="font-size: 10px;">DesignPattern</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 15px;">工具</a>
+      <a href="/tags/DesignPattern/" style="font-size: 10px;">DesignPattern</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/后端/" style="font-size: 16.67px;">后端</a> <a href="/tags/工具/" style="font-size: 13.33px;">工具</a>
     </div>
   </div>
 
@@ -749,7 +801,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -759,6 +811,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/03/30/Bond-BindTo-实现/">Bond-BindTo 实现</a>
+          </li>
         
           <li>
             <a href="/2016/03/30/Linux-Server-Install/">Linux Server Install - USB 安装</a>
@@ -774,10 +830,6 @@
         
           <li>
             <a href="/2016/03/28/Revel-run干了什么？/">Revel-run干了什么？</a>
-          </li>
-        
-          <li>
-            <a href="/2016/03/28/Bond-Observable/">Bond-Observable</a>
           </li>
         
       </ul>
