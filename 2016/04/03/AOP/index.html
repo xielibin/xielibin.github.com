@@ -6,18 +6,18 @@
   <title>AOP | 天晷</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="在Wiki上对AOP解释，https://en.wikipedia.org/wiki/Aspect-oriented_programming：
-1In computing, aspect-oriented programming (AOP) is a programming paradigm that aims to increase modularity by allowing the sepa">
+In computing, aspect-oriented programming (AOP) is a programming paradigm that aims to increase modularity by allowing the separ">
 <meta property="og:type" content="article">
 <meta property="og:title" content="AOP">
 <meta property="og:url" content="http://yoursite.com/2016/04/03/AOP/index.html">
 <meta property="og:site_name" content="天晷">
 <meta property="og:description" content="在Wiki上对AOP解释，https://en.wikipedia.org/wiki/Aspect-oriented_programming：
-1In computing, aspect-oriented programming (AOP) is a programming paradigm that aims to increase modularity by allowing the sepa">
-<meta property="og:updated_time" content="2016-04-03T14:08:20.000Z">
+In computing, aspect-oriented programming (AOP) is a programming paradigm that aims to increase modularity by allowing the separ">
+<meta property="og:updated_time" content="2016-04-03T14:11:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AOP">
 <meta name="twitter:description" content="在Wiki上对AOP解释，https://en.wikipedia.org/wiki/Aspect-oriented_programming：
-1In computing, aspect-oriented programming (AOP) is a programming paradigm that aims to increase modularity by allowing the sepa">
+In computing, aspect-oriented programming (AOP) is a programming paradigm that aims to increase modularity by allowing the separ">
   
     <link rel="alternative" href="/atom.xml" title="天晷" type="application/atom+xml">
   
@@ -90,11 +90,17 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>在Wiki上对AOP解释，<a href="https://en.wikipedia.org/wiki/Aspect-oriented_programming：" target="_blank" rel="external">https://en.wikipedia.org/wiki/Aspect-oriented_programming：</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">In computing, aspect-oriented programming (AOP) is a programming paradigm that aims to increase modularity by allowing the separation of cross-cutting concerns. It does so by adding additional behavior to existing code (an advice) without modifying the code itself, instead separately specifying which code is modified via a &quot;pointcut&quot; specification, such as &quot;log all function calls when the function&apos;s name begins with &apos;set&apos;&quot;. This allows behaviors that are not central to the business logic (such as logging) to be added to a program without cluttering the code core to the functionality. AOP forms a basis for aspect-oriented software development.</span><br></pre></td></tr></table></figure>
+<p>In computing, aspect-oriented programming (AOP) is a programming paradigm that aims to increase modularity by allowing the separation of cross-cutting concerns. It does so by adding additional behavior to existing code (an advice) without modifying the code itself, instead separately specifying which code is modified via a “pointcut” specification, such as “log all function calls when the function’s name begins with ‘set’”. This allows behaviors that are not central to the business logic (such as logging) to be added to a program without cluttering the code core to the functionality. AOP forms a basis for aspect-oriented software development.</p>
 <p>在不修改现有代码的基础之上，通过一个切入点添加特定的行为且不会影响原有的逻辑，例如当全部func开始调用的时候打印日志。</p>
-<h2 id="NSObject"><a href="#NSObject" class="headerlink" title="NSObject"></a>NSObject</h2><h4 id="class-func-load"><a href="#class-func-load" class="headerlink" title="class func load"></a>class func load</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Invoked whenever a class or category is added to the Objective-C runtime; implement this method to perform class-specific behavior upon loading.</span><br><span class="line"></span><br><span class="line">In addition:</span><br><span class="line"></span><br><span class="line">A class’s +load method is called after all of its superclasses’ +load methods.</span><br><span class="line"></span><br><span class="line">A category +load method is called after the class’s own +load method.</span><br></pre></td></tr></table></figure>
+<h2 id="NSObject"><a href="#NSObject" class="headerlink" title="NSObject"></a>NSObject</h2><h4 id="class-func-load"><a href="#class-func-load" class="headerlink" title="class func load"></a>class func load</h4><p>Invoked whenever a class or category is added to the Objective-C runtime; implement this method to perform class-specific behavior upon loading.</p>
+<p>In addition:</p>
+<p>A class’s +load method is called after all of its superclasses’ +load methods.</p>
+<p>A category +load method is called after the class’s own +load method.</p>
 <p>Swift Class不允许overrid load方法，重写时会报错：Method ‘load()’ defines Objective-C class method ‘load’, which is not permitted by Swift.</p>
-<h4 id="class-func-initialize"><a href="#class-func-initialize" class="headerlink" title="class func initialize"></a>class func initialize</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Initializes the class before it receives its first message.</span><br><span class="line"></span><br><span class="line">The runtime sends initialize to each class in a program just before the class, or any class that inherits from it, is sent its first message from within the program. The runtime sends the initialize message to classes in a thread-safe manner. Superclasses receive this message before their subclasses. The superclass implementation may be called multiple times if subclasses do not implement initialize—the runtime will call the inherited implementation—or if subclasses explicitly call [super initialize]. If you want to protect yourself from being run multiple times, you can structure your implementation along these lines:</span><br><span class="line"></span><br><span class="line">+ (void)initialize &#123;</span><br><span class="line">  if (self == [ClassName self]) &#123;</span><br><span class="line">    // ... do the initialization ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">Because initialize is called in a thread-safe manner and the order of initialize being called on different classes is not guaranteed, it’s important to do the minimum amount of work necessary in initialize methods. Specifically, any code that takes locks that might be required by other classes in their initialize methods is liable to lead to deadlocks. Therefore you should not rely on initialize for complex initialization, and should instead limit it to straightforward, class local initialization.</span><br></pre></td></tr></table></figure>
+<h4 id="class-func-initialize"><a href="#class-func-initialize" class="headerlink" title="class func initialize"></a>class func initialize</h4><p>Initializes the class before it receives its first message.</p>
+<p>The runtime sends initialize to each class in a program just before the class, or any class that inherits from it, is sent its first message from within the program. The runtime sends the initialize message to classes in a thread-safe manner. Superclasses receive this message before their subclasses. The superclass implementation may be called multiple times if subclasses do not implement initialize—the runtime will call the inherited implementation—or if subclasses explicitly call [super initialize]. If you want to protect yourself from being run multiple times, you can structure your implementation along these lines:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+ (void)initialize &#123;</span><br><span class="line">  if (self == [ClassName self]) &#123;</span><br><span class="line">    // ... do the initialization ...</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Because initialize is called in a thread-safe manner and the order of initialize being called on different classes is not guaranteed, it’s important to do the minimum amount of work necessary in initialize methods. Specifically, any code that takes locks that might be required by other classes in their initialize methods is liable to lead to deadlocks. Therefore you should not rely on initialize for complex initialization, and should instead limit it to straightforward, class local initialization.</p>
 <ol>
 <li>initialize在接收到第一条消息以前调用。</li>
 <li>initialize方法调用是线程安全的。</li>
@@ -103,7 +109,8 @@
 <li>因为是线程安全，不能保证执行顺序，不应该做过多的任务。</li>
 </ol>
 <h2 id="Requiring-Dynamic-Dispatch"><a href="#Requiring-Dynamic-Dispatch" class="headerlink" title="Requiring Dynamic Dispatch"></a>Requiring Dynamic Dispatch</h2><p>在Swift Interacting with Object-C 中：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">When Swift APIs are imported by the Objective-C runtime, there are no guarantees of dynamic dispatch for properties, methods, subscripts, or initializers. The Swift compiler may still devirtualize or inline member access to optimize the performance of your code, bypassing the Objective-C runtime.</span><br><span class="line"></span><br><span class="line">You can use the dynamic modifier to require that access to members be dynamically dispatched through the Objective-C runtime. Requiring dynamic dispatch is rarely necessary. However, it is necessary when using using APIs like key–value observing or the method_exchangeImplementations function in the Objective-C runtime, which dynamically replace the implementation of a method at runtime. If the Swift compiler inlined the implementation of the method or devirtualized access to it, the new implementation would not be used.</span><br></pre></td></tr></table></figure>
+<p>When Swift APIs are imported by the Objective-C runtime, there are no guarantees of dynamic dispatch for properties, methods, subscripts, or initializers. The Swift compiler may still devirtualize or inline member access to optimize the performance of your code, bypassing the Objective-C runtime.</p>
+<p>You can use the dynamic modifier to require that access to members be dynamically dispatched through the Objective-C runtime. Requiring dynamic dispatch is rarely necessary. However, it is necessary when using using APIs like key–value observing or the method_exchangeImplementations function in the Objective-C runtime, which dynamically replace the implementation of a method at runtime. If the Swift compiler inlined the implementation of the method or devirtualized access to it, the new implementation would not be used.</p>
 <ol>
 <li>Swift API 是通过 Ojbect-C 运行时导入，由于Swift编译会绕过OC运行时进行 性能优化，不能保证 properties, methods, subscripts等的动态分发。</li>
 <li>设置 dynamic modifier ，实现如KVC 、 method_exchangeImplementations 等功能。</li>
@@ -117,7 +124,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimkn8fc50000i7zlxn25b6f5" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimkncicg0001ixzlquqg6nv9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>

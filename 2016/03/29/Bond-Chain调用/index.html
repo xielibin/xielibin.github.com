@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="天晷">
 <meta property="og:description" content="在说明几个链式调用方法之前必须得明白链式调用的定义，如何实现链式调用。在Swift中Array里map、flatMap是满足链式调用的。
 12345678let arr = [1, 2, 3]let res = arr.map &amp;#123; (i) -&amp;gt; String in    return &amp;quot;\(i)&amp;quot;    &amp;#125; .map &amp;#123; (index) -&amp;">
-<meta property="og:updated_time" content="2016-04-03T13:06:00.000Z">
+<meta property="og:updated_time" content="2016-04-03T14:10:37.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Bond-Chain调用">
 <meta name="twitter:description" content="在说明几个链式调用方法之前必须得明白链式调用的定义，如何实现链式调用。在Swift中Array里map、flatMap是满足链式调用的。
@@ -93,7 +93,9 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">let arr = [1, 2, 3]</span><br><span class="line">let res = arr.map &#123; (i) -&gt; String in</span><br><span class="line">    return &quot;\(i)&quot;</span><br><span class="line">    &#125; .map &#123; (index) -&gt; String in</span><br><span class="line">        return &quot;index:&quot; + index</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">print(res)  //&quot;[&quot;index:1&quot;, &quot;index:2&quot;, &quot;index:3&quot;]\n&quot;</span><br></pre></td></tr></table></figure>
 <p>大家请观摩 @唐巧 的烧脑体操（五）(<a href="http://www.infoq.com/cn/articles/swift-brain-gym-monad)里对链式调用实现的讲解。" target="_blank" rel="external">http://www.infoq.com/cn/articles/swift-brain-gym-monad)里对链式调用实现的讲解。</a></p>
 <p>在Wiki上关于Monad的解释：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">In functional programming, a monad is a structure that represents computations defined as sequences of steps: a type with a monad structure defines what it means to chain operations, or nest functions of that type together. This allows the programmer to build pipelines that process data in a series of steps (also called actions), in which each action is decorated with additional processing rules provided by the monad.</span><br><span class="line"></span><br><span class="line">操作方式：</span><br><span class="line">A monad is created by defining a type constructor M and two operations, bind and return (where return is often also called unit):</span><br><span class="line"></span><br><span class="line">The return operation takes a value from a plain type and puts it into a container using the constructor, creating a monadic value: M a.</span><br><span class="line">The bind operation &quot;&gt;&gt;=&quot; takes as its arguments a monadic value M a and a function (a → M b) that can transform the value.</span><br><span class="line">The bind operator unwraps the plain value a embedded in its input monadic value M a, and feeds it to the function.</span><br><span class="line">The function then creates a new monadic value M b that can be fed to the next bind operators composed in the pipeline.</span><br></pre></td></tr></table></figure>
+<p>In functional programming, a monad is a structure that represents computations defined as sequences of steps: a type with a monad structure defines what it means to chain operations, or nest functions of that type together. This allows the programmer to build pipelines that process data in a series of steps (also called actions), in which each action is decorated with additional processing rules provided by the monad.</p>
+<p>操作方式：<br>A monad is created by defining a type constructor M and two operations, bind and return (where return is often also called unit):</p>
+<p>The return operation takes a value from a plain type and puts it into a container using the constructor, creating a monadic value: M a.<br>The bind operation “&gt;&gt;=” takes as its arguments a monadic value M a and a function (a → M b) that can transform the value.<br>The bind operator unwraps the plain value a embedded in its input monadic value M a, and feeds it to the function.<br>The function then creates a new monadic value M b that can be fed to the next bind operators composed in the pipeline.</p>
 <p><em>一定要先理解chain调用的原理，这个很重要，不然在swift的道路上往后走多少都将是徒劳，个人见解</em></p>
 <p><em>同时补一句，目前烧脑体操系列出的其它节讲的内容也比较细致，前去观摩吧！！！</em></p>
 <hr>
@@ -136,7 +138,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/29/Bond-Chain调用/" data-id="cimkn8fch0004i7zl0iy7lfyj" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/29/Bond-Chain调用/" data-id="cimkncicm0003ixzloesfs0hh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
