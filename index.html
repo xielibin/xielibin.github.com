@@ -65,6 +65,49 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-策略模式" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/03/策略模式/" class="article-date">
+  <time datetime="2016-04-03T05:41:10.000Z" itemprop="datePublished">2016-04-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/04/03/策略模式/">策略模式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Pattern-Strategy"><a href="#Pattern-Strategy" class="headerlink" title="Pattern: Strategy"></a>Pattern: Strategy</h3><p>//设计原则一：找出应用中可能需要变化之处，把它们独立出来，不要和那些不需要变化的代码混在一起。</p>
+<p>//设计原则二：针对接口编程，而不是针对实现编程。</p>
+<p>//设计原则三：多用组合，少用继承</p>
+<p>//策略模式：定义算法族，分别封装起来，让它们之间可以相互替换，此模式让算法的变化独立于使用算法的客户</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">protocol FlyBehavior &#123;</span><br><span class="line">    func fly() -&gt; String</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">protocol QuackBehavior &#123;</span><br><span class="line">    func quack() -&gt; String</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct BehaviorFly : FlyBehavior &#123;</span><br><span class="line">    func fly() -&gt; String &#123;</span><br><span class="line">        return &quot;I&apos;m flying!!&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct CantFly : FlyBehavior &#123;</span><br><span class="line">    func fly() -&gt; String &#123;</span><br><span class="line">        return &quot;I can&apos;t fly&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct Quack : QuackBehavior &#123;</span><br><span class="line">    func quack() -&gt; String &#123;</span><br><span class="line">        return &quot;Quack&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct MuteQuack : QuackBehavior &#123;</span><br><span class="line">    func quack() -&gt; String &#123;</span><br><span class="line">        return &quot;Silence&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">struct Duck &#123;</span><br><span class="line">    var fly : FlyBehavior</span><br><span class="line">    var quack : QuackBehavior</span><br><span class="line">    </span><br><span class="line">    func performFly() -&gt; String &#123;</span><br><span class="line">        return fly.fly()</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func performQuack() -&gt; String &#123;</span><br><span class="line">        return quack.quack()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Use</span><br><span class="line">let cantFly = CantFly()</span><br><span class="line">let muteQuack = MuteQuack()</span><br><span class="line">let duck1 = Duck(fly: cantFly, quack: muteQuack)</span><br><span class="line">duck1.performFly()</span><br><span class="line">duck1.performQuack()</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/03/策略模式/" data-id="cimk5sbpx0011v5zlvdm6g4ix" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DesignPattern/">DesignPattern</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-错误处理-railway-oriented-programming" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/04/03/错误处理-railway-oriented-programming/" class="article-date">
@@ -105,7 +148,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/错误处理-railway-oriented-programming/" data-id="cimk2ebfk000n52zlgfxbscrf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/错误处理-railway-oriented-programming/" data-id="cimk5sbq10015v5zl80tp3ju6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -162,7 +205,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/31/Revel-Server-Run/" data-id="cimk2ebf3000c52zlcwa73ong" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/31/Revel-Server-Run/" data-id="cimk5sbox000fv5zl23up7tqf" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -261,7 +304,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/30/Bond-BindTo-实现/" data-id="cimk2ebei000052zlw1zd830v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/30/Bond-BindTo-实现/" data-id="cimk5sboa0001v5zljfu19mhg" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -332,7 +375,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/30/Linux-Server-Install/" data-id="cimk2ebew000652zle2x45ydd" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/30/Linux-Server-Install/" data-id="cimk5sbon0008v5zlczafthir" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OS/">OS</a></li></ul>
@@ -383,7 +426,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/29/Mustache-模板解析/" data-id="cimk2ebez000852zlk68065gu" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/29/Mustache-模板解析/" data-id="cimk5sbot000cv5zl40twwhsb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -462,7 +505,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/29/Bond-Chain调用/" data-id="cimk2ebeo000152zlunli6lp9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/29/Bond-Chain调用/" data-id="cimk5sbo50000v5zl7w1gonjv" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -558,7 +601,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/28/Revel-run干了什么？/" data-id="cimk2ebf7000e52zlqjx9wt81" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/28/Revel-run干了什么？/" data-id="cimk5sbp0000hv5zlzf8q9lgl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -624,7 +667,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/28/Bond-Observable/" data-id="cimk2ebfs000w52zlyy0gr370" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/28/Bond-Observable/" data-id="cimk5sbof0003v5zl4n4r20du" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -706,55 +749,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/27/Revel-新建一个应用/" data-id="cimk2ebfc000h52zl8xn4qryb" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-后端小记开始" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/03/27/后端小记开始/" class="article-date">
-  <time datetime="2016-03-27T13:04:07.000Z" itemprop="datePublished">2016-03-27</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/03/27/后端小记开始/">后端小记开始</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>记的东西越多，忘得越快，为了忘时能快速回忆，所以还是得记下来 – 致开始衰退的记忆力</p>
-<hr>
-<p>从开始转行干编程的活，主要是以iOS开发为主，前两年Object-C，目前已用Swift快一年进入感觉和领悟也开始记下，OC的还会写，但是已经没有那么熟悉能记下的都是比较重要的部分了。</p>
-<p>其它语言到现在各种都有看过；不过最让我怀念的还是大学的时候，记得汇编学得挺不错的，可惜现在是一点反应都没有。其它像C、Java都是写写语法，没有实战。唯一实战的就只有js、HTML了，毕竟在iOS开发上也要用到。</p>
-<p>一不小心就开始接触Go语言，也拿着练了练手写着感觉还不错，当然Swift现在也能进行后端开发，但俗话说，不能在一棵树上吊死嘛，长点见识总是好的，所以毅然还是Go吧。</p>
-<p>使用Go语言、Revel框架、MySQL作为记录的开始。</p>
-<hr>
-<p>各种准备就不说了，参考</p>
-<p>Go语言官方网站：<a href="http://golang.org/" target="_blank" rel="external">http://golang.org/</a></p>
-<p>Revel官方文档：<a href="http://revel.github.io/index.html" target="_blank" rel="external">http://revel.github.io/index.html</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/27/后端小记开始/" data-id="cimk2ebfi000l52zl3pziwynx" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/27/Revel-新建一个应用/" data-id="cimk5sbp3000iv5zl9rwprfim" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -781,7 +776,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DesignPattern/">DesignPattern</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/DesignPattern/">DesignPattern</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -790,7 +785,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/DesignPattern/" style="font-size: 10px;">DesignPattern</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/后端/" style="font-size: 16.67px;">后端</a> <a href="/tags/工具/" style="font-size: 13.33px;">工具</a>
+      <a href="/tags/DesignPattern/" style="font-size: 12.5px;">DesignPattern</a> <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/后端/" style="font-size: 17.5px;">后端</a> <a href="/tags/工具/" style="font-size: 15px;">工具</a>
     </div>
   </div>
 
@@ -799,7 +794,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -809,6 +804,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/04/03/策略模式/">策略模式</a>
+          </li>
         
           <li>
             <a href="/2016/04/03/错误处理-railway-oriented-programming/">错误处理-railway oriented programming</a>
@@ -824,10 +823,6 @@
         
           <li>
             <a href="/2016/03/30/Linux-Server-Install/">Linux Server Install - USB 安装</a>
-          </li>
-        
-          <li>
-            <a href="/2016/03/29/Mustache-模板解析/">Mustache-模板解析</a>
           </li>
         
       </ul>
