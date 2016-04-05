@@ -15,7 +15,7 @@ Scott Wlaschin 的 Railw">
 <meta property="og:description" content="在Swift 2中，增加了Error Handler，让处理错误异常有了新的方式
 关于《Swift 2 throws 全解析 - 从原理到实践》一文对throws进行了详细描述。网站地址：http://www.ibm.com/developerworks/cn/mobile/mo-cn-swift/index.html，作者：王巍 (@onevcat)
 Scott Wlaschin 的 Railw">
-<meta property="og:updated_time" content="2016-04-03T06:00:44.000Z">
+<meta property="og:updated_time" content="2016-04-04T02:41:29.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="错误处理-railway oriented programming">
 <meta name="twitter:description" content="在Swift 2中，增加了Error Handler，让处理错误异常有了新的方式
@@ -106,11 +106,12 @@ Scott Wlaschin 的 Railw">
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">infix operator -&gt;&gt; &#123;</span><br><span class="line">    associativity left</span><br><span class="line">    precedence 140</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func -&gt;&gt;&lt;T,U&gt;(left : Result&lt;T&gt;, trans : ((T) throws -&gt; U)) -&gt; Result&lt;U&gt; &#123;</span><br><span class="line">    return left.map(trans)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>使用：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let start = Result(start: data)</span><br><span class="line">let value = try (start -&gt;&gt; throw1 -&gt;&gt; throw2 -&gt;&gt; throw3).finish()</span><br><span class="line">return value</span><br></pre></td></tr></table></figure>
+<p><strong><em>如throw1这样的func是像验证邮箱、用户名这样的功能性func,则可以提取成为全局功能代码复用，减少代码量。</em></strong></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/错误处理-railway-oriented-programming/" data-id="cimkncidw0010ixzlmjhyi5kz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/错误处理-railway-oriented-programming/" data-id="cimng2owr0014z8zlwyszttpw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -151,7 +152,7 @@ Scott Wlaschin 的 Railw">
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -160,7 +161,7 @@ Scott Wlaschin 的 Railw">
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Pattern/" style="font-size: 13.33px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/后端/" style="font-size: 16.67px;">后端</a> <a href="/tags/工具/" style="font-size: 13.33px;">工具</a>
+      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 15px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 15px;">工具</a>
     </div>
   </div>
 
@@ -169,7 +170,7 @@ Scott Wlaschin 的 Railw">
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -181,6 +182,14 @@ Scott Wlaschin 的 Railw">
       <ul>
         
           <li>
+            <a href="/2016/04/05/Unicode-UFT8-概记/">Unicode_UFT8_概记</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/04/Revel-Filter-Chain/">Revel Filter Chain</a>
+          </li>
+        
+          <li>
             <a href="/2016/04/03/AOP/">AOP</a>
           </li>
         
@@ -190,14 +199,6 @@ Scott Wlaschin 的 Railw">
         
           <li>
             <a href="/2016/04/03/错误处理-railway-oriented-programming/">错误处理-railway oriented programming</a>
-          </li>
-        
-          <li>
-            <a href="/2016/03/31/Revel-Server-Run/">Revel-Server_Run</a>
-          </li>
-        
-          <li>
-            <a href="/2016/03/30/Bond-BindTo-实现/">Bond-BindTo 实现</a>
           </li>
         
       </ul>
