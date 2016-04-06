@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>责任链 | 天晷</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="//职责链是使多个对象都有机会处理请求，从而避免请求的发送者和接受者之间的耦合关系。//将这个对象连成一条链，并沿着这条链传递该请求，直到有一个对象处理他为止。
+//对象本身要经过什么处理是通过每个链上元素通过运行态来决定的，决定的因素是取决于对象的属性或者一些其他方面的策略。//用户无论是从哪一个节点作为他的请求头节点，最终用户都可以得到一个请求的反馈。
+12345678910111213141">
+<meta property="og:type" content="article">
+<meta property="og:title" content="责任链">
+<meta property="og:url" content="http://yoursite.com/2016/04/06/责任链/index.html">
+<meta property="og:site_name" content="天晷">
+<meta property="og:description" content="//职责链是使多个对象都有机会处理请求，从而避免请求的发送者和接受者之间的耦合关系。//将这个对象连成一条链，并沿着这条链传递该请求，直到有一个对象处理他为止。
+//对象本身要经过什么处理是通过每个链上元素通过运行态来决定的，决定的因素是取决于对象的属性或者一些其他方面的策略。//用户无论是从哪一个节点作为他的请求头节点，最终用户都可以得到一个请求的反馈。
+12345678910111213141">
+<meta property="og:updated_time" content="2016-04-06T07:26:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="责任链">
+<meta name="twitter:description" content="//职责链是使多个对象都有机会处理请求，从而避免请求的发送者和接受者之间的耦合关系。//将这个对象连成一条链，并沿着这条链传递该请求，直到有一个对象处理他为止。
+//对象本身要经过什么处理是通过每个链上元素通过运行态来决定的，决定的因素是取决于对象的属性或者一些其他方面的策略。//用户无论是从哪一个节点作为他的请求头节点，最终用户都可以得到一个请求的反馈。
+12345678910111213141">
+  
+    <link rel="alternative" href="/atom.xml" title="天晷" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天晷</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">脑容量有限，清理出来装灵感吧！</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-责任链" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/06/责任链/" class="article-date">
+  <time datetime="2016-04-06T07:24:25.000Z" itemprop="datePublished">2016-04-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      责任链
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>//职责链是使多个对象都有机会处理请求，从而避免请求的发送者和接受者之间的耦合关系。<br>//将这个对象连成一条链，并沿着这条链传递该请求，直到有一个对象处理他为止。</p>
+<p>//对象本身要经过什么处理是通过每个链上元素通过运行态来决定的，决定的因素是取决于对象的属性或者一些其他方面的策略。<br>//用户无论是从哪一个节点作为他的请求头节点，最终用户都可以得到一个请求的反馈。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line">struct LeaveRequest &#123;</span><br><span class="line">    var id : Int</span><br><span class="line">    var day : Float</span><br><span class="line">    var reason : String</span><br><span class="line">    </span><br><span class="line">    func checkReason() &#123;</span><br><span class="line">        print(reason)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">protocol LeaveHandler &#123;</span><br><span class="line">    var nextLevel : LeaveHandler? &#123;get set&#125;</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request : LeaveRequest) -&gt; Bool</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">extension LeaveHandler &#123;</span><br><span class="line">    mutating func setNextLevel(next : LeaveHandler) &#123;</span><br><span class="line">        self.nextLevel = next</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func nextLevelHandler(request : LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        if let next = nextLevel &#123;</span><br><span class="line">            return next.handlerLeaveRequest(request)</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return false</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request : LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        return nextLevelHandler(request)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct Boss : LeaveHandler &#123;</span><br><span class="line">    var name : String</span><br><span class="line">    internal var nextLevel : LeaveHandler?</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request: LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        if 4 &lt; request.day &amp;&amp; request.day &lt; 7 &#123;</span><br><span class="line">            request.checkReason()</span><br><span class="line">            return true</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            print(&quot;No Rule ...&quot;)</span><br><span class="line">            return false</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct HR : LeaveHandler &#123;</span><br><span class="line">    var name : String</span><br><span class="line">    internal var nextLevel : LeaveHandler?</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request: LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        if 2 &lt; request.day &amp;&amp; request.day &lt;= 4 &#123;</span><br><span class="line">            request.checkReason()</span><br><span class="line">            </span><br><span class="line">            return true</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return nextLevelHandler(request)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct PM : LeaveHandler &#123;</span><br><span class="line">    var name : String</span><br><span class="line">    internal var nextLevel : LeaveHandler?</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request: LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        if 1 &lt; request.day &amp;&amp; request.day &lt;= 2 &#123;</span><br><span class="line">            request.checkReason()</span><br><span class="line">            return true</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return nextLevelHandler(request)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct Leader : LeaveHandler &#123;</span><br><span class="line">    var name : String</span><br><span class="line">    internal var nextLevel : LeaveHandler?</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request: LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        if request.day &lt;= 1 &#123;</span><br><span class="line">            request.checkReason()</span><br><span class="line">            return true</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return nextLevelHandler(request)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let boss = Boss(name: &quot;Boss&quot;, nextLevel: nil)</span><br><span class="line">let hr = HR(name: &quot;HR&quot;, nextLevel: boss)</span><br><span class="line">let pm = PM(name: &quot;PM&quot;, nextLevel: hr)</span><br><span class="line">let leader = Leader(name: &quot;leader&quot;, nextLevel: pm)</span><br><span class="line"></span><br><span class="line">let leaveRequest = LeaveRequest(id: 1, day: 3, reason: &quot;个人原因&quot;)</span><br><span class="line">leader.handlerLeaveRequest(leaveRequest)</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cimotoafc0014z0zlsbl1pc86" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/04/05/Unicode-UFT8-概记/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Unicode_UFT8_概记</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 16.67px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 13.33px;">工具</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/06/责任链/">责任链</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/05/Unicode-UFT8-概记/">Unicode_UFT8_概记</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/04/Revel-Filter-Chain/">Revel Filter Chain</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/03/AOP/">AOP</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/03/策略模式/">策略模式</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 天晷<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
