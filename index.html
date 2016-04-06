@@ -65,6 +65,86 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-OC-运行时概记" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/06/OC-运行时概记/" class="article-date">
+  <time datetime="2016-04-06T12:29:15.000Z" itemprop="datePublished">2016-04-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/04/06/OC-运行时概记/">OC_运行时概记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>必然时间太久还是会忘，还是记一下吧。</p>
+<p>Guide中对runtime解释：The Objective-C language defers as many decisions as it can from compile time and link time to runtime. Whenever possible, it does things dynamically. This means that the language requires not just a compiler, but also a runtime system to execute the compiled code. The runtime system acts as a kind of operating system for the Objective-C language; it’s what makes the language work.</p>
+<p>OC将决议从编译时延迟到运行时，作为动态运行。这意味着不但需要编译器，同时还需要一个运行时系统来执行编译代码。这个运行时系统为OC充当一个操作系统，使其能够运行。</p>
+<h3 id="Interact"><a href="#Interact" class="headerlink" title="Interact"></a>Interact</h3><ol>
+<li>通过源码实现功能，编译后动态运行。</li>
+<li>通过NSObject 提供的部分查询method，如methodForSelector: \ respondsToSelector:等。</li>
+<li>通过runtime functions。</li>
+</ol>
+<p>OC定义Class结构，在/objc/runtime.h中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">struct objc_class &#123;</span><br><span class="line">    Class isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line"></span><br><span class="line">#if !__OBJC2__</span><br><span class="line">    Class super_class                                        OBJC2_UNAVAILABLE;</span><br><span class="line">    const char *name                                         OBJC2_UNAVAILABLE;</span><br><span class="line">    long version                                             OBJC2_UNAVAILABLE;</span><br><span class="line">    long info                                                OBJC2_UNAVAILABLE;</span><br><span class="line">    long instance_size                                       OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_ivar_list *ivars                             OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_method_list **methodLists                    OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_cache *cache                                 OBJC2_UNAVAILABLE;</span><br><span class="line">    struct objc_protocol_list *protocols                     OBJC2_UNAVAILABLE;</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">&#125; OBJC2_UNAVAILABLE;</span><br></pre></td></tr></table></figure>
+<p>表示一个实例对象：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/// Represents an instance of a class.</span><br><span class="line">struct objc_object &#123;</span><br><span class="line">    Class isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>看几个重要的定义：<br>OC版本源文件内定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/// An opaque type that represents a method in a class definition.</span><br><span class="line">typedef struct objc_method *Method;</span><br><span class="line"></span><br><span class="line">/// An opaque type that represents an instance variable.</span><br><span class="line">typedef struct objc_ivar *Ivar;</span><br><span class="line"></span><br><span class="line">/// An opaque type that represents a category.</span><br><span class="line">typedef struct objc_category *Category;</span><br><span class="line"></span><br><span class="line">/// An opaque type that represents an Objective-C declared property.</span><br><span class="line">typedef struct objc_property *objc_property_t;</span><br><span class="line"></span><br><span class="line">/// Defines a method</span><br><span class="line">struct objc_method_description &#123;</span><br><span class="line">	SEL name;               /**&lt; The name of the method */</span><br><span class="line">	char *types;            /**&lt; The types of the method arguments */</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">/// Defines a property attribute</span><br><span class="line">typedef struct &#123;</span><br><span class="line">    const char *name;           /**&lt; The name of the attribute */</span><br><span class="line">    const char *value;          /**&lt; The value of the attribute (usually empty) */</span><br><span class="line">&#125; objc_property_attribute_t;</span><br></pre></td></tr></table></figure>
+<p>在Swift库中已经预留出和OC版源文件相同的头文件（会将运行时部分用Swift语法实现？）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import ObjectiveC.List</span><br><span class="line">import ObjectiveC.NSObjCRuntime</span><br><span class="line">import ObjectiveC.NSObject</span><br><span class="line">import ObjectiveC.Object</span><br><span class="line">import ObjectiveC.Protocol</span><br><span class="line">import ObjectiveC.message</span><br><span class="line">import ObjectiveC.objc</span><br><span class="line">import ObjectiveC.objc_api</span><br><span class="line">import ObjectiveC.objc_auto</span><br><span class="line">import ObjectiveC.objc_class</span><br><span class="line">import ObjectiveC.objc_exception</span><br><span class="line">import ObjectiveC.objc_load</span><br><span class="line">import ObjectiveC.objc_runtime</span><br><span class="line">import ObjectiveC.objc_sync</span><br><span class="line">import ObjectiveC.runtime</span><br></pre></td></tr></table></figure>
+<p>Swift库ObjectiveC.runtime内定义，对runtime用Swift语法实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">/// An opaque type that represents a method in a class definition.</span><br><span class="line">public typealias Method = COpaquePointer</span><br><span class="line"></span><br><span class="line">/// An opaque type that represents an instance variable.</span><br><span class="line">public typealias Ivar = COpaquePointer</span><br><span class="line"></span><br><span class="line">/// An opaque type that represents a category.</span><br><span class="line">public typealias Category = COpaquePointer</span><br><span class="line"></span><br><span class="line">/// An opaque type that represents an Objective-C declared property.</span><br><span class="line">public typealias objc_property_t = COpaquePointer</span><br><span class="line"></span><br><span class="line">/* Use `Class` instead of `struct objc_class *` */</span><br><span class="line"></span><br><span class="line">/// Defines a method</span><br><span class="line">public struct objc_method_description &#123;</span><br><span class="line">    /**&lt; The name of the method */</span><br><span class="line">    public var name: Selector</span><br><span class="line">    /**&lt; The types of the method arguments */</span><br><span class="line">    public var types: UnsafeMutablePointer&lt;Int8&gt;</span><br><span class="line">    public init()</span><br><span class="line">    public init(name: Selector, types: UnsafeMutablePointer&lt;Int8&gt;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/// Defines a property attribute</span><br><span class="line">public struct objc_property_attribute_t &#123;</span><br><span class="line">    /**&lt; The name of the attribute */</span><br><span class="line">    public var name: UnsafePointer&lt;Int8&gt;</span><br><span class="line">    /**&lt; The value of the attribute (usually empty) */</span><br><span class="line">    public var value: UnsafePointer&lt;Int8&gt;</span><br><span class="line">    public init()</span><br><span class="line">    public init(name: UnsafePointer&lt;Int8&gt;, value: UnsafePointer&lt;Int8&gt;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>Method 表示方法，分成Selector 和 IMP 部分。</li>
+<li>Ivar 表示实例对象的变量。</li>
+<li>Category 表示OC范筹。</li>
+<li>objc_property_t 表示属性。</li>
+</ol>
+<h3 id="Messaging"><a href="#Messaging" class="headerlink" title="Messaging"></a>Messaging</h3><ol>
+<li>将语法 [receiver message] 翻译成 objc_msgSend(receiver, selector)。</li>
+<li>在objc_cache中查找方法。</li>
+<li>如果在cache中没找到，则在 objc_method_list 里查找， 如果找到则 缓存。</li>
+<li>如果在 objc_method_list 里没找到，则在指向父类查找。</li>
+</ol>
+<h3 id="Dynamic加载"><a href="#Dynamic加载" class="headerlink" title="Dynamic加载"></a>Dynamic加载</h3><h6 id="Dynamic-Method-Resolution"><a href="#Dynamic-Method-Resolution" class="headerlink" title="Dynamic Method Resolution"></a>Dynamic Method Resolution</h6><p>定义一个Class 未实现 objectSend方法，动态用 resolveObjectSend方法替换实现。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">- (void)resolveObjectSend &#123;</span><br><span class="line">    NSLog(@&quot;resolve message send ....&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (BOOL)resolveInstanceMethod:(SEL)sel &#123;</span><br><span class="line">    </span><br><span class="line">    if (sel == @selector(objectSend)) &#123;</span><br><span class="line">        IMP res = class_getMethodImplementation([self class], @selector(resolveObjectSend));</span><br><span class="line">        BOOL result = class_addMethod([self class], sel, res, &quot;v@:&quot;);</span><br><span class="line">        if (result) &#123;</span><br><span class="line">            NSLog(@&quot;method added ....&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        return YES;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return [super resolveInstanceMethod:sel];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>判定是否为 objectSend 消息。</li>
+<li>用运行时方法取出 resolveObjectSend 方法 对应的实现。</li>
+<li>增加方法，用 resolveObjectSend 的实现 作为 objectSend 的实现。</li>
+</ol>
+<p>对于实例方法或者类方法没有实现的，可以用 resolveInstanceMethod 或者 resolveClassMethod 动态添加实现。</p>
+<h3 id="消息转发-Message-Forwarding"><a href="#消息转发-Message-Forwarding" class="headerlink" title="消息转发 Message Forwarding"></a>消息转发 Message Forwarding</h3><p>在发送一个消息对对象后，如果对象不能处理消息，则会产生运行时错误，在抛出这个错误之前runtime会用forwardInvocation再进行一次处理 — 称为消息转发。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">- (void) forwardInvocation:(NSInvocation *)anInvocation &#123;</span><br><span class="line">    if ([anInvocation selector] == @selector(objectSend)) &#123;</span><br><span class="line">        anInvocation.selector = @selector(resolveObjectSend);</span><br><span class="line">        [anInvocation invokeWithTarget:another];</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        [super forwardInvocation:anInvocation];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector &#123;</span><br><span class="line">    NSMethodSignature * signature = [super methodSignatureForSelector:aSelector];</span><br><span class="line">    if (!signature) &#123;</span><br><span class="line">        signature = [another methodSignatureForSelector:@selector(resolveObjectSend)];</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return signature;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="运行时func使用"><a href="#运行时func使用" class="headerlink" title="运行时func使用"></a>运行时func使用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">class MyClass: NSObject &#123;</span><br><span class="line">    var pro : NSArray = [1, 2]</span><br><span class="line">    var pro1 : NSString = &quot;123&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let myObject = MyClass()</span><br><span class="line">myObject.pro = [2, 3]</span><br><span class="line"></span><br><span class="line">let proName : String = &quot;pro&quot;</span><br><span class="line">let iii : [CChar]? = proName.cStringUsingEncoding(NSUTF8StringEncoding)</span><br><span class="line">let iva : Ivar = class_getInstanceVariable(MyClass.self, iii!)</span><br><span class="line">let valueForIva = object_getIvar(myObject, iva)  // [2, 3]</span><br><span class="line"></span><br><span class="line">var count : UInt32 = 0</span><br><span class="line">let list = class_copyIvarList(MyClass.self, &amp;count)</span><br><span class="line"></span><br><span class="line">for i in 0..&lt;Int(count) &#123;</span><br><span class="line">    let name = ivar_getName(list[i])</span><br><span class="line">    print(String(UTF8String: name))  // Optional(&quot;pro&quot;)   // Optional(&quot;pro1&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let my = MyClass()</span><br><span class="line">object_getIvar(my, list[1])   // &quot;123&quot;</span><br><span class="line"></span><br><span class="line">list.dealloc(2)</span><br></pre></td></tr></table></figure>
+<p>参考官方文档地址： <a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40008048" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40008048</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cimowps9d000a8wzlh9qwuu9i" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-责任链" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/04/06/责任链/" class="article-date">
@@ -93,7 +173,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cimotoafc0014z0zlsbl1pc86" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cimowpsag001b8wzla56zp7kv" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -144,7 +224,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cimotoaf5000wz0zlya0kqzke" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cimowps9z000v8wzlzd7u19cc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Other/">Other</a></li></ul>
@@ -277,7 +357,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cimotoaey000qz0zlhiox4kuc" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cimowps9q000j8wzldxmst9zt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -346,7 +426,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimotoad90001z0zlrmhggi59" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimowps9600038wzlv9grgmsk" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -389,7 +469,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/策略模式/" data-id="cimotoafb0012z0zlyoo2l39t" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/策略模式/" data-id="cimowps9y000t8wzlvyerkq3n" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -442,7 +522,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/错误处理-railway-oriented-programming/" data-id="cimotoafh001bz0zlnin4ddkw" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/错误处理-railway-oriented-programming/" data-id="cimowpsaa00178wzl0zpr4exd" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -499,7 +579,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/31/Revel-Server-Run/" data-id="cimotoaet000mz0zlm8vx0mov" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/31/Revel-Server-Run/" data-id="cimowps9u000o8wzlrtt5bc11" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -598,7 +678,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/30/Bond-BindTo-实现/" data-id="cimotoadh0003z0zl30fjogm9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/30/Bond-BindTo-实现/" data-id="cimowps8w00008wzlkxts85au" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -669,61 +749,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/30/Linux-Server-Install/" data-id="cimotoafe0016z0zldz4trgrz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/30/Linux-Server-Install/" data-id="cimowps9100018wzleks9tbtk" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OS/">OS</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Mustache-模板解析" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/03/29/Mustache-模板解析/" class="article-date">
-  <time datetime="2016-03-29T13:35:54.000Z" itemprop="datePublished">2016-03-29</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/03/29/Mustache-模板解析/">Mustache-模板解析</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>关于 revel 生成 main.go 和 routes.go 两个文件，用了模板进行解析，这里用的到的模板规则叫做 mustache。</p>
-<p>看了mustache定义后，可以想象一下运用场景。。。。</p>
-<p>各种语言解析库集合参考地址：<a href="http://mustache.github.io/" target="_blank" rel="external">http://mustache.github.io/</a><br>mustache 手册参考地址：<a href="http://mustache.github.io/mustache.5.html" target="_blank" rel="external">http://mustache.github.io/mustache.5.html</a></p>
-<p>引用一下手册里的解释：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">NAME</span><br><span class="line">mustache - Logic-less templates.</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">A typical Mustache template:</span><br><span class="line"></span><br><span class="line">Hello &#123;&#123;name&#125;&#125;</span><br><span class="line">You have just won &#123;&#123;value&#125;&#125; dollars!</span><br><span class="line">&#123;&#123;#in_ca&#125;&#125;</span><br><span class="line">Well, &#123;&#123;taxed_value&#125;&#125; dollars, after taxes.</span><br><span class="line">&#123;&#123;/in_ca&#125;&#125;</span><br><span class="line">Given the following hash:</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;name&quot;: &quot;Chris&quot;,</span><br><span class="line">  &quot;value&quot;: 10000,</span><br><span class="line">  &quot;taxed_value&quot;: 10000 - (10000 * 0.4),</span><br><span class="line">  &quot;in_ca&quot;: true</span><br><span class="line">&#125;</span><br><span class="line">Will produce the following:</span><br><span class="line"></span><br><span class="line">Hello Chris</span><br><span class="line">You have just won 10000 dollars!</span><br><span class="line">Well, 6000.0 dollars, after taxes.</span><br><span class="line">DESCRIPTION</span><br><span class="line">Mustache can be used for HTML, config files, source code - anything. It works by expanding tags in a template using values provided in a hash or object.</span><br><span class="line"></span><br><span class="line">We call it &quot;logic-less&quot; because there are no if statements, else clauses, or for loops. Instead there are only tags. Some tags are replaced with a value, some nothing, and others a series of values. This document explains the different types of Mustache tags.</span><br></pre></td></tr></table></figure>
-<p>更多说明和用法参考手册。</p>
-<hr>
-<h4 id="区别说明"><a href="#区别说明" class="headerlink" title="区别说明"></a>区别说明</h4><p>golang里面的模板解析格式和上面提到的略有差别，下面列出在main.go中一个数组解析：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;range $k, $v := $.ImportPaths&#125;&#125;</span><br><span class="line">	&#123;&#123;$v&#125;&#125; &quot;&#123;&#123;$k&#125;&#125;&quot;</span><br><span class="line">&#123;&#123;end&#125;&#125;</span><br></pre></td></tr></table></figure>
-<p>这是对导入包路径的引入</p>
-<p>相比于官方对数组模板解析：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Template:</span><br><span class="line"></span><br><span class="line">&#123;&#123;#repo&#125;&#125;</span><br><span class="line">  &lt;b&gt;&#123;&#123;name&#125;&#125;&lt;/b&gt;</span><br><span class="line">&#123;&#123;/repo&#125;&#125;</span><br><span class="line">Hash:</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  &quot;repo&quot;: [</span><br><span class="line">    &#123; &quot;name&quot;: &quot;resque&quot; &#125;,</span><br><span class="line">    &#123; &quot;name&quot;: &quot;hub&quot; &#125;,</span><br><span class="line">    &#123; &quot;name&quot;: &quot;rip&quot; &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br><span class="line">Output:</span><br><span class="line"></span><br><span class="line">&lt;b&gt;resque&lt;/b&gt;</span><br><span class="line">&lt;b&gt;hub&lt;/b&gt;</span><br><span class="line">&lt;b&gt;rip&lt;/b&gt;</span><br></pre></td></tr></table></figure>
-<h4 id="Server启动入口"><a href="#Server启动入口" class="headerlink" title="Server启动入口"></a>Server启动入口</h4><p>在生成main.go的最后 <code>revel.Run(*port)</code>, 这个方法传入一个端口启动Server 。。。。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/29/Mustache-模板解析/" data-id="cimotoaei000fz0zldqjkcflt" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
 
     </footer>
   </div>
@@ -747,7 +776,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -756,7 +785,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 16.67px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 13.33px;">工具</a>
+      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 16.67px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/iOS/" style="font-size: 10px;">iOS</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 13.33px;">工具</a>
     </div>
   </div>
 
@@ -765,7 +794,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">6</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -775,6 +804,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/04/06/OC-运行时概记/">OC_运行时概记</a>
+          </li>
         
           <li>
             <a href="/2016/04/06/责任链/">责任链</a>
@@ -790,10 +823,6 @@
         
           <li>
             <a href="/2016/04/03/AOP/">AOP</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/03/策略模式/">策略模式</a>
           </li>
         
       </ul>
