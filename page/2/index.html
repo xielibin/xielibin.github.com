@@ -65,6 +65,77 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Linux-Server-Install" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/30/Linux-Server-Install/" class="article-date">
+  <time datetime="2016-03-30T06:08:02.000Z" itemprop="datePublished">2016-03-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/30/Linux-Server-Install/">Linux Server Install - USB 安装</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天测试环境服务器OS安装也让俺们扛枪上阵，此处，，，</p>
+<p>云服务器也是摆弄过很久了，但说实话直接用台式机装单系统Linux还是第一次，顺便记下，下次操作的时候能快点</p>
+<p>采用USB驱动安装的方式，典型的台式机（有点年龄了）</p>
+<p>资源准备：<br>1.U盘 大小够用就行 2G以上</p>
+<p>2.Ubuntu ISO镜像文件下载： <a href="http://www.ubuntu.com/download/server" target="_blank" rel="external">http://www.ubuntu.com/download/server</a></p>
+<p>3.能运行的机子，  当然这个时候还是需要键盘 和 显示器</p>
+<p>Ubuntu官网：<a href="http://www.ubuntu.com/" target="_blank" rel="external">http://www.ubuntu.com/</a> ， 当然这里面也能找到 桌面版的  。。。。</p>
+<h2 id="Mac下ISO写入U盘"><a href="#Mac下ISO写入U盘" class="headerlink" title="Mac下ISO写入U盘"></a>Mac下ISO写入U盘</h2><p>记住 diskutil 、 dd 、iostat 命令</p>
+<h5 id="查看磁盘信息"><a href="#查看磁盘信息" class="headerlink" title="查看磁盘信息"></a>查看磁盘信息</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">**-Mac-:~ **$ diskutil list</span><br><span class="line">/dev/disk0 (internal):</span><br><span class="line">   #:                       TYPE NAME                    SIZE       IDENTIFIER</span><br><span class="line">   0:      GUID_partition_scheme                         121.3 GB   disk0</span><br><span class="line">   1:                        EFI EFI                     314.6 MB   disk0s1</span><br><span class="line">   2:          Apple_CoreStorage Macintosh HD            120.4 GB   disk0s2</span><br><span class="line">   3:                 Apple_Boot Recovery HD             650.0 MB   disk0s3</span><br><span class="line">/dev/disk1 (internal, virtual):</span><br><span class="line">   #:                       TYPE NAME                    SIZE       IDENTIFIER</span><br><span class="line">   0:                  Apple_HFS Macintosh HD           +120.0 GB   disk1</span><br><span class="line">                                 Logical Volume on disk0s2</span><br><span class="line">                                 2A870B27-0CF6-4C3E-8F78-DCAB3D741849</span><br><span class="line">                                 Unlocked Encrypted</span><br><span class="line">/dev/disk2 (external, physical):</span><br><span class="line">   #:                       TYPE NAME                    SIZE       IDENTIFIER</span><br><span class="line">   0:     FDisk_partition_scheme                        *8.0 GB     disk2</span><br><span class="line">   1:                 DOS_FAT_32 KINGSTON                8.0 GB     disk2s1</span><br></pre></td></tr></table></figure>
+<p>看到我们的U盘挂载为 /dev/disk2</p>
+<p>df 命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">**-Mac-:~ **$ df -h</span><br><span class="line">Filesystem      Size   Used  Avail Capacity  iused   ifree %iused  Mounted on</span><br><span class="line">/dev/disk1     112Gi   82Gi   29Gi    74% 21668000 7634782   74%   /</span><br><span class="line">devfs          183Ki  183Ki    0Bi   100%      636       0  100%   /dev</span><br><span class="line">map -hosts       0Bi    0Bi    0Bi   100%        0       0  100%   /net</span><br><span class="line">map auto_home    0Bi    0Bi    0Bi   100%        0       0  100%   /home</span><br></pre></td></tr></table></figure>
+<h5 id="Unmount-U盘"><a href="#Unmount-U盘" class="headerlink" title="Unmount U盘"></a>Unmount U盘</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">**-Mac-:~ **$ diskutil unmountDisk /dev/disk2</span><br><span class="line">Unmount of all volumes on disk2 was successful</span><br></pre></td></tr></table></figure>
+<h5 id="dd命令将ISO写入U盘"><a href="#dd命令将ISO写入U盘" class="headerlink" title="dd命令将ISO写入U盘"></a>dd命令将ISO写入U盘</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">**-Mac-:~ **$ sudo dd if=~/Downloads/ubuntu-14.04.4-server-amd64.iso of=/dev/disk2</span><br><span class="line">1185792+0 records in</span><br><span class="line">1185792+0 records out</span><br><span class="line">607125504 bytes transferred in 513.156579 secs (1183119 bytes/sec)</span><br></pre></td></tr></table></figure>
+<p>这个执行的过程有点长，可以查看进度：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">**-Mac-:~ **$ iostat -w 2</span><br><span class="line"></span><br><span class="line">     disk0           disk2           disk3       cpu     load average</span><br><span class="line">    KB/t tps  MB/s     KB/t tps  MB/s     KB/t tps  MB/s  us sy id   1m   5m   15m</span><br><span class="line">    37.69   5  0.18     4.36   1  0.01   336.10   0  0.02   6  3 91  1.04 1.86 1.81</span><br><span class="line">    0.00   0  0.00     4.00 583  2.28     0.00   0  0.00  10  7 83  1.04 1.85 1.81</span><br><span class="line">    0.00   0  0.00     4.00 340  1.33   512.00   3  1.50  12  6 81  1.04 1.85 1.81</span><br></pre></td></tr></table></figure>
+<h5 id="eject-U盘"><a href="#eject-U盘" class="headerlink" title="eject U盘"></a>eject U盘</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">**-Mac-:~ **$ diskutil eject /dev/disk2</span><br><span class="line">Disk /dev/disk2 ejected</span><br></pre></td></tr></table></figure>
+<h2 id="设置-USB-启动"><a href="#设置-USB-启动" class="headerlink" title="设置 USB 启动"></a>设置 USB 启动</h2><p>常规方式进入 BIOS 设置（什么 F8、F9 。。。。 Del 等方式）， 设置 USB 为首选启动 ， F10 保存</p>
+<p>U盘在插入的状态下，将会自动进入 Ubuntu 安装 。。。。。。</p>
+<h2 id="自动安装过程"><a href="#自动安装过程" class="headerlink" title="自动安装过程"></a>自动安装过程</h2><p>在这个过程里面基本上都是自动的，也要注意以下几个点：</p>
+<ol>
+<li><p>磁盘选择情况 </p>
+</li>
+<li><p>登录用户 一定要记住密码</p>
+</li>
+<li><p>其它部分根据提示设置即可，当然也要根据实际的需要改变一些设置，毕竟Linux自己可定制性很强嘛 。。。。</p>
+</li>
+</ol>
+<h2 id="完成安装"><a href="#完成安装" class="headerlink" title="完成安装"></a>完成安装</h2><p>这次安装完成了，还是遇到点小麻烦</p>
+<p>居然启动不起来，来了一个 reboot and select proper boot device</p>
+<p>想想肯定是引导有问题，所以重新选择到Disk （此处被忽悠了一下，这个选项变成灰白色，还以为不能操作。。。。且Driver 下面也是灰白 ，没有选择到正确选项 ，卡住了我）</p>
+<p>正常选择Disk 后，再重新启动 就进入到Ubuntu 启动流程， 输入用户名 和 密码  。。。。。</p>
+<p>最后拔掉除了网线 和 电源线 以外的其它线缆  。。。。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/03/30/Linux-Server-Install/" data-id="cimq4did200082bzlmmszj58p" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OS/">OS</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Mustache-模板解析" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/03/29/Mustache-模板解析/" class="article-date">
@@ -104,7 +175,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/29/Mustache-模板解析/" data-id="cimowps9b00088wzlf9q9r1z2" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/29/Mustache-模板解析/" data-id="cimq4didm000n2bzlc1bcc64n" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -187,7 +258,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/29/Bond-Chain调用/" data-id="cimowps9700048wzlh3y15wq1" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/29/Bond-Chain调用/" data-id="cimq4dicr00012bzlqo62uloy" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -283,7 +354,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/28/Revel-run干了什么？/" data-id="cimowps9t000m8wzl2c9ogunf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/28/Revel-run干了什么？/" data-id="cimq4dido000p2bzl5v35s9y6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -349,7 +420,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/28/Bond-Observable/" data-id="cimowps9900068wzlpgjt30z6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/28/Bond-Observable/" data-id="cimq4dicz00062bzlajzml78v" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -431,7 +502,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/27/Revel-新建一个应用/" data-id="cimowps9x000r8wzlasemca0v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/27/Revel-新建一个应用/" data-id="cimq4didq000r2bzlm22g8e86" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -479,7 +550,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/27/后端小记开始/" data-id="cimowpsa600138wzlz2wei9ov" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/27/后端小记开始/" data-id="cimq4die0000z2bzl0f1fchn1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -523,7 +594,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/26/观察者模式/" data-id="cimowpsa900158wzlputywa4k" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/26/观察者模式/" data-id="cimq4diec00192bzl6yi7wrhk" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -590,7 +661,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/26/Mirror/" data-id="cimowps9l000f8wzlajacmrpg" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/26/Mirror/" data-id="cimq4did400092bzlsfixbn4r" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -638,76 +709,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/25/Swift-元类型简介/" data-id="cimowpsa3000y8wzl4u4ek8a4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/25/Swift-元类型简介/" data-id="cimq4didt000v2bzlx139jkzx" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Jenkins环境搭建与iOS自动构建包-0" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/" class="article-date">
-  <time datetime="2015-08-18T08:32:00.000Z" itemprop="datePublished">2015-08-18</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/">Jenkins环境搭建与iOS自动构建包</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文介绍采用Tomcat的方式运行Jenkins。</p>
-<p>###安装Tomcat<br>在本机环境安装Tomcat，完成后启动服务并访问<a href="http://localhost:8080" target="_blank" rel="external">http://localhost:8080</a>能够看到Tomcat页面，即Tomcat成功安装。</p>
-<p>###启动Jenkins服务</p>
-<hr>
-<p>1.在<a href="http://mirror.xmission.com/jenkins/war/" target="_blank" rel="external">http://mirror.xmission.com/jenkins/war/</a>去下载需要的war包，本该下载的是<a href="http://ftp-nyc.osuosl.org/pub/jenkins/war/1.613/jenkins.war" target="_blank" rel="external">http://ftp-nyc.osuosl.org/pub/jenkins/war/1.613/jenkins.war</a>。</p>
-<hr>
-<p>2.将jenkins解压后放入/Library/Tomcat/webapps下，即能正常访问<a href="http://localhost:8080/jenkins" target="_blank" rel="external">http://localhost:8080/jenkins</a>.</p>
-<hr>
-<p>3.可以根据需求新建Job了.</p>
-<p>###Jenkins插件管理</p>
-<p>####安装方式一<br>1.直接在启动的Jenkins服务下进行可视化下载安装，重新启动服务后生效。（我在采用此方式的时，有多数插件都不能成功安装，于是我采用的第二种方式）</p>
-<p>####安装方式二</p>
-<hr>
-<p>1.Jenkins服务启动后，会自动在~/目录下生成一个.jenkins的目录，在此目录下有一个plugins的目录应该是负责插件的。</p>
-<hr>
-<p>2.进入该目录可以看见已经安装的部分插件了。</p>
-<hr>
-<p>3.进入该网址<a href="http://mirror.xmission.com/jenkins/plugins/" target="_blank" rel="external">http://mirror.xmission.com/jenkins/plugins/</a>可以直接下载需要的插件</p>
-<hr>
-<p>4.将下载好的插件直接放入到~/.jenkins/plugins目录下，重新启动服务即可生效（需要注意一点有些插件功能需要依赖于其它插件，所以一定要明确需要的依赖插件）</p>
-<p>###iOS自动构建</p>
-<hr>
-<p>1.本文涉及的插件及参考文档已分享至该链接，可下载<a href="http://pan.baidu.com/s/1kTBzeYz" target="_blank" rel="external">http://pan.baidu.com/s/1kTBzeYz</a>。</p>
-<hr>
-<p>2.在~/.jenkins/jobs下管理新建的所有Job，可以将Job文件夹复制出来，在其它地方使用，在此帖一个已经配置好的范例（此范例是第三方管理工具CocoaPods时的配置情况）,<a href="http://pan.baidu.com/s/1dl5CU" target="_blank" rel="external">http://pan.baidu.com/s/1dl5CU</a>。</p>
-<hr>
-<p>3.当然可以结合Apple提供的items-service协议，在Tomcat下新建一个服务，提供一个下载页面，这样就可以完成自动构建+下载安装。</p>
-<p>###其它<br>1.考虑结合版本管理</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/" data-id="cimowps9h000d8wzlboz1exh2" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
 
     </footer>
   </div>
@@ -731,7 +736,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -740,7 +745,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 16.67px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/iOS/" style="font-size: 10px;">iOS</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 13.33px;">工具</a>
+      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 17.5px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/iOS/" style="font-size: 12.5px;">iOS</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 15px;">工具</a>
     </div>
   </div>
 
@@ -749,7 +754,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -759,6 +764,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/04/07/EventHandler-PG/">EventHandler_PG</a>
+          </li>
         
           <li>
             <a href="/2016/04/06/OC-运行时概记/">OC_运行时概记</a>
@@ -774,10 +783,6 @@
         
           <li>
             <a href="/2016/04/04/Revel-Filter-Chain/">Revel Filter Chain</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/03/AOP/">AOP</a>
           </li>
         
       </ul>

@@ -13,7 +13,7 @@ Guide中对runtime解释：The Objective-C language defers as many decisions as 
 <meta property="og:site_name" content="天晷">
 <meta property="og:description" content="必然时间太久还是会忘，还是记一下吧。
 Guide中对runtime解释：The Objective-C language defers as many decisions as it can from compile time and link time to runtime. Whenever possible, it does things dynamically. This means th">
-<meta property="og:updated_time" content="2016-04-06T13:44:47.000Z">
+<meta property="og:updated_time" content="2016-04-07T06:53:38.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OC_运行时概记">
 <meta name="twitter:description" content="必然时间太久还是会忘，还是记一下吧。
@@ -103,8 +103,17 @@ Guide中对runtime解释：The Objective-C language defers as many decisions as 
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/// Represents an instance of a class.</span><br><span class="line">struct objc_object &#123;</span><br><span class="line">    Class isa  OBJC_ISA_AVAILABILITY;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 <p>看几个重要的定义：<br>OC版本源文件内定义：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/// An opaque type that represents a method in a class definition.</span><br><span class="line">typedef struct objc_method *Method;</span><br><span class="line"></span><br><span class="line">/// An opaque type that represents an instance variable.</span><br><span class="line">typedef struct objc_ivar *Ivar;</span><br><span class="line"></span><br><span class="line">/// An opaque type that represents a category.</span><br><span class="line">typedef struct objc_category *Category;</span><br><span class="line"></span><br><span class="line">/// An opaque type that represents an Objective-C declared property.</span><br><span class="line">typedef struct objc_property *objc_property_t;</span><br><span class="line"></span><br><span class="line">/// Defines a method</span><br><span class="line">struct objc_method_description &#123;</span><br><span class="line">	SEL name;               /**&lt; The name of the method */</span><br><span class="line">	char *types;            /**&lt; The types of the method arguments */</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">/// Defines a property attribute</span><br><span class="line">typedef struct &#123;</span><br><span class="line">    const char *name;           /**&lt; The name of the attribute */</span><br><span class="line">    const char *value;          /**&lt; The value of the attribute (usually empty) */</span><br><span class="line">&#125; objc_property_attribute_t;</span><br></pre></td></tr></table></figure>
-<p>在Swift库中已经预留出和OC版源文件相同的头文件（会将运行时部分用Swift语法实现？）</p>
+<p>在Swift库中已经预留出和OC版源文件相同的头文件：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import ObjectiveC.List</span><br><span class="line">import ObjectiveC.NSObjCRuntime</span><br><span class="line">import ObjectiveC.NSObject</span><br><span class="line">import ObjectiveC.Object</span><br><span class="line">import ObjectiveC.Protocol</span><br><span class="line">import ObjectiveC.message</span><br><span class="line">import ObjectiveC.objc</span><br><span class="line">import ObjectiveC.objc_api</span><br><span class="line">import ObjectiveC.objc_auto</span><br><span class="line">import ObjectiveC.objc_class</span><br><span class="line">import ObjectiveC.objc_exception</span><br><span class="line">import ObjectiveC.objc_load</span><br><span class="line">import ObjectiveC.objc_runtime</span><br><span class="line">import ObjectiveC.objc_sync</span><br><span class="line">import ObjectiveC.runtime</span><br></pre></td></tr></table></figure>
+<p>在Apple开源的Foundation project内有如此说明：</p>
+<p><strong>Runtime: The basis for interoperability.</strong></p>
+<p>The classes and methods in this group provide an interface for interoperability between C code and Swift. They also provide common layers used throughout the framework such as the root class NSObject.</p>
+<ol>
+<li>NSObject is mostly implemented.</li>
+<li>NSEnumerator is fully implemented.</li>
+<li>NSSwiftRuntime (internal use only) contains Swift runtime-specific functionality.</li>
+<li>NSObjCRuntime is missing some key parts such as NSClassFromString. Much of the functionality here is specific to the Objective-C runtime and is not relevant when building for Swift.</li>
+</ol>
 <p>Swift库ObjectiveC.runtime内定义，对runtime用Swift语法实现：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">/// An opaque type that represents a method in a class definition.</span><br><span class="line">public typealias Method = COpaquePointer</span><br><span class="line"></span><br><span class="line">/// An opaque type that represents an instance variable.</span><br><span class="line">public typealias Ivar = COpaquePointer</span><br><span class="line"></span><br><span class="line">/// An opaque type that represents a category.</span><br><span class="line">public typealias Category = COpaquePointer</span><br><span class="line"></span><br><span class="line">/// An opaque type that represents an Objective-C declared property.</span><br><span class="line">public typealias objc_property_t = COpaquePointer</span><br><span class="line"></span><br><span class="line">/* Use `Class` instead of `struct objc_class *` */</span><br><span class="line"></span><br><span class="line">/// Defines a method</span><br><span class="line">public struct objc_method_description &#123;</span><br><span class="line">    /**&lt; The name of the method */</span><br><span class="line">    public var name: Selector</span><br><span class="line">    /**&lt; The types of the method arguments */</span><br><span class="line">    public var types: UnsafeMutablePointer&lt;Int8&gt;</span><br><span class="line">    public init()</span><br><span class="line">    public init(name: Selector, types: UnsafeMutablePointer&lt;Int8&gt;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/// Defines a property attribute</span><br><span class="line">public struct objc_property_attribute_t &#123;</span><br><span class="line">    /**&lt; The name of the attribute */</span><br><span class="line">    public var name: UnsafePointer&lt;Int8&gt;</span><br><span class="line">    /**&lt; The value of the attribute (usually empty) */</span><br><span class="line">    public var value: UnsafePointer&lt;Int8&gt;</span><br><span class="line">    public init()</span><br><span class="line">    public init(name: UnsafePointer&lt;Int8&gt;, value: UnsafePointer&lt;Int8&gt;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ol>
@@ -135,7 +144,7 @@ Guide中对runtime解释：The Objective-C language defers as many decisions as 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cimowps9d000a8wzlh9qwuu9i" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cimq4didg000h2bzlewzei8gn" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -145,6 +154,15 @@ Guide中对runtime解释：The Objective-C language defers as many decisions as 
   
     
 <nav id="article-nav">
+  
+    <a href="/2016/04/07/EventHandler-PG/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          EventHandler_PG
+        
+      </div>
+    </a>
   
   
     <a href="/2016/04/06/责任链/" id="article-nav-older" class="article-nav-link-wrap">
@@ -167,7 +185,7 @@ Guide中对runtime解释：The Objective-C language defers as many decisions as 
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -176,7 +194,7 @@ Guide中对runtime解释：The Objective-C language defers as many decisions as 
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 16.67px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/iOS/" style="font-size: 10px;">iOS</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 13.33px;">工具</a>
+      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 17.5px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/iOS/" style="font-size: 12.5px;">iOS</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 15px;">工具</a>
     </div>
   </div>
 
@@ -185,7 +203,7 @@ Guide中对runtime解释：The Objective-C language defers as many decisions as 
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">7</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">8</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -195,6 +213,10 @@ Guide中对runtime解释：The Objective-C language defers as many decisions as 
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/04/07/EventHandler-PG/">EventHandler_PG</a>
+          </li>
         
           <li>
             <a href="/2016/04/06/OC-运行时概记/">OC_运行时概记</a>
@@ -210,10 +232,6 @@ Guide中对runtime解释：The Objective-C language defers as many decisions as 
         
           <li>
             <a href="/2016/04/04/Revel-Filter-Chain/">Revel Filter Chain</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/03/AOP/">AOP</a>
           </li>
         
       </ul>
