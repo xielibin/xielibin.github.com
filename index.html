@@ -94,7 +94,7 @@
 <li>Motion 和 远程 事件：window将事件发送到first responder处理。</li>
 </ol>
 <p>UIKit first sends the event to the object that is best suited to handle the event. For touch events, that object is the hit-test view, and for other events, that object is the first responder.</p>
-<h2 id="hit-testing"><a href="#hit-testing" class="headerlink" title="hit-testing"></a>hit-testing</h2><p><img src="http://7xsq10.com2.z0.glb.clouddn.com/2_1.tiff" alt="Figure2_1"></p>
+<h2 id="hit-testing"><a href="#hit-testing" class="headerlink" title="hit-testing"></a>hit-testing</h2><p><img src="http://7xsq10.com2.z0.glb.clouddn.com/2_1.jpg" alt="Figure2_1"></p>
 <p>如图，假设用户点击2-1上的E视图。iOS查找hit-test view检查顺序：</p>
 <ol>
 <li>touch事件在视图A内发生，所以检查视图B、C。</li>
@@ -105,7 +105,7 @@
 <p>hitTest:withEvent:方法返回hit-test view通过 CGPoint point 和 UIEvent。hitTest:withEvent:方法首先调用自己的pointInside:withEvent:方法。如果传入hitTest:withEvent:方法的point在视图之内，则pointInside:withEvent:返回YES。然后hitTest方法在子视图上递归调用hitTest方法。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class CustomHitTestView: UIView &#123;</span><br><span class="line">    </span><br><span class="line">    override func hitTest(point: CGPoint, withEvent event: UIEvent?) -&gt; UIView? &#123;</span><br><span class="line">        return self</span><br><span class="line">//        return super.hitTest(point, withEvent: event)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func pointInside(point: CGPoint, withEvent event: UIEvent?) -&gt; Bool &#123;</span><br><span class="line">        return super.pointInside(point, withEvent: event)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="Regulating-the-Delivery-of-Touches-to-Views"><a href="#Regulating-the-Delivery-of-Touches-to-Views" class="headerlink" title="Regulating the Delivery of Touches to Views"></a>Regulating the Delivery of Touches to Views</h2><p>window首先将touch事件发送到任何依附于hit-test view（或者其父视图吗？）的Gesture。</p>
-<p><img src="http://7xsq10.com2.z0.glb.clouddn.com/1_5.tiff" alt="Figure1_5"></p>
+<p><img src="http://7xsq10.com2.z0.glb.clouddn.com/1_5.jpg" alt="Figure1_5"></p>
 <p><strong>Gesture Recognizers Get the First Opportunity to Recognize a Touch</strong></p>
 <p>window延迟向view分发事件，让手势识别器有机会先分析touch。在延迟期间，如果手势识别器识别到touch手势，则window不会分发touch事件到view，并且会取消之前已经分发到view上和这个识别序列有关的touch object。</p>
 <h2 id="Creating-a-Custom-Gesture-Recognizer"><a href="#Creating-a-Custom-Gesture-Recognizer" class="headerlink" title="Creating a Custom Gesture Recognizer"></a>Creating a Custom Gesture Recognizer</h2><p>在自定义手势，则需要实现 UIGestureRecognizerSubclass 下的方法：</p>
@@ -130,13 +130,13 @@
 <li>Text editing。</li>
 </ol>
 <h2 id="Responder-Chain-delivery-Path"><a href="#Responder-Chain-delivery-Path" class="headerlink" title="Responder Chain delivery Path"></a>Responder Chain delivery Path</h2><p>如果initial对象（hit-test view 或者 first Responder）不能处理事件，则将事件通过next Responder沿着Chain传递。每个Responder决定是否处理这个事件，或者沿着Chain继续传递下去。</p>
-<p><img src="http://7xsq10.com2.z0.glb.clouddn.com/2_2.tiff" alt="Figure2_2"></p>
+<p><img src="http://7xsq10.com2.z0.glb.clouddn.com/2_2.jpg" alt="Figure2_2"></p>
 <p>参考官方文档链接：<a href="https://developer.apple.com/library/ios/documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009541" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009541</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cimq51h3e0008byzlg5kfos04" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cimq5ag8x0004cwzlrsp8suce" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -225,7 +225,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cimq51h40000gbyzlbo2v7nab" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cimq5ag9m000jcwzls856rw6i" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -265,7 +265,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cimq51h4t000zbyzlg2hp40lb" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cimq5agaf0016cwzlkthn5dm9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -316,7 +316,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cimq51h4l000vbyzlpbu9gvuo" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cimq5agaa0011cwzllnv6kj07" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Other/">Other</a></li></ul>
@@ -449,7 +449,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cimq51h55001bbyzl821w6ir2" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cimq5ag9r000ncwzlx1j0lfwu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -518,7 +518,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimq51h2v0000byzlekak3sl9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimq5ag8p0001cwzlqhk51one" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -561,7 +561,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/策略模式/" data-id="cimq51h4w0012byzlm8ynrx97" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/策略模式/" data-id="cimq5aga3000wcwzljj7ua1wz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -614,7 +614,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/错误处理-railway-oriented-programming/" data-id="cimq51h520019byzl96cltr32" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/错误处理-railway-oriented-programming/" data-id="cimq5agal001bcwzlou5yv6hp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -671,7 +671,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/31/Revel-Server-Run/" data-id="cimq51h4f000tbyzlk0o3wfem" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/31/Revel-Server-Run/" data-id="cimq5ag9q000lcwzlq46esuyj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -770,7 +770,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/30/Bond-BindTo-实现/" data-id="cimq51h380004byzlqzj9wjac" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/30/Bond-BindTo-实现/" data-id="cimq5ag8k0000cwzluevlu3fm" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
