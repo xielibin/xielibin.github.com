@@ -96,7 +96,7 @@
 <li>必须让观察对象用addObserver:forKeyPath:options:context:向被观察对象注册。</li>
 <li>观察对象必须实现observeValueForKeyPath:ofObject:change:context:。</li>
 </ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">class ObserveredClass : NSObject &#123;</span><br><span class="line">    var value : String = &quot;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class InstanceClass : NSObject &#123;</span><br><span class="line">    </span><br><span class="line">    // Receiving Notification of a Change</span><br><span class="line">    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer&lt;Void&gt;) &#123;</span><br><span class="line">        if keyPath == &quot;value&quot; &#123;</span><br><span class="line">            print(change?[NSKeyValueChangeNewKey])</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let observered = ObserveredClass()</span><br><span class="line">let instance = InstanceClass()</span><br><span class="line"></span><br><span class="line">// Registering as an Observer</span><br><span class="line">instance.addObserver(observered, forKeyPath: &quot;value&quot;, options: NSKeyValueObservingOptions.New, context: nil)</span><br><span class="line">observered.value = &quot;123&quot;</span><br><span class="line"></span><br><span class="line">// Removing an Object as an Observer</span><br><span class="line">instance.removeObserver(observered, forKeyPath: &quot;value&quot;, context: nil)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">class ObserveredClass : NSObject &#123;</span><br><span class="line">    dynamic var value : String = &quot;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class InstanceClass : NSObject &#123;</span><br><span class="line">    </span><br><span class="line">    // Receiving Notification of a Change</span><br><span class="line">    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer&lt;Void&gt;) &#123;</span><br><span class="line">        if keyPath == &quot;value&quot; &#123;</span><br><span class="line">            print(change?[NSKeyValueChangeNewKey])</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let observered = ObserveredClass()</span><br><span class="line">let instance = InstanceClass()</span><br><span class="line"></span><br><span class="line">// Registering as an Observer</span><br><span class="line">instance.addObserver(observered, forKeyPath: &quot;value&quot;, options: NSKeyValueObservingOptions.New, context: nil)</span><br><span class="line">observered.value = &quot;123&quot;</span><br><span class="line"></span><br><span class="line">// Removing an Object as an Observer</span><br><span class="line">instance.removeObserver(observered, forKeyPath: &quot;value&quot;, context: nil)</span><br></pre></td></tr></table></figure>
 <h2 id="KVO-Compliance"><a href="#KVO-Compliance" class="headerlink" title="KVO Compliance"></a>KVO Compliance</h2><p>符合KVO规则，需要有以下三点：</p>
 <ol>
 <li>这个类的观察属性必须是满足 KVC 规则的，KVO支持的数据类型和KVC一致。</li>
@@ -131,7 +131,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cimszvj0r000eqpzlpucm0e05" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cimt09xc0000drjzlmxmod08c" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -288,7 +288,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="cimszvj0i000aqpzl1zmsnf6x" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="cimt09xc3000erjzl3gg14n9e" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -371,7 +371,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cimszvj0e0006qpzlyrlrdxec" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cimt09xbq0006rjzl9z7od3iv" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -460,7 +460,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cimszvj13000mqpzl7sx5a2jy" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cimt09xca000krjzl1y2uv2zr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -500,7 +500,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cimszvj1w0019qpzl4eks0n3h" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cimt09xd9001erjzlnjzudxv7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -551,7 +551,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cimszvj1i000yqpzli6wo6yc7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cimt09xcu0010rjzlr1um8wty" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Other/">Other</a></li></ul>
@@ -684,7 +684,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cimszvj15000pqpzllifyy50v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cimt09xcj000rrjzlodas1n27" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -753,7 +753,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimszvj050001qpzlabfjbonh" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimt09xbh0001rjzl46vk2rru" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -796,7 +796,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/策略模式/" data-id="cimszvj1s0017qpzlg0qak8lk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/策略模式/" data-id="cimt09xd00017rjzl9emnuzso" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -849,7 +849,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/错误处理-railway-oriented-programming/" data-id="cimszvj23001eqpzl5aubyhsl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/错误处理-railway-oriented-programming/" data-id="cimt09xdc001grjzlzw4n83e8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
