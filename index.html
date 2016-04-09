@@ -65,6 +65,83 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-KVO-PG" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/09/KVO-PG/" class="article-date">
+  <time datetime="2016-04-09T08:38:06.000Z" itemprop="datePublished">2016-04-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/04/09/KVO-PG/">KVO_PG</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>KVO是一种机制被用于当其它对象指定属性改变时 观察对象被及时通知。在MVC工作模式下，KVO对Model属性改变及时通知Controller是非常有利的。</p>
+<p>KVO主要优势在于不用开发时去用其它机制进行实现，基础框架已经做了很好的支持。</p>
+<p>关于KVO相关扩展方法定义在 ： import Foundation.NSKeyValueObserving</p>
+<h2 id="Register-KVO"><a href="#Register-KVO" class="headerlink" title="Register KVO"></a>Register KVO</h2><p>要实现对特定属性采用KVO机制进行观察，必须满足以下三点：</p>
+<ol>
+<li>被观察的类的指定属性必须是遵守KVO规则的。</li>
+<li>必须让观察对象用addObserver:forKeyPath:options:context:向被观察对象注册。</li>
+<li>观察对象必须实现observeValueForKeyPath:ofObject:change:context:。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">class ObserveredClass : NSObject &#123;</span><br><span class="line">    var value : String = &quot;&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class InstanceClass : NSObject &#123;</span><br><span class="line">    </span><br><span class="line">    // Receiving Notification of a Change</span><br><span class="line">    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer&lt;Void&gt;) &#123;</span><br><span class="line">        if keyPath == &quot;value&quot; &#123;</span><br><span class="line">            print(change?[NSKeyValueChangeNewKey])</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let observered = ObserveredClass()</span><br><span class="line">let instance = InstanceClass()</span><br><span class="line"></span><br><span class="line">// Registering as an Observer</span><br><span class="line">instance.addObserver(observered, forKeyPath: &quot;value&quot;, options: NSKeyValueObservingOptions.New, context: nil)</span><br><span class="line">observered.value = &quot;123&quot;</span><br><span class="line"></span><br><span class="line">// Removing an Object as an Observer</span><br><span class="line">instance.removeObserver(observered, forKeyPath: &quot;value&quot;, context: nil)</span><br></pre></td></tr></table></figure>
+<h2 id="KVO-Compliance"><a href="#KVO-Compliance" class="headerlink" title="KVO Compliance"></a>KVO Compliance</h2><p>符合KVO规则，需要有以下三点：</p>
+<ol>
+<li>这个类的观察属性必须是满足 KVC 规则的，KVO支持的数据类型和KVC一致。</li>
+<li>类必须能触发属性改变的通知。</li>
+<li>依赖的key注册也能适合运用。</li>
+</ol>
+<p>有两种方法触发属性改变通知。</p>
+<h4 id="Auto-Change"><a href="#Auto-Change" class="headerlink" title="Auto Change"></a>Auto Change</h4><p>自动触发：NSObject提供了默认的支持，当属性是符合KVC规则时。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// Call the accessor method.</span><br><span class="line">[account setName:@&quot;Savings&quot;];</span><br><span class="line"> </span><br><span class="line">// Use setValue:forKey:.</span><br><span class="line">[account setValue:@&quot;Savings&quot; forKey:@&quot;name&quot;];</span><br><span class="line"> </span><br><span class="line">// Use a key path, where &apos;account&apos; is a kvc-compliant property of &apos;document&apos;.</span><br><span class="line">[document setValue:@&quot;Savings&quot; forKeyPath:@&quot;account.name&quot;];</span><br><span class="line"> </span><br><span class="line">// Use mutableArrayValueForKey: to retrieve a relationship proxy object.</span><br><span class="line">Transaction *newTransaction = &lt;#Create a new transaction for the account#&gt;;</span><br><span class="line">NSMutableArray *transactions = [account mutableArrayValueForKey:@&quot;transactions&quot;];</span><br><span class="line">[transactions addObject:newTransaction];</span><br></pre></td></tr></table></figure>
+<h4 id="Manual-Change"><a href="#Manual-Change" class="headerlink" title="Manual Change"></a>Manual Change</h4><p>手动触发： 提供了更小粒度控制，何时、如何触发通知。可以减少不必要的触发，或者集合一定数量通知同时触发。</p>
+<p>Class实现手动触发必须继承NSObject并且实现 + (BOOL)automaticallyNotifiesObserversForKey:(NSString *)theKey 方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">+ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)theKey &#123;</span><br><span class="line"> </span><br><span class="line">    BOOL automatic = NO;</span><br><span class="line">    if ([theKey isEqualToString:@&quot;openingBalance&quot;]) &#123;</span><br><span class="line">        automatic = NO;</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">        automatic = [super automaticallyNotifiesObserversForKey:theKey];</span><br><span class="line">    &#125;</span><br><span class="line">    return automatic;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实现手动通知观察者，在改变值前调用 willChangeValueForKey：，并在改变值后调用 didChangeValueForKey：；可优化触发。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- (void)setOpeningBalance:(double)theBalance &#123;</span><br><span class="line">    if (theBalance != _openingBalance) &#123;</span><br><span class="line">        [self willChangeValueForKey:@&quot;openingBalance&quot;];</span><br><span class="line">        _openingBalance = theBalance;</span><br><span class="line">        [self didChangeValueForKey:@&quot;openingBalance&quot;];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于to-many relationship，不但要指定属性值改变，而且要通过 NSKeyValueChange 表示 改变的类型  NSKeyValueChangeInsertion, NSKeyValueChangeRemoval, or NSKeyValueChangeReplacement。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (void)removeTransactionsAtIndexes:(NSIndexSet *)indexes &#123;</span><br><span class="line">    [self willChange:NSKeyValueChangeRemoval</span><br><span class="line">        valuesAtIndexes:indexes forKey:@&quot;transactions&quot;];</span><br><span class="line"> </span><br><span class="line">    // Remove the transaction objects at the specified indexes.</span><br><span class="line"> </span><br><span class="line">    [self didChange:NSKeyValueChangeRemoval</span><br><span class="line">        valuesAtIndexes:indexes forKey:@&quot;transactions&quot;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Registering-Dependent-Keys"><a href="#Registering-Dependent-Keys" class="headerlink" title="Registering Dependent Keys"></a>Registering Dependent Keys</h2><h4 id="To-one"><a href="#To-one" class="headerlink" title="To-one"></a>To-one</h4><p>注册依赖keys，自动触发通知可以 重写 keyPathsForValuesAffectingValueForKey： 方法 或者  根据规则实现适当的方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (NSString *)fullName &#123;</span><br><span class="line">    return [NSString stringWithFormat:@&quot;%@ %@&quot;,firstName, lastName];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="重写-keyPathsForValuesAffectingValueForKey：-方法："><a href="#重写-keyPathsForValuesAffectingValueForKey：-方法：" class="headerlink" title="重写 keyPathsForValuesAffectingValueForKey： 方法："></a>重写 keyPathsForValuesAffectingValueForKey： 方法：</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">+ (NSSet *)keyPathsForValuesAffectingValueForKey:(NSString *)key &#123;</span><br><span class="line"> </span><br><span class="line">    NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];</span><br><span class="line"> </span><br><span class="line">    if ([key isEqualToString:@&quot;fullName&quot;]) &#123;</span><br><span class="line">        NSArray *affectingKeys = @[@&quot;lastName&quot;, @&quot;firstName&quot;];</span><br><span class="line">        keyPaths = [keyPaths setByAddingObjectsFromArray:affectingKeys];</span><br><span class="line">    &#125;</span><br><span class="line">    return keyPaths;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="实现-keyPathsForValuesAffecting-方法"><a href="#实现-keyPathsForValuesAffecting-方法" class="headerlink" title="实现 keyPathsForValuesAffecting 方法"></a>实现 keyPathsForValuesAffecting<key> 方法</key></h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+ (NSSet *)keyPathsForValuesAffectingFullName &#123;</span><br><span class="line">    return [NSSet setWithObjects:@&quot;lastName&quot;, @&quot;firstName&quot;, nil];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于在扩展里，由于不能override keyPathsForValuesAffectingValueForKey，所以只能通过实现 keyPathsForValuesAffecting<key> 的方式实现。</key></p>
+<h4 id="To-many"><a href="#To-many" class="headerlink" title="To-many"></a>To-many</h4><p>The keyPathsForValuesAffectingValueForKey: method does not support key-paths that include a to-many relationship. For example, suppose you have a Department object with a to-many relationship (employees) to a Employee, and Employee has a salary attribute. You might want the Department object have a totalSalary attribute that is dependent upon the salaries of all the Employees in the relationship. You can not do this with, for example, keyPathsForValuesAffectingTotalSalary and returning employees.salary as a key.</p>
+<p>采用过渡的技巧实现，观察：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">let totalSalaryContext = UnsafeMutablePointer&lt;Void&gt;()</span><br><span class="line"></span><br><span class="line">class Employee: NSObject &#123;</span><br><span class="line">    dynamic var salary : NSNumber = 1.0</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class Department: NSObject &#123;</span><br><span class="line">    let employees : NSArray = [Employee(), Employee()]</span><br><span class="line">    dynamic var totalSalay : CGFloat = 0.0</span><br><span class="line">    </span><br><span class="line">    override init() &#123;</span><br><span class="line">        super.init()</span><br><span class="line">        employees.forEach &#123; (object) -&gt; () in</span><br><span class="line">            object.addObserver(self, forKeyPath: &quot;salary&quot;, options: NSKeyValueObservingOptions.New, context: totalSalaryContext)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    deinit &#123;</span><br><span class="line">        employees.forEach &#123; (object) -&gt; () in</span><br><span class="line">            object.removeObserver(self, forKeyPath: &quot;salary&quot;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer&lt;Void&gt;) &#123;</span><br><span class="line">        if (context == totalSalaryContext) &#123;</span><br><span class="line">            updateTotalSalary()</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func updateTotalSalary() &#123;</span><br><span class="line">        let new = self.valueForKeyPath(&quot;employees.@sum.salary&quot;) as? NSNumber ?? 0</span><br><span class="line">        totalSalay = CGFloat(new)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">let department = Department()</span><br><span class="line">department.addObserver(self, forKeyPath: &quot;totalSalay&quot;, options: NSKeyValueObservingOptions.New, context: nil)</span><br><span class="line"></span><br><span class="line">override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer&lt;Void&gt;) &#123;</span><br><span class="line">    if keyPath == &quot;totalSalay&quot; &#123;</span><br><span class="line">        print(change?[NSKeyValueChangeNewKey])</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        super.observeValueForKeyPath(keyPath, ofObject: object, change: change, context: context)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">(department.employees.lastObject as? Employee)?.salary = 20  //触发</span><br></pre></td></tr></table></figure>
+<h2 id="Key-Value-Observing-Implementation-Details"><a href="#Key-Value-Observing-Implementation-Details" class="headerlink" title="Key-Value Observing Implementation Details"></a>Key-Value Observing Implementation Details</h2><p>自动KVO采用isa-swizzling的方法实现。</p>
+<p>isa是一个指向操作分发表对象类的指针。对象类的分发表包含方法的实现和其它各种数据。</p>
+<p>当一个观察对象向被观察对象注册一个属性时，被观察对象的isa指针改变，去指向一个中介的class而不再指向原来的class。所以这个isa指针不能再完全反应实例对象的实际class。</p>
+<p>不能用改变后的isa指针去判定class关系。需要用类方法判定实例对象所属的类。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cimszol57000fi8zlld8ep7g9" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-KVC-PG" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/04/08/KVC-PG/" class="article-date">
@@ -210,7 +287,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="cimsknqvk00098lzlqffolb0m" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="cimszol53000di8zlawx6a6tm" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -293,7 +370,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cimsknqve00048lzl8184las3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cimszol4q0003i8zl2v0oadzp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -382,7 +459,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cimsknqvz000k8lzlnwside9l" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cimszol5h000pi8zl7wceqc9a" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -422,7 +499,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cimsknqwl00178lzl79j7fp8s" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cimszol6k001fi8zlmfdtacz7" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -473,7 +550,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cimsknqwd000x8lzlrgde9st6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cimszol5w0014i8zlnnsx7zuc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Other/">Other</a></li></ul>
@@ -606,7 +683,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cimsknqw5000r8lzlhicuffn2" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cimszol5l000ui8zldzys8rui" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -675,7 +752,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimsknqv300008lzlk1yl4v4k" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimszol4k0001i8zlht944u07" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -718,7 +795,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/策略模式/" data-id="cimsknqwh00128lzl3do3oep7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/策略模式/" data-id="cimszol6j001ei8zl42lkgrzp" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -771,67 +848,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/错误处理-railway-oriented-programming/" data-id="cimsknqwp00198lzlzd2fz5ht" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/错误处理-railway-oriented-programming/" data-id="cimszol6n001ji8zljhhkx570" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Revel-Server-Run" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/03/31/Revel-Server-Run/" class="article-date">
-  <time datetime="2016-03-31T14:39:53.000Z" itemprop="datePublished">2016-03-31</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/03/31/Revel-Server-Run/">Revel-Server_Run</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在main执行的最后调用server.go Run func 开启HTTP服务。</p>
-<ol>
-<li>根据设置的地址和端口等，拼接出 localAddress</li>
-<li>生成http.Server ，每个参数接收地址， 第二个是回调 handle, 最后设置Read Write 超时时长。</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Server = &amp;http.Server&#123;</span><br><span class="line">		Addr:         localAddress,</span><br><span class="line">		Handler:      http.HandlerFunc(handle),</span><br><span class="line">		ReadTimeout:  time.Minute,</span><br><span class="line">		WriteTimeout: time.Minute,</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>runStartupHooks() 开启服务前运行在各个文件init里注册的hook 方法。</li>
-<li>设置 MainTemplateLoader ，准备解析模板</li>
-<li>根据watch情况，设置 MainWatcher 并在 Filter最开始加入 WatchFilter ， 并且监测 Template下文件变动</li>
-<li>如果 HttpSsl 是 true , 调用 <code>Server.ListenAndServeTLS(HttpSslCert, HttpSslKey))</code> 开启Server服务。 Server.ListenAndServeTLS : ListenAndServeTLS listens on the TCP network address srv.Addr and then calls Serve to handle requests on incoming TLS connections. Accepted connections are configured to enable TCP keep-alives.</li>
-<li>如果 HttpSsl 是 false , 调用 <code>listener, err := net.Listen(network, localAddress)</code> ： Listen announces on the local network address laddr. 然后 <code>Server.Serve(listener)</code> : Serve accepts incoming connections on the Listener l, creating a new service goroutine for each. The service goroutines read requests and then call srv.Handler to reply to them.</li>
-</ol>
-<h2 id="StartupHooks"><a href="#StartupHooks" class="headerlink" title="StartupHooks"></a>StartupHooks</h2><p>Startup Hook 定义如下 ：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">var startupHooks []func()   //全局变量</span><br><span class="line"></span><br><span class="line">func OnAppStart(f func()) &#123;</span><br><span class="line">	startupHooks = append(startupHooks, f)</span><br><span class="line">&#125;   // 全局注册方法</span><br><span class="line"></span><br><span class="line">//      // from: yourapp/app/controllers/somefile.go</span><br><span class="line">//      func InitDB() &#123;</span><br><span class="line">//          // do DB connection stuff here</span><br><span class="line">//      &#125;</span><br><span class="line">//</span><br><span class="line">//      func FillCache() &#123;</span><br><span class="line">//          // fill a cache from DB</span><br><span class="line">//          // this depends on InitDB having been run</span><br><span class="line">//      &#125;</span><br><span class="line">//</span><br><span class="line">//      // from: yourapp/app/init.go</span><br><span class="line">//      func init() &#123;</span><br><span class="line">//          // set up filters...</span><br><span class="line">//</span><br><span class="line">//          // register startup functions</span><br><span class="line">//          revel.OnAppStart(InitDB)</span><br><span class="line">//          revel.OnAppStart(FillCache)</span><br><span class="line">//      &#125;</span><br></pre></td></tr></table></figure>
-<h2 id="handle"><a href="#handle" class="headerlink" title="handle"></a>handle</h2><p>回调方法，对数据处理后 调用 handleInternal ：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">var (</span><br><span class="line">		req  = NewRequest(r)</span><br><span class="line">		resp = NewResponse(w)</span><br><span class="line">		c    = NewController(req, resp)</span><br><span class="line">	)   // 生成一个 Req , Res , controller</span><br></pre></td></tr></table></figure>
-<p>Filter 看名字感觉是一个过滤机制，对于数据的处理全部都在这个流程  <code>Filters[0](c, Filters[1:])</code></p>
-<p>最后根据数据处理的结果到不同的出口，关闭连接：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">if c.Result != nil &#123;</span><br><span class="line">		c.Result.Apply(req, resp)</span><br><span class="line">	&#125; else if c.Response.Status != 0 &#123;</span><br><span class="line">		c.Response.Out.WriteHeader(c.Response.Status)</span><br><span class="line">	&#125;</span><br><span class="line">	// Close the Writer if we can</span><br><span class="line">	if w, ok := resp.Out.(io.Closer); ok &#123;</span><br><span class="line">		w.Close()</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/31/Revel-Server-Run/" data-id="cimsknqw2000m8lzls9hd6iyc" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
 
     </footer>
   </div>
@@ -855,7 +875,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -864,7 +884,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 16.67px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/iOS/" style="font-size: 13.33px;">iOS</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 13.33px;">工具</a>
+      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 16.67px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/iOS/" style="font-size: 16.67px;">iOS</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 13.33px;">工具</a>
     </div>
   </div>
 
@@ -873,7 +893,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -883,6 +903,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/04/09/KVO-PG/">KVO_PG</a>
+          </li>
         
           <li>
             <a href="/2016/04/08/KVC-PG/">KVC_PG</a>
@@ -898,10 +922,6 @@
         
           <li>
             <a href="/2016/04/06/责任链/">责任链</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/05/Unicode-UFT8-概记/">Unicode_UFT8_概记</a>
           </li>
         
       </ul>
