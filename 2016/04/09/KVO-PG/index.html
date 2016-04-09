@@ -17,7 +17,7 @@ Register KVO要实现对特定属性采用KVO机">
 KVO主要优势在于不用开发时去用其它机制进行实现，基础框架已经做了很好的支持。
 关于KVO相关扩展方法定义在 ： import Foundation.NSKeyValueObserving
 Register KVO要实现对特定属性采用KVO机">
-<meta property="og:updated_time" content="2016-04-09T10:18:39.000Z">
+<meta property="og:updated_time" content="2016-04-09T10:24:27.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="KVO_PG">
 <meta name="twitter:description" content="KVO是一种机制被用于当其它对象指定属性改变时 观察对象被及时通知。在MVC工作模式下，KVO对Model属性改变及时通知Controller是非常有利的。
@@ -134,11 +134,12 @@ Register KVO要实现对特定属性采用KVO机">
 <p>isa是一个指向操作分发表对象类的指针。对象类的分发表包含方法的实现和其它各种数据。</p>
 <p>当一个观察对象向被观察对象注册一个属性时，被观察对象的isa指针改变，去指向一个中介的class而不再指向原来的class。所以这个isa指针不能再完全反应实例对象的实际class。</p>
 <p>不能用改变后的isa指针去判定class关系。需要用类方法判定实例对象所属的类。</p>
+<p>参考官方文档：<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cimszol57000fi8zlld8ep7g9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cimszvj0r000eqpzlpucm0e05" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
