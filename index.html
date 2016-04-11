@@ -65,6 +65,125 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-RunLoop" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/11/RunLoop/" class="article-date">
+  <time datetime="2016-04-11T04:18:27.000Z" itemprop="datePublished">2016-04-11</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/04/11/RunLoop/">RunLoop</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>线程是一种在同一应用内并行执行多任务轻量级的实现方式。在系统层面不同程序并行执行，系统依据不同程序的需要分配执行时间。在不同的应用程序内，存在一个或者多个线程，同时执行任务或者趋于同时执行。系统对实际的线程进行控制，安排线程在可用的内核上执行，依据优先级切换不同的线程执行任务。</p>
+<p>从技术层面讲，线程是内核层面和应用层面的数据结构组合用于管理执行代码。在内核结构上协调事件分发、依据优先级安排线程执行在可用的内核上。在应用层面上该数据结构包括调用堆栈存储函数并且应用需要管理和操控线程的属性和状态。</p>
+<ol>
+<li>对于非并发的应用内，则只有一个线程执行任务。线程必须响应程序内的任何事件。</li>
+<li>对于并发的应用，则有多条path同时执行任务。每个path都有自定义的入口，并独立于主线程的任务。多线程优势：可以提升程序的响应。可以提升程序的实时性能在多核系统上。</li>
+</ol>
+<p><strong>Run Loops是线程的基本构成的一部分。Run Loop是一个处理事件的循环，用于我们安排任务或者协调进入的Event。run loop的作用是当有任务需要处理时保持线程忙碌，在没有任务需要执行时让线程进入休眠。</strong></p>
+<ol>
+<li>run loop不完成完全自动进行管理，应用必须设计程序代码在响应接入的event，并在适当的时候启动。</li>
+<li>应用不需要明确创建run loop对象，每个线程都有一个关联的run loop对象。</li>
+<li>app框架自动设置并开启线程的run loop对象，只有新启的其它线程需要明确的开启run loop。</li>
+</ol>
+<h2 id="解析Run-Loop"><a href="#解析Run-Loop" class="headerlink" title="解析Run Loop"></a>解析Run Loop</h2><p>run loop接收两种不同来源类型的事件。<strong>Input Sources</strong>分发异步事件。<strong>Timer Sources</strong>分发同步事件。</p>
+<p>下图描述的Run loop的概念结构和各种不同的输入源：<br><img src="http://7xsq10.com2.z0.glb.clouddn.com/runloop_3_1.jpg" alt="RunLoop_3_1"></p>
+<p>除了处理输入的事件源，run loop同时会生成关于自身的行为通知。注册通知可以接收到相应的通知并且可以用这些通知进行附加的处理。</p>
+<h2 id="Run-Loop-Modes"><a href="#Run-Loop-Modes" class="headerlink" title="Run Loop Modes"></a>Run Loop Modes</h2><p>一个Run loop模式是输入源、时钟和注册的观察者的集合。</p>
+<p>每当应用程序启动run loop，指定一个特定模式运行。在run loop运行期间，只有关联到相应模式上的事件会被监控和分发（相似的，只有关联到指定模式的观察者才会被通知）。关联到其它模式的输入源被挂起直到run loop运行适当的模式。</p>
+<p>在程序内，用字符串标示指定的模式，框架内定义的default和几种能用模式：<br><img src="http://7xsq10.com2.z0.glb.clouddn.com/runloop_T3_1.jpg" alt="RunLoop_T3_1"></p>
+<p>应用使用不同的模式筛选出在特定途径下不想执行的事件任务。在应用执行的大部分时间，都应该将程序使用default模式执行。</p>
+<h2 id="Input-Sources"><a href="#Input-Sources" class="headerlink" title="Input Sources"></a>Input Sources</h2><p>输入源异步的分发事件到指定线程。源事件依赖于输入源类型，被分为能用的两种：一是基于端口的输入源监控应用程序的Mach ports，另一种是自定义输入源监控事件。系统实现对于常用的两种类型输入都适用，唯一不同的地方就是它们如何触发信号。基于端口的输入源自动触发信息通过系统内核，而自定义输入源需要代码控制实现在另一个纯种。</p>
+<h6 id="基于端口的输入源"><a href="#基于端口的输入源" class="headerlink" title="基于端口的输入源"></a>基于端口的输入源</h6><p>Cocoa和CoreFoundation框架提供内置的支持创建基于端口的输入源。在Cocoa框架内使用NSPort进行端口输入源的创建。在CoreFoundation用CFMachPortRef等。</p>
+<h6 id="自定义输入源"><a href="#自定义输入源" class="headerlink" title="自定义输入源"></a>自定义输入源</h6><p>如果要创建一个自定义的输入源，则必须使用CFRunLoopSourceRef相关联的功能函数。定义一个自定义的输入源需要使用不同的回调函数。CoreFoundation框架在不同的时间点调用不同的架设函数，处理任何的接入事件、或者sources完成后移出run loop。</p>
+<p>除了定义当事件到达时输入源的行为定义，同时必须定义事件的分发机制。这部分内容运行在独立的线程上，负责响应提供输入源的数据并且当数据准备完成时要触发信号。关于事件分发机制部分取决于代码实现，但不应该过于复杂。</p>
+<h6 id="Cocoa-Selector-Sources"><a href="#Cocoa-Selector-Sources" class="headerlink" title="Cocoa Selector Sources"></a>Cocoa Selector Sources</h6><p>除了基于端口的输入源，Cocoa定义了定制的输入源允许应用通过调用Selector方式实现。和端口输入源一样，selector源在目标线程上也是连续的执行，从而避免在同一个线程上多个方法同时的执行的同步问题。</p>
+<p><strong>如果要在另一个线程调用Selector，该线程必须有一个活动的active</strong>，且run loop处理全部入队的selector调用在插入run loop时，而不是在loop迭代循环的时候。</p>
+<p>下表列出定义在NSObject上可以在另一个线程上执行selector的方法：<br><img src="http://7xsq10.com2.z0.glb.clouddn.com/runloop_T3_2.jpg" alt="RunLoop_T3_2"></p>
+<h2 id="Timer-Sources"><a href="#Timer-Sources" class="headerlink" title="Timer Sources"></a>Timer Sources</h2><p>时间输入源是预定义的在将来某个时间点同步分发事件到指定线程上。时钟源是一种通知线程执行任务的方式。</p>
+<h6 id="Configuring-Timer-Sources"><a href="#Configuring-Timer-Sources" class="headerlink" title="Configuring Timer Sources"></a>Configuring Timer Sources</h6><p>创建一个时钟输入源，程序需要创建一个时间对象，并且将时钟对象安排到run loop上执行。</p>
+<p>在Cocoa框架里，定义了两个方法来创建并安排时钟到run loop，这两个方法创建并添加timer至run loop的default模式：</p>
+<ol>
+<li>scheduledTimerWithTimeInterval:target:selector:userInfo:repeats:</li>
+<li>scheduledTimerWithTimeInterval:invocation:repeats:</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">NSRunLoop* myRunLoop = [NSRunLoop currentRunLoop];</span><br><span class="line"> </span><br><span class="line">// Create and schedule the first timer.</span><br><span class="line">NSDate* futureDate = [NSDate dateWithTimeIntervalSinceNow:1.0];</span><br><span class="line">NSTimer* myTimer = [[NSTimer alloc] initWithFireDate:futureDate</span><br><span class="line">                        interval:0.1</span><br><span class="line">                        target:self</span><br><span class="line">                        selector:@selector(myDoFireTimer1:)</span><br><span class="line">                        userInfo:nil</span><br><span class="line">                        repeats:YES];</span><br><span class="line">[myRunLoop addTimer:myTimer forMode:NSDefaultRunLoopMode];</span><br><span class="line"> </span><br><span class="line">// Create and schedule the second timer.</span><br><span class="line">[NSTimer scheduledTimerWithTimeInterval:0.2</span><br><span class="line">                        target:self</span><br><span class="line">                        selector:@selector(myDoFireTimer2:)</span><br><span class="line">                        userInfo:nil</span><br><span class="line">                        repeats:YES];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CFRunLoopRef runLoop = CFRunLoopGetCurrent();</span><br><span class="line">CFRunLoopTimerContext context = &#123;0, NULL, NULL, NULL, NULL&#125;;</span><br><span class="line">CFRunLoopTimerRef timer = CFRunLoopTimerCreate(kCFAllocatorDefault, 0.1, 0.3, 0, 0,</span><br><span class="line">                                        &amp;myCFTimerCallback, &amp;context);</span><br><span class="line"> </span><br><span class="line">CFRunLoopAddTimer(runLoop, timer, kCFRunLoopCommonModes);</span><br></pre></td></tr></table></figure>
+<h2 id="Run-Loop-Observers"><a href="#Run-Loop-Observers" class="headerlink" title="Run Loop Observers"></a>Run Loop Observers</h2><p>可以关联以下事件至Run Loop：</p>
+<ol>
+<li>进入run loop时。</li>
+<li>当一个run loop处理一个timer。</li>
+<li>当一个run loop处理一个输入源。</li>
+<li>当一个run loop进入睡眠状态。</li>
+<li>当一个输入源准备要唤醒run loop。</li>
+<li>退出run loop。</li>
+</ol>
+<p>创建和使用Run Loop Objservers 需要使用 CFRunLoopObserverRef  相关功能函数。</p>
+<h2 id="Run-Loop-事件顺序"><a href="#Run-Loop-事件顺序" class="headerlink" title="Run Loop 事件顺序"></a>Run Loop 事件顺序</h2><p>run loop事件指定顺序如下：</p>
+<ol>
+<li>通知观察者已经进入run loop。</li>
+<li>通知观察者处于准备状态的timer将要执行。</li>
+<li>通知观察者任何非基于端口的输入源将要执行。</li>
+<li>非基于端口的输入源准备执行。</li>
+<li>如果基于端口的输入源已经准备就绪且等待执行，则立即处理事件。跳转至步骤9</li>
+<li>通知观察者线程将要进入休眠。</li>
+<li>将线程变成休眠状态，直到如下事件发生：（1）一个基于端口的事件到达。（2）timer触发。（3）runloop到达设置的超时时间。（4）runloop被明确的唤醒。</li>
+<li>通知观察者线程刚刚被唤醒。</li>
+<li>处理等待状态的事件。（1）如果用户定义的timer触发，处理timer事件，并重新启动runloop。进入步骤2。（2）如果input源触发，则分发事件。（3）如果runloop被明确唤醒但是没有超时，则重新启动runloop。进入步骤2</li>
+<li>通知观察者run loop退出。</li>
+</ol>
+<h2 id="什么时候用RunLoop"><a href="#什么时候用RunLoop" class="headerlink" title="什么时候用RunLoop"></a>什么时候用RunLoop</h2><p>仅仅只有在应用内创建第二个线程，有可能需要启动runloop。</p>
+<p>需要启动runloop，当计划做如下任务：</p>
+<ol>
+<li>使用基于端口或者自定义的输入源和其它的线程进行通信。</li>
+<li>在线程中使用timer。</li>
+<li>需要使用selector输入源。</li>
+<li>想要线程执行周期性的任务。</li>
+</ol>
+<h2 id="使用RunLoop"><a href="#使用RunLoop" class="headerlink" title="使用RunLoop"></a>使用RunLoop</h2><p>Cocoa框架提供NSRunLoop类。在应用更底层，是一个指针指向CFRunLoopRef类型。</p>
+<h6 id="获取runloop对象"><a href="#获取runloop对象" class="headerlink" title="获取runloop对象"></a>获取runloop对象</h6><p>在当前线程获取runloop：Cocoa框架用NSRunLoop 的 currentRunLoop 类方法。CoreFoundation框架用CFRunLoopGetCurrent方法。</p>
+<h6 id="启动runloop"><a href="#启动runloop" class="headerlink" title="启动runloop"></a>启动runloop</h6><p>runloop必须有一个输入源或者时钟依附其上，不然就会立即退出。</p>
+<p>有以下几种方式启动runloop：</p>
+<ol>
+<li>无条件的启动：是最简单的方式启动，可以添加或者删除输入源和时钟源。但是只有通过杀掉才能停止runloop。并且没有办法进入自定义的模式。</li>
+<li>采用超时限制：只有当被分配的时间过期或者一个事件到达，runloop会退出。当一个事件到达，事件被分发处理，然后runloop退出；但可以再添加另一个事件。这个过期时间可以重新设定。</li>
+<li>采用指定模式运行。</li>
+</ol>
+<p>a skeleton version of a thread’s main entry routine:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">- (void)skeletonThreadMain</span><br><span class="line">&#123;</span><br><span class="line">    // Set up an autorelease pool here if not using garbage collection.</span><br><span class="line">    BOOL done = NO;</span><br><span class="line"> </span><br><span class="line">    // Add your sources or timers to the run loop and do any other setup.</span><br><span class="line"> </span><br><span class="line">    do</span><br><span class="line">    &#123;</span><br><span class="line">        // Start the run loop but return after each source is handled.</span><br><span class="line">        SInt32    result = CFRunLoopRunInMode(kCFRunLoopDefaultMode, 10, YES);</span><br><span class="line"> </span><br><span class="line">        // If a source explicitly stopped the run loop, or if there are no</span><br><span class="line">        // sources or timers, go ahead and exit.</span><br><span class="line">        if ((result == kCFRunLoopRunStopped) || (result == kCFRunLoopRunFinished))</span><br><span class="line">            done = YES;</span><br><span class="line"> </span><br><span class="line">        // Check for any other exit conditions here and set the</span><br><span class="line">        // done variable as needed.</span><br><span class="line">    &#125;</span><br><span class="line">    while (!done);</span><br><span class="line"> </span><br><span class="line">    // Clean up code here. Be sure to release any allocated autorelease pools.</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>runloop可以递归的执行。即：可以在任何的RunLoop方法内启动runloop的执行入口。</p>
+<h6 id="退出runloop"><a href="#退出runloop" class="headerlink" title="退出runloop"></a>退出runloop</h6><p>两个方法退出：1.使用timeout机制退出。2.明确执行退出操作。</p>
+<p>关于配置自定义输入源，参考官方文档。</p>
+<p>参考文档：<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW1" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/Multithreading/RunLoopManagement/RunLoopManagement.html#//apple_ref/doc/uid/10000057i-CH16-SW1</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/11/RunLoop/" data-id="cimvpdrvn000yt2zlexcmonoz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-KVO-PG" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/04/09/KVO-PG/" class="article-date">
@@ -131,7 +250,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cimt09xc0000drjzlmxmod08c" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cimvpdruz000et2zl4qxd2r6k" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -288,7 +407,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="cimt09xc3000erjzl3gg14n9e" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="cimvpdrux000ct2zlgygijz3o" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -371,7 +490,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cimt09xbq0006rjzl9z7od3iv" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cimvpdrul0006t2zllhhu05ah" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -460,7 +579,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cimt09xca000krjzl1y2uv2zr" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cimvpdrvb000nt2zl78xk0lbl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -500,7 +619,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cimt09xd9001erjzlnjzudxv7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cimvpdrw3001et2zlsa8ehd62" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -551,7 +670,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cimt09xcu0010rjzlr1um8wty" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cimvpdrvs0013t2zl7bj5ca5h" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Other/">Other</a></li></ul>
@@ -684,7 +803,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cimt09xcj000rrjzlodas1n27" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cimvpdrvd000pt2zls2ki0kz5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -753,7 +872,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimt09xbh0001rjzl46vk2rru" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimvpdru70000t2zlsnfz9zjd" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -796,63 +915,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/策略模式/" data-id="cimt09xd00017rjzl9emnuzso" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/策略模式/" data-id="cimvpdrvz001at2zlstlf9yxh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-错误处理-railway-oriented-programming" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/03/错误处理-railway-oriented-programming/" class="article-date">
-  <time datetime="2016-04-03T03:08:51.000Z" itemprop="datePublished">2016-04-03</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/04/03/错误处理-railway-oriented-programming/">错误处理-railway oriented programming</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><strong>在Swift 2中，增加了Error Handler，让处理错误异常有了新的方式</strong></p>
-<p>关于《Swift 2 throws 全解析 - 从原理到实践》一文对throws进行了详细描述。网站地址：<a href="http://www.ibm.com/developerworks/cn/mobile/mo-cn-swift/index.html，作者：王巍" target="_blank" rel="external">http://www.ibm.com/developerworks/cn/mobile/mo-cn-swift/index.html，作者：王巍</a> (@onevcat)</p>
-<p>Scott Wlaschin 的 Railway Oriented Programming — error handling in functional languages 视频讲述了轨道编程，地址：<a href="https://vimeo.com/97344498" target="_blank" rel="external">https://vimeo.com/97344498</a></p>
-<p>这里记录一下自己 结合Swift 2 Error Handler 采用 面向轨道-错误处理 运用。</p>
-<h2 id="直接抛出"><a href="#直接抛出" class="headerlink" title="直接抛出"></a>直接抛出</h2><p>直接处理方式，有错误直接抛出：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">enum ThrowError : ErrorType &#123;</span><br><span class="line">    case ThrowError1</span><br><span class="line">    case ThrowError2</span><br><span class="line">    case ThrowError3</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">func handlerFlow(data : Int) throws -&gt; Int &#123;</span><br><span class="line">    let data1 = data + 5</span><br><span class="line">    guard data1 &gt; 10 else &#123;</span><br><span class="line">        throw ThrowError.ThrowError1</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    let data2 = data1 + 5</span><br><span class="line">    guard data2 &lt; 20 else &#123;</span><br><span class="line">        throw ThrowError.ThrowError2</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    let data3 = data2 + 3</span><br><span class="line">    guard data3 &gt; 20 else &#123;</span><br><span class="line">        throw ThrowError.ThrowError3</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return data3</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Result"><a href="#Result" class="headerlink" title="Result"></a>Result</h2><p>参考系统库Optional：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">enum Result&lt;T&gt; &#123;</span><br><span class="line">    case Success(T)</span><br><span class="line">    case Failure(ErrorType)</span><br><span class="line"></span><br><span class="line">    init(start : T) &#123;</span><br><span class="line">        self = .Success(start)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    func flatMap&lt;U&gt;(trans : T -&gt; Result&lt;U&gt;) -&gt; Result&lt;U&gt; &#123;</span><br><span class="line">        switch self &#123;</span><br><span class="line">        case .Success(let value):</span><br><span class="line">            return trans(value)</span><br><span class="line">        case .Failure(let err):</span><br><span class="line">            return .Failure(err)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    func map&lt;U&gt;(trans : ((T) throws -&gt; U)) -&gt; Result&lt;U&gt; &#123;</span><br><span class="line">        switch self &#123;</span><br><span class="line">        case .Success(let value):</span><br><span class="line">            do &#123;</span><br><span class="line">                let value : U = try trans(value)</span><br><span class="line">                return .Success(value)</span><br><span class="line">            &#125; catch &#123;</span><br><span class="line">                return .Failure(error)</span><br><span class="line">            &#125;</span><br><span class="line">        case .Failure(let err):</span><br><span class="line">            return .Failure(err)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    func finish() throws -&gt; T &#123;</span><br><span class="line">        switch self &#123;</span><br><span class="line">        case .Success(let value):</span><br><span class="line">            return value</span><br><span class="line">        case .Failure(let err):</span><br><span class="line">            throw err</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Error-chain-传递"><a href="#Error-chain-传递" class="headerlink" title="Error chain 传递"></a>Error chain 传递</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">func handlerFlow(data : Int) throws -&gt; Int &#123;</span><br><span class="line">    func throw1(data : Int) throws -&gt; Int &#123;</span><br><span class="line">        let res = data + 5</span><br><span class="line">        guard res &gt; 10 else &#123;</span><br><span class="line">            throw ThrowError.ThrowError1</span><br><span class="line">        &#125;</span><br><span class="line">        return res</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func throw2(data : Int) throws -&gt; Int &#123;</span><br><span class="line">        let res = data + 5</span><br><span class="line">        guard res &lt; 20 else &#123;</span><br><span class="line">            throw ThrowError.ThrowError1</span><br><span class="line">        &#125;</span><br><span class="line">        return res</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func throw3(data : Int) throws -&gt; Int &#123;</span><br><span class="line">        let res = data + 3</span><br><span class="line">        guard res &gt; 20 else &#123;</span><br><span class="line">            throw ThrowError.ThrowError1</span><br><span class="line">        &#125;</span><br><span class="line">        return res</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    let value = try Result(start: data).map(throw1).map(throw2).map(throw3).finish()</span><br><span class="line">    return value</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>也可以试着用操作符将 Result map等重写：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">infix operator -&gt;&gt; &#123;</span><br><span class="line">    associativity left</span><br><span class="line">    precedence 140</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func -&gt;&gt;&lt;T,U&gt;(left : Result&lt;T&gt;, trans : ((T) throws -&gt; U)) -&gt; Result&lt;U&gt; &#123;</span><br><span class="line">    return left.map(trans)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>使用：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let start = Result(start: data)</span><br><span class="line">let value = try (start -&gt;&gt; throw1 -&gt;&gt; throw2 -&gt;&gt; throw3).finish()</span><br><span class="line">return value</span><br></pre></td></tr></table></figure>
-<p><strong><em>如throw1这样的func是像验证邮箱、用户名这样的功能性func,则可以提取成为全局功能代码复用，减少代码量。</em></strong></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/错误处理-railway-oriented-programming/" data-id="cimt09xdc001grjzlzw4n83e8" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
 
     </footer>
   </div>
@@ -876,7 +942,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -885,7 +951,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 16.67px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/iOS/" style="font-size: 16.67px;">iOS</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 13.33px;">工具</a>
+      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 15px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/iOS/" style="font-size: 17.5px;">iOS</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 12.5px;">工具</a>
     </div>
   </div>
 
@@ -894,7 +960,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -904,6 +970,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/04/11/RunLoop/">RunLoop</a>
+          </li>
         
           <li>
             <a href="/2016/04/09/KVO-PG/">KVO_PG</a>
@@ -919,10 +989,6 @@
         
           <li>
             <a href="/2016/04/06/OC-运行时概记/">OC_运行时概记</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/06/责任链/">责任链</a>
           </li>
         
       </ul>

@@ -65,6 +65,50 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-观察者模式" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/26/观察者模式/" class="article-date">
+  <time datetime="2016-03-26T11:05:26.000Z" itemprop="datePublished">2016-03-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/26/观察者模式/">观察者模式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>//设计原则一：为了交互对象之间的松耦合设计而努力。<br>//松耦合的设计之所以能让我们建立有弹性的oo系统，能够应对变化，是因为对象之间的互相依赖降到了最低。</p>
+<p>//观察者模式：定义了对象之间的一对多依赖，这样一来，当一个对象改变状态时，它的所有依赖者都会收到通知并自动更新。</p>
+<hr>
+<h2 id="接口声明"><a href="#接口声明" class="headerlink" title="接口声明"></a>接口声明</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">protocol Observer &#123;</span><br><span class="line">    var id : Int &#123;get set&#125;</span><br><span class="line">    func update(temp : Float, humidity : Float, pressure : Float)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">protocol Subject &#123;</span><br><span class="line">    func registerObserver(o : Observer)</span><br><span class="line">    func removeObserver(o : Observer)</span><br><span class="line">    func notifyObservers()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="主题对象实现接口"><a href="#主题对象实现接口" class="headerlink" title="主题对象实现接口"></a>主题对象实现接口</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">class WeatherData: Subject &#123;</span><br><span class="line">    private var observers = Array&lt;Observer&gt;()</span><br><span class="line">    </span><br><span class="line">    private var temp : Float = 0.0 &#123;</span><br><span class="line">        didSet &#123;</span><br><span class="line">            notifyObservers()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    private var humidity : Float = 0.0 &#123;</span><br><span class="line">        didSet &#123;</span><br><span class="line">            notifyObservers()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    private var pressure : Float = 0.0 &#123;</span><br><span class="line">        didSet &#123;</span><br><span class="line">            notifyObservers()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func registerObserver(o: Observer) &#123;</span><br><span class="line">        observers.append(o)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func removeObserver(o: Observer) &#123;</span><br><span class="line">        let index = observers.indexOf &#123; (ob) -&gt; Bool in</span><br><span class="line">            return o.id == ob.id</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        guard index != nil else &#123;</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        observers.removeAtIndex(index!)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    internal func notifyObservers() &#123;</span><br><span class="line">        for o in observers &#123;</span><br><span class="line">            o.update(temp, humidity: humidity, pressure: pressure)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="观察者实现接口"><a href="#观察者实现接口" class="headerlink" title="观察者实现接口"></a>观察者实现接口</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">protocol DisplayElement &#123;</span><br><span class="line">    func display()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">var index : Int = 0</span><br><span class="line"></span><br><span class="line">class CurrentConditionsDisplay: Observer, DisplayElement &#123;</span><br><span class="line">    internal var id : Int</span><br><span class="line">    private var temp : Float = 0.0</span><br><span class="line">    private var humidity : Float = 0.0</span><br><span class="line">    private var pressure : Float = 0.0</span><br><span class="line">    </span><br><span class="line">    init() &#123;</span><br><span class="line">        id = ++index</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func update(temp: Float, humidity: Float, pressure: Float) &#123;</span><br><span class="line">        self.temp = temp</span><br><span class="line">        self.humidity = humidity</span><br><span class="line">        self.pressure = pressure</span><br><span class="line">        </span><br><span class="line">        display()</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func display() &#123;</span><br><span class="line">       print(&quot;temp : \(temp), humidity : \(humidity), pressure : \(pressure)&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">let dataCenter = WeatherData()</span><br><span class="line">let displayPlat = CurrentConditionsDisplay()</span><br><span class="line">dataCenter.registerObserver(displayPlat)</span><br><span class="line"></span><br><span class="line">dataCenter.temp = 10</span><br><span class="line">dataCenter.pressure = 20</span><br><span class="line"></span><br><span class="line">dataCenter.removeObserver(displayPlat)</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/03/26/观察者模式/" data-id="cimvpdrw0001bt2zlkpakddnc" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Mirror" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/03/26/Mirror/" class="article-date">
@@ -120,7 +164,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/26/Mirror/" data-id="cimt09xc7000irjzlbqisatac" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/26/Mirror/" data-id="cimvpdrv1000gt2zl21mngu4y" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -168,7 +212,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/25/Swift-元类型简介/" data-id="cimt09xct000yrjzlkcf8kosn" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/25/Swift-元类型简介/" data-id="cimvpdrvp0010t2zlwffd8nu4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -234,7 +278,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/" data-id="cimt09xbu000arjzlz7lmo7uo" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/" data-id="cimvpdrur0009t2zlq269vgau" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
@@ -330,7 +374,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/运用github-pages发布本地hexo/" data-id="cimt09xd7001brjzljjddjyyq" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/03/运用github-pages发布本地hexo/" data-id="cimvpdrw7001gt2zlmxrv4wri" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
@@ -377,7 +421,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/hello-world/" data-id="cimt09xcx0013rjzlcza1ue77" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/03/hello-world/" data-id="cimvpdrvv0015t2zlrn2ob779" class="article-share-link">Share</a>
       
       
     </footer>
@@ -429,7 +473,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/Hexo-安装与使用/" data-id="cimt09xbt0008rjzlkk9ytpv4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/03/Hexo-安装与使用/" data-id="cimvpdrui0003t2zlhh8fxls6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
@@ -456,7 +500,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -465,7 +509,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 16.67px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/iOS/" style="font-size: 16.67px;">iOS</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 13.33px;">工具</a>
+      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 15px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/iOS/" style="font-size: 17.5px;">iOS</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 12.5px;">工具</a>
     </div>
   </div>
 
@@ -474,7 +518,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -484,6 +528,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/04/11/RunLoop/">RunLoop</a>
+          </li>
         
           <li>
             <a href="/2016/04/09/KVO-PG/">KVO_PG</a>
@@ -499,10 +547,6 @@
         
           <li>
             <a href="/2016/04/06/OC-运行时概记/">OC_运行时概记</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/06/责任链/">责任链</a>
           </li>
         
       </ul>
