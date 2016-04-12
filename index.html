@@ -65,6 +65,147 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Concurrency-PG" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/12/Concurrency-PG/" class="article-date">
+  <time datetime="2016-04-12T03:58:31.000Z" itemprop="datePublished">2016-04-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/04/12/Concurrency-PG/">Concurrency-PG</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>并发</strong>概念：是指多种事件在同一时间发生。</p>
+<p>直接线程交互：应用程序必须依据操作系统的情况动态的创建和适配线程工作情况。除此之外，应用程序需要花费大量精力负责创建和维护使用的线程。</p>
+<p>针对多线程管理，Apple提出采取一个异步的方式解决并发问题。异步功能函数在另外一个线程执行耗时的任务，当任务完成后，发送一个通知（调用回调函数）至原工作线程。</p>
+<p>为简化异步功能的实现和使用，Apple实现了几种解决方案：Dispatch Queues、Dispatch Sources、Operation Queues。</p>
+<h6 id="并发注意事项"><a href="#并发注意事项" class="headerlink" title="并发注意事项"></a>并发注意事项</h6><ol>
+<li>考虑是否必须采用并发实现。</li>
+<li>并发可以提升性能，但是会增加程序复杂度，同时也会增加程序调试难度。</li>
+<li>并发不应该作为一个功能特征看待，不能为了并发而加入并发。</li>
+<li>清楚定义程序需要完成的功能任务。分离出需要执行的任务单元。标示需要的执行队列，正确将任务单元放入队列中执行。</li>
+<li>并发技术只是提供更方便的执行并发任务的操作，不能保证性能的提升，所以在编程时要注意考虑性能问题。</li>
+</ol>
+<p>性能考虑：</p>
+<ol>
+<li>如果内存是影响性能的关键，则考虑直接执行任务。</li>
+<li>标示线性执行任务，调整任务结构，尽量采用并发执行。</li>
+<li>避免使用lock操作。</li>
+<li>尽量使用框架提供的高层API。</li>
+</ol>
+<h2 id="Operation-Queues"><a href="#Operation-Queues" class="headerlink" title="Operation Queues"></a>Operation Queues</h2><p>operations是一种面向对象的方式实现异步执行任务功能。operations结合operation queue使用或者单独使用。</p>
+<p>operation对象是NSOperation类型的一个实例对象，用于封装在应用内需要执行的任务。以下列出关于官方定义的几个Operation类：<br><img src="http://7xsq10.com2.z0.glb.clouddn.com/concurrency_T2_1.jpg" alt="Concurrency_T2_1"></p>
+<p>全部operation对象都支持如下：</p>
+<ol>
+<li>可以建立operation对象间的依赖关系。</li>
+<li>支持设定completion block回调通知。</li>
+<li>支持运用KVO技术监控对象的执行状态。</li>
+<li>支持通过设定优先级，影响operation对象的执行顺序。</li>
+<li>支持取消任务。</li>
+</ol>
+<p>关于Operation相关类Apple开源代码：<a href="https://github.com/apple/swift-corelibs-foundation/blob/master/Foundation/NSOperation.swift" target="_blank" rel="external">https://github.com/apple/swift-corelibs-foundation/blob/master/Foundation/NSOperation.swift</a></p>
+<h6 id="对比并发与非并发"><a href="#对比并发与非并发" class="headerlink" title="对比并发与非并发"></a>对比并发与非并发</h6><p>operation对象通常的使用方式是将其加入到operation queue中。但也可以直接调用operation的start方法执行，此时operation的运行并不不一定会保证是并发执行。可以通过NSOperration的isConcurrent方法查询当前是同步或者异步执行状态。</p>
+<p>如果想要通过直接调用start方式运行在异步方式上，则必须增加附加的代码控制，实现在另外一个线程调用start方法。</p>
+<p><strong>通常情况下，我们都应该直接使用Operation Queue进行操作</strong></p>
+<h5 id="NSInvocationOperation"><a href="#NSInvocationOperation" class="headerlink" title="NSInvocationOperation"></a>NSInvocationOperation</h5><p>NSInvocationOperation是通过调用对象的selector实现，Swift不支持：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">@implementation MyCustomClass</span><br><span class="line">- (NSOperation*)taskWithData:(id)data &#123;</span><br><span class="line">    NSInvocationOperation* theOp = [[NSInvocationOperation alloc] initWithTarget:self</span><br><span class="line">                    selector:@selector(myTaskMethod:) object:data];</span><br><span class="line"> </span><br><span class="line">   return theOp;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">// This is the method that does the actual work of the task.</span><br><span class="line">- (void)myTaskMethod:(id)data &#123;</span><br><span class="line">    // Perform the task.</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+<h5 id="NSBlockOperation"><a href="#NSBlockOperation" class="headerlink" title="NSBlockOperation"></a>NSBlockOperation</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let operation = NSBlockOperation &#123; () -&gt; Void in</span><br><span class="line">    print(&quot;Begin operation.&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="Custom-Operation-Object"><a href="#Custom-Operation-Object" class="headerlink" title="Custom Operation Object"></a>Custom Operation Object</h5><p>定义一个非并发操作，只需要实现main任务，及响应取消操作，其它部分NSOpertion已经实现。</p>
+<p>定义一个并发操作，则必须重写NSOperation内已经实现的部分。</p>
+<h6 id="Main-Task"><a href="#Main-Task" class="headerlink" title="Main Task"></a>Main Task</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">class MyNoConcurrentOperation: NSOperation &#123;</span><br><span class="line">    </span><br><span class="line">    var data : AnyObject</span><br><span class="line">    </span><br><span class="line">    init(d  : AnyObject) &#123;</span><br><span class="line">        data = d</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func main() &#123;</span><br><span class="line">        print(&quot;Do something.&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="Respond-Cancel"><a href="#Respond-Cancel" class="headerlink" title="Respond Cancel"></a>Respond Cancel</h6><p>当一个任务开始执行，则任务会一直执行，直至完成或者明确取消操作。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">override func main() &#123;</span><br><span class="line">       print(&quot;Do something.&quot;)</span><br><span class="line">       var isDone = false</span><br><span class="line">       </span><br><span class="line">       while !cancelled &amp;&amp; !isDone &#123;</span><br><span class="line">           // Do some work and set isDone to YES when finished</span><br><span class="line">           isDone = true</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<h6 id="configuring-operation-concurrent"><a href="#configuring-operation-concurrent" class="headerlink" title="configuring operation concurrent"></a>configuring operation concurrent</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">class MyOperation: NSOperation &#123;</span><br><span class="line">    </span><br><span class="line">    override var concurrent : Bool &#123;</span><br><span class="line">        get &#123;</span><br><span class="line">            return true</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    var finish : Bool = false</span><br><span class="line">    override var finished : Bool &#123;</span><br><span class="line">        get &#123;</span><br><span class="line">            return finish</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    var execute : Bool = false</span><br><span class="line">    override var executing : Bool &#123;</span><br><span class="line">        get &#123;</span><br><span class="line">            return execute</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override init() &#123;</span><br><span class="line">        execute = false</span><br><span class="line">        finish = false</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func start() &#123;</span><br><span class="line">        guard !cancelled else &#123;</span><br><span class="line">            self.willChangeValueForKey(&quot;finished&quot;)</span><br><span class="line">            finish = true</span><br><span class="line">            self.didChangeValueForKey(&quot;finished&quot;)</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        self.willChangeValueForKey(&quot;executing&quot;)</span><br><span class="line">        NSThread.detachNewThreadSelector(&quot;main&quot;, toTarget: self, withObject: nil)</span><br><span class="line">        execute = true</span><br><span class="line">        self.didChangeValueForKey(&quot;executing&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func main() &#123;</span><br><span class="line">        // Do main task of operation.</span><br><span class="line">        print(NSThread.currentThread())  // &quot;&lt;NSThread: 0x7fd8bb423dd0&gt;&#123;number = 3, name = (null)&#125;\n&quot;</span><br><span class="line">        completeOperation()</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func completeOperation() &#123;</span><br><span class="line">        self.willChangeValueForKey(&quot;finished&quot;)</span><br><span class="line">        self.willChangeValueForKey(&quot;executing&quot;)</span><br><span class="line">        </span><br><span class="line">        execute = false</span><br><span class="line">        finish = true</span><br><span class="line">        </span><br><span class="line">        self.didChangeValueForKey(&quot;executing&quot;)</span><br><span class="line">        self.didChangeValueForKey(&quot;finished&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let o = MyOperation()</span><br><span class="line">NSThread.currentThread()   // &lt;NSThread: 0x7fd8bb506f30&gt;&#123;number = 1, name = main&#125;</span><br><span class="line">o.start()</span><br></pre></td></tr></table></figure>
+<h4 id="Execution-Behavior-of-Operation"><a href="#Execution-Behavior-of-Operation" class="headerlink" title="Execution Behavior of Operation"></a>Execution Behavior of Operation</h4><ol>
+<li>用 addDependency(op: NSOperation) 、 removeDependency(op: NSOperation) 控制依赖关系。</li>
+<li>用 queuePriority: NSOperationQueuePriority 设置执行优先级。</li>
+<li>用 threadPriority: Double 改变底层线程优先级，value在0 到 1之间。</li>
+<li>用 completionBlock: (() -&gt; Void)? 设置完成时回调。</li>
+</ol>
+<h2 id="Executing-Operations"><a href="#Executing-Operations" class="headerlink" title="Executing Operations"></a>Executing Operations</h2><h4 id="Operation-Queue"><a href="#Operation-Queue" class="headerlink" title="Operation Queue"></a>Operation Queue</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let aQueue = NSOperationQueue()</span><br><span class="line">aQueue.addOperation(anOp)</span><br><span class="line"></span><br><span class="line">aQueue.addOperations([anOOp], waitUntilFinished: false)</span><br></pre></td></tr></table></figure>
+<p>public func addOperations(ops: [NSOperation], waitUntilFinished wait: Bool) 开源实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">    public func addOperations(_ ops: [NSOperation], waitUntilFinished wait: Bool) &#123;</span><br><span class="line">#if DEPLOYMENT_ENABLE_LIBDISPATCH</span><br><span class="line">        var waitGroup: dispatch_group_t?</span><br><span class="line">        if wait &#123;</span><br><span class="line">            waitGroup = dispatch_group_create()</span><br><span class="line">        &#125;</span><br><span class="line">#endif</span><br><span class="line">        /*</span><br><span class="line">         If OperationQueuePriority was not supported this could be much faster</span><br><span class="line">         since it would not need to have the extra book-keeping for managing a priority</span><br><span class="line">         queue. However this implementation attempts to be similar to the specification.</span><br><span class="line">         As a concequence this means that the dequeue may NOT nessicarly be the same as</span><br><span class="line">         the enqueued operation in this callout. So once the dispatch_block is created</span><br><span class="line">         the operation must NOT be touched; since it has nothing to do with the actual</span><br><span class="line">         execution. The only differential is that the block enqueued to dispatch_async</span><br><span class="line">         is balanced with the number of Operations enqueued to the NSOperationQueue.</span><br><span class="line">         */</span><br><span class="line">        ops.forEach &#123; (operation: NSOperation) -&gt; Void in</span><br><span class="line">            lock.lock()</span><br><span class="line">            operation._queue = self</span><br><span class="line">            _operations.insert(operation)</span><br><span class="line">            lock.unlock()</span><br><span class="line">#if DEPLOYMENT_ENABLE_LIBDISPATCH</span><br><span class="line">            if let group = waitGroup &#123;</span><br><span class="line">                dispatch_group_enter(group)</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            let block = dispatch_block_create(DISPATCH_BLOCK_ENFORCE_QOS_CLASS) &#123; () -&gt; Void in</span><br><span class="line">                if let sema = self._concurrencyGate &#123;</span><br><span class="line">                    dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER)</span><br><span class="line">                    self._runOperation()</span><br><span class="line">                    dispatch_semaphore_signal(sema)</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    self._runOperation()</span><br><span class="line">                &#125;</span><br><span class="line">                if let group = waitGroup &#123;</span><br><span class="line">                    dispatch_group_leave(group)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            dispatch_group_async(queueGroup, _underlyingQueue, block)</span><br><span class="line">#endif</span><br><span class="line">        &#125;</span><br><span class="line">#if DEPLOYMENT_ENABLE_LIBDISPATCH</span><br><span class="line">        if let group = waitGroup &#123;</span><br><span class="line">            dispatch_group_wait(group, DISPATCH_TIME_FOREVER)</span><br><span class="line">        &#125;</span><br><span class="line">#endif</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Manually"><a href="#Manually" class="headerlink" title="Manually"></a>Manually</h4><p>手动执行需要判定是否就绪、已经取消等条件。</p>
+<h4 id="Cancel-Operation"><a href="#Cancel-Operation" class="headerlink" title="Cancel Operation"></a>Cancel Operation</h4><p>直接调用 cancel 方法，对于Queue中 调用 func cancelAllOperations()。</p>
+<h2 id="Dispatch-Queues"><a href="#Dispatch-Queues" class="headerlink" title="Dispatch Queues"></a>Dispatch Queues</h2><p>GCD分发队列是非常强大的工具允许构造任意的Block任务同步 或者 异步执行。</p>
+<p>系统内定义的队列类型：<br><img src="http://7xsq10.com2.z0.glb.clouddn.com/concurrency_T3_1.jpg" alt="Dispatch_Queues_Type"></p>
+<p><strong>注意点：</strong></p>
+<ol>
+<li>队列执行任务的并发情况依赖当前系统其它队列的执行情况。线性队列全部任务都限制在同一队列内执行。</li>
+<li>同一时间队列内执行任务的数量由系统决定。</li>
+<li>系统根据任务优先级动态调整执行顺序。</li>
+<li>一个任务被加入队列之前必须是准备就绪的。</li>
+<li>私有的新建队列是引用记数的对象，需要考虑对象引用问题。</li>
+</ol>
+<h4 id="队列相关"><a href="#队列相关" class="headerlink" title="队列相关"></a>队列相关</h4><p><img src="http://7xsq10.com2.z0.glb.clouddn.com/concurrency_T3_2.jpg" alt="Queue_Related Tech"></p>
+<h4 id="实现任务闭包"><a href="#实现任务闭包" class="headerlink" title="实现任务闭包"></a>实现任务闭包</h4><p>这个不用多提了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let task = &#123;</span><br><span class="line">    print(&quot;Current task.&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="创建和管理队列"><a href="#创建和管理队列" class="headerlink" title="创建和管理队列"></a>创建和管理队列</h4><h6 id="全局队列"><a href="#全局队列" class="headerlink" title="全局队列"></a>全局队列</h6><p>let global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)</p>
+<h6 id="线性队列"><a href="#线性队列" class="headerlink" title="线性队列"></a>线性队列</h6><p>let serial = dispatch_queue_create(“com.example.MyQueue”, DISPATCH_QUEUE_SERIAL)</p>
+<h6 id="获取全局队列"><a href="#获取全局队列" class="headerlink" title="获取全局队列"></a>获取全局队列</h6><p>用 dispatch_get_current_queue 、 dispatch_get_main_queue 、dispatch_get_global_queue。</p>
+<h4 id="添加任务"><a href="#添加任务" class="headerlink" title="添加任务"></a>添加任务</h4><h6 id="简单任务"><a href="#简单任务" class="headerlink" title="简单任务"></a>简单任务</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">let serial = dispatch_queue_create(&quot;com.example.MyQueue&quot;, DISPATCH_QUEUE_SERIAL)</span><br><span class="line">dispatch_async(serial) &#123; () -&gt; Void in</span><br><span class="line">    print(&quot;current task finish.&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="Loop-Iterations"><a href="#Loop-Iterations" class="headerlink" title="Loop Iterations"></a>Loop Iterations</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">let serial = dispatch_queue_create(&quot;com.example.MyQueue&quot;, DISPATCH_QUEUE_SERIAL)</span><br><span class="line"></span><br><span class="line">dispatch_apply(100, serial) &#123; (i) -&gt; Void in</span><br><span class="line">    print(&quot;current index: \(i)&quot;)    // 执行100次</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="分发信号量"><a href="#分发信号量" class="headerlink" title="分发信号量"></a>分发信号量</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">let sema = dispatch_semaphore_create(100)</span><br><span class="line">dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER)  //等待之前正在占用资源的任务</span><br><span class="line"></span><br><span class="line">//执行资源冲突的任务</span><br><span class="line"></span><br><span class="line">dispatch_semaphore_signal(sema)</span><br></pre></td></tr></table></figure>
+<h6 id="Dispatch-Group"><a href="#Dispatch-Group" class="headerlink" title="Dispatch Group"></a>Dispatch Group</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">let global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)</span><br><span class="line"></span><br><span class="line">let group = dispatch_group_create()</span><br><span class="line"></span><br><span class="line">dispatch_group_async(group, global) &#123; () -&gt; Void in</span><br><span class="line">    // some asy task ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// current thread task ..</span><br><span class="line"></span><br><span class="line">dispatch_group_wait(group, DISPATCH_TIME_FOREVER)</span><br><span class="line"></span><br><span class="line">//asy task 和 syn task 完成后执行。</span><br></pre></td></tr></table></figure>
+<h2 id="Dispatch-Sources"><a href="#Dispatch-Sources" class="headerlink" title="Dispatch Sources"></a>Dispatch Sources</h2><p>Dispatch Sources提供了一种向内核提交请求，异步响应内核事件的机制。是一个基本的数据类型，协调进程关于底层的事件。</p>
+<p>支持的事件源类型如下：</p>
+<ol>
+<li>时钟产生周期性的通知。</li>
+<li>信号源通知应用系统产生信号。</li>
+<li>文件描述符或者基于socket操作的通知：（1）数据准备好可读。（2）文件可写数据。（3）当文件被系统删除、移动、重命名。（4）当文件的原信息修改。</li>
+<li>和进程相关的通知事件：（1）进程退出。（2）通过命令fork或者exec产生进程。（3）当一个信号在线程内分发。</li>
+<li>基于Mach相关的事件分发。</li>
+<li>自定义的事件分发源。</li>
+</ol>
+<p>记录一下关于信号量和进行的监控，其它的参考文档实现：</p>
+<h6 id="Signals"><a href="#Signals" class="headerlink" title="Signals"></a>Signals</h6><p>func installSignalHandler() {<br>    // Make sure the signal does not terminate the application.<br>    signal(SIGHUP, SIG_IGN)</p>
+<pre><code>let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+let source = dispatch_source_create(DISPATCH_SOURCE_TYPE_SIGNAL, UInt(SIGHUP), 0, queue)
+
+if source != nil {
+    dispatch_source_set_event_handler(source, { () -&gt; Void in
+        // 处理信号发生
+    })
+
+    // Start processing signals
+    dispatch_resume(source)
+}
+</code></pre><p>}</p>
+<h6 id="Process"><a href="#Process" class="headerlink" title="Process"></a>Process</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">func monitorParentProcess() &#123;</span><br><span class="line">    let parentPID = getpid()</span><br><span class="line">    </span><br><span class="line">    let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)</span><br><span class="line">    let source = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC, UInt(parentPID), DISPATCH_PROC_EXIT, queue)</span><br><span class="line">    </span><br><span class="line">    if source != nil &#123;</span><br><span class="line">        dispatch_source_set_event_handler(source, &#123; () -&gt; Void in</span><br><span class="line">            //Handler exit ...</span><br><span class="line">            </span><br><span class="line">            dispatch_source_cancel(source)</span><br><span class="line">        &#125;)</span><br><span class="line">        </span><br><span class="line">        dispatch_resume(source)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h4><ol>
+<li>队列减少多线程应用对系统存储的使用。</li>
+<li>消除创建和管理线程的代码。</li>
+<li>消除在线程上管理和计划执行的代码。</li>
+<li>简化应用程序代码书写。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/12/Concurrency-PG/" data-id="cimx7a5n300019gzl5i69ziz9" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-RunLoop" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/04/11/RunLoop/" class="article-date">
@@ -172,7 +313,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/11/RunLoop/" data-id="cimvte8xb000xefzlalexb52s" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/11/RunLoop/" data-id="cimx7a5op00169gzlqejfrwsr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -250,7 +391,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cimvte8x2000lefzlz3gwle78" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cimx7a5nu000j9gzl3aty7y8r" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -407,7 +548,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="cimvte8wv000eefzli0xy36uq" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="cimx7a5nm000c9gzlto3581fq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -490,7 +631,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cimvte8wf0004efzl6w2rbij7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cimx7a5ne00089gzluwdkixmq" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -579,7 +720,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cimvte8x5000qefzlnnw3ilds" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cimx7a5o3000s9gzlz3xtsszs" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -619,7 +760,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cimvte8xu001gefzl60ga64r6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cimx7a5p5001i9gzlzgg10d2f" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -670,7 +811,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cimvte8xl0014efzlgehu5xvn" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cimx7a5ok00149gzlef3crfte" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Other/">Other</a></li></ul>
@@ -803,7 +944,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cimvte8x7000sefzlvascubbk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cimx7a5o1000q9gzlb15252rd" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -872,50 +1013,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimvte8w80001efzlunj1brjo" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-策略模式" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/03/策略模式/" class="article-date">
-  <time datetime="2016-04-03T05:41:10.000Z" itemprop="datePublished">2016-04-03</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/04/03/策略模式/">策略模式</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="Pattern-Strategy"><a href="#Pattern-Strategy" class="headerlink" title="Pattern: Strategy"></a>Pattern: Strategy</h3><p>//设计原则一：找出应用中可能需要变化之处，把它们独立出来，不要和那些不需要变化的代码混在一起。</p>
-<p>//设计原则二：针对接口编程，而不是针对实现编程。</p>
-<p>//设计原则三：多用组合，少用继承</p>
-<p>//策略模式：定义算法族，分别封装起来，让它们之间可以相互替换，此模式让算法的变化独立于使用算法的客户</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">protocol FlyBehavior &#123;</span><br><span class="line">    func fly() -&gt; String</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">protocol QuackBehavior &#123;</span><br><span class="line">    func quack() -&gt; String</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct BehaviorFly : FlyBehavior &#123;</span><br><span class="line">    func fly() -&gt; String &#123;</span><br><span class="line">        return &quot;I&apos;m flying!!&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct CantFly : FlyBehavior &#123;</span><br><span class="line">    func fly() -&gt; String &#123;</span><br><span class="line">        return &quot;I can&apos;t fly&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct Quack : QuackBehavior &#123;</span><br><span class="line">    func quack() -&gt; String &#123;</span><br><span class="line">        return &quot;Quack&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct MuteQuack : QuackBehavior &#123;</span><br><span class="line">    func quack() -&gt; String &#123;</span><br><span class="line">        return &quot;Silence&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">struct Duck &#123;</span><br><span class="line">    var fly : FlyBehavior</span><br><span class="line">    var quack : QuackBehavior</span><br><span class="line">    </span><br><span class="line">    func performFly() -&gt; String &#123;</span><br><span class="line">        return fly.fly()</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func performQuack() -&gt; String &#123;</span><br><span class="line">        return quack.quack()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Use</span><br><span class="line">let cantFly = CantFly()</span><br><span class="line">let muteQuack = MuteQuack()</span><br><span class="line">let duck1 = Duck(fly: cantFly, quack: muteQuack)</span><br><span class="line">duck1.performFly()</span><br><span class="line">duck1.performQuack()</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/策略模式/" data-id="cimvte8xp0018efzl31491tr7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimx7a5my00009gzlqlyq6iet" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -942,7 +1040,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -951,7 +1049,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 15px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/iOS/" style="font-size: 17.5px;">iOS</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 12.5px;">工具</a>
+      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 16.67px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/iOS/" style="font-size: 20px;">iOS</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 13.33px;">工具</a>
     </div>
   </div>
 
@@ -960,7 +1058,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -970,6 +1068,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/04/12/Concurrency-PG/">Concurrency-PG</a>
+          </li>
         
           <li>
             <a href="/2016/04/11/RunLoop/">RunLoop</a>
@@ -985,10 +1087,6 @@
         
           <li>
             <a href="/2016/04/07/EventHandler-PG/">EventHandler_PG</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/06/OC-运行时概记/">OC_运行时概记</a>
           </li>
         
       </ul>

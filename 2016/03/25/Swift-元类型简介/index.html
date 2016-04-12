@@ -17,7 +17,7 @@
 先来一段代码：
 12345let v : String.Type = String.self(v).init(1) //&amp;quot;1&amp;quot;let vv : Any = String.self(vv as! String.Type).init(&amp;quot;23&amp;quot;)  // &amp;quot;2&amp;quot;
 上面一段代码关注的点： .Type 和 .">
-<meta property="og:updated_time" content="2016-03-25T12:58:11.000Z">
+<meta property="og:updated_time" content="2016-04-11T11:42:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Swift 元类型简介">
 <meta name="twitter:description" content="本文主要是对Swift元类型知识小记。
@@ -105,11 +105,13 @@
 <hr>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">let vv : Any = String.self</span><br><span class="line">(vv as! String.Type).init(&quot;23&quot;)  // &quot;2&quot;</span><br><span class="line"></span><br><span class="line">let vvv : Any.Type = String.self</span><br><span class="line">(vvv as! String.Type).init(&quot;2344&quot;)   // &quot;2344&quot;</span><br><span class="line"></span><br><span class="line">vv is Any.Type  // true</span><br><span class="line">vvv is Any      // &quot;is&quot; test is always true</span><br></pre></td></tr></table></figure>
 <p>这个地方就有点荤菜了<br>Any可以表示任何东西。<br>Any.Type还是只能用作.Type 作用。</p>
+<h2 id="dynamicType"><a href="#dynamicType" class="headerlink" title="dynamicType"></a>dynamicType</h2><p>使用dynamicType动态接入一个实例的类型。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var str = &quot;Hello, playground&quot;</span><br><span class="line">str.dynamicType    // String.Type</span><br><span class="line"></span><br><span class="line">if str.dynamicType == String.self &#123;</span><br><span class="line">    print(&quot;Same&quot;)    // 执行结果：&quot;Same\n&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/25/Swift-元类型简介/" data-id="cimvte8xf000zefzl8fjktsye" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/25/Swift-元类型简介/" data-id="cimx7a5oi00129gzl362ew8k5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -150,7 +152,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">5</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -159,7 +161,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 15px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/iOS/" style="font-size: 17.5px;">iOS</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 12.5px;">工具</a>
+      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 16.67px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 20px;">Swift</a> <a href="/tags/iOS/" style="font-size: 20px;">iOS</a> <a href="/tags/后端/" style="font-size: 20px;">后端</a> <a href="/tags/工具/" style="font-size: 13.33px;">工具</a>
     </div>
   </div>
 
@@ -168,7 +170,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -178,6 +180,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/04/12/Concurrency-PG/">Concurrency-PG</a>
+          </li>
         
           <li>
             <a href="/2016/04/11/RunLoop/">RunLoop</a>
@@ -193,10 +199,6 @@
         
           <li>
             <a href="/2016/04/07/EventHandler-PG/">EventHandler_PG</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/06/OC-运行时概记/">OC_运行时概记</a>
           </li>
         
       </ul>
