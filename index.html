@@ -87,7 +87,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><strong>并发</strong>概念：是指多种事件在同一时间发生。</p>
+        <p><strong>并发</strong>概念：是指多种事件任务在同一时间执行。</p>
 <p>直接线程交互：应用程序必须依据操作系统的情况动态的创建和适配线程工作情况。除此之外，应用程序需要花费大量精力负责创建和维护使用的线程。</p>
 <p>针对多线程管理，Apple提出采取一个异步的方式解决并发问题。异步功能函数在另外一个线程执行耗时的任务，当任务完成后，发送一个通知（调用回调函数）至原工作线程。</p>
 <p>为简化异步功能的实现和使用，Apple实现了几种解决方案：Dispatch Queues、Dispatch Sources、Operation Queues。</p>
@@ -159,6 +159,8 @@
 <h6 id="Loop-Iterations"><a href="#Loop-Iterations" class="headerlink" title="Loop Iterations"></a>Loop Iterations</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">let serial = dispatch_queue_create(&quot;com.example.MyQueue&quot;, DISPATCH_QUEUE_SERIAL)</span><br><span class="line"></span><br><span class="line">dispatch_apply(100, serial) &#123; (i) -&gt; Void in</span><br><span class="line">    print(&quot;current index: \(i)&quot;)    // 执行100次</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h6 id="分发信号量"><a href="#分发信号量" class="headerlink" title="分发信号量"></a>分发信号量</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">let sema = dispatch_semaphore_create(100)</span><br><span class="line">dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER)  //等待之前正在占用资源的任务</span><br><span class="line"></span><br><span class="line">//执行资源冲突的任务</span><br><span class="line"></span><br><span class="line">dispatch_semaphore_signal(sema)</span><br></pre></td></tr></table></figure>
 <h6 id="Dispatch-Group"><a href="#Dispatch-Group" class="headerlink" title="Dispatch Group"></a>Dispatch Group</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">let global = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)</span><br><span class="line"></span><br><span class="line">let group = dispatch_group_create()</span><br><span class="line"></span><br><span class="line">dispatch_group_async(group, global) &#123; () -&gt; Void in</span><br><span class="line">    // some asy task ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// current thread task ..</span><br><span class="line"></span><br><span class="line">dispatch_group_wait(group, DISPATCH_TIME_FOREVER)</span><br><span class="line"></span><br><span class="line">//asy task 和 syn task 完成后执行。</span><br></pre></td></tr></table></figure>
+<p>关于同步或者异步，及是否开启线程情况如下：<br><img src="http://7xsq10.com2.z0.glb.clouddn.com/concurrency_1_1.png" alt="Dispatch_Queue_Thread_OO"></p>
+<p>参考此链接：<a href="http://www.cnblogs.com/wendingding/p/3806821.html" target="_blank" rel="external">http://www.cnblogs.com/wendingding/p/3806821.html</a></p>
 <h2 id="Dispatch-Sources"><a href="#Dispatch-Sources" class="headerlink" title="Dispatch Sources"></a>Dispatch Sources</h2><p>Dispatch Sources提供了一种向内核提交请求，异步响应内核事件的机制。是一个基本的数据类型，协调进程关于底层的事件。</p>
 <p>支持的事件源类型如下：</p>
 <ol>
@@ -190,11 +192,12 @@ if source != nil {
 <li>消除在线程上管理和计划执行的代码。</li>
 <li>简化应用程序代码书写。</li>
 </ol>
+<p>参考官方文档：<a href="https://developer.apple.com/library/mac/documentation/General/Conceptual/ConcurrencyProgrammingGuide/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/General/Conceptual/ConcurrencyProgrammingGuide/Introduction/Introduction.html</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/12/Concurrency-PG/" data-id="cimx7a5n300019gzl5i69ziz9" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/12/Concurrency-PG/" data-id="cimx7qukl0001ahzlwa2for7y" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -313,7 +316,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/11/RunLoop/" data-id="cimx7a5op00169gzlqejfrwsr" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/11/RunLoop/" data-id="cimx7qumg0016ahzly5cmqma5" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -391,7 +394,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cimx7a5nu000j9gzl3aty7y8r" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cimx7qule000gahzlrfrblmdb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -548,7 +551,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="cimx7a5nm000c9gzlto3581fq" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="cimx7qul9000eahzly3wmlrfw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -631,7 +634,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cimx7a5ne00089gzluwdkixmq" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cimx7quky0008ahzl3qlsii7b" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -720,7 +723,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cimx7a5o3000s9gzlz3xtsszs" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cimx7qulr000qahzl13dqv28a" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -760,7 +763,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cimx7a5p5001i9gzlzgg10d2f" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cimx7qumt001lahzldgei48bm" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -811,7 +814,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cimx7a5ok00149gzlef3crfte" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cimx7qumb0012ahzlp75c79hb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Other/">Other</a></li></ul>
@@ -944,7 +947,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cimx7a5o1000q9gzlb15252rd" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cimx7qulu000sahzlzhmg74f3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -1013,7 +1016,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimx7a5my00009gzlqlyq6iet" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cimx7qukf0000ahzlvpjd6ap9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
