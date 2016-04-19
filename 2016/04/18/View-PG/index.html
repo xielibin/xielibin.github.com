@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>View-PG | 天晷</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="windows和view呈现应用的内容到屏幕上。
+window主要功能可以认为是一个容器，协调管理views与用户的交互。
+view用于封装需要展示的内容作为window的一部分呈现，占用区域一定是一个矩形。绘制内容、touch交互事件、管理子视图布局。绘制涉及到的图形技术主要是Core Graphics，OpenGL ES，以及UIKit提供的封装。
+Animations是和应用发生交互时，在界">
+<meta property="og:type" content="article">
+<meta property="og:title" content="View-PG">
+<meta property="og:url" content="http://yoursite.com/2016/04/18/View-PG/index.html">
+<meta property="og:site_name" content="天晷">
+<meta property="og:description" content="windows和view呈现应用的内容到屏幕上。
+window主要功能可以认为是一个容器，协调管理views与用户的交互。
+view用于封装需要展示的内容作为window的一部分呈现，占用区域一定是一个矩形。绘制内容、touch交互事件、管理子视图布局。绘制涉及到的图形技术主要是Core Graphics，OpenGL ES，以及UIKit提供的封装。
+Animations是和应用发生交互时，在界">
+<meta property="og:image" content="http://7xsq10.com2.z0.glb.clouddn.com/view_PG_F1_7.jpg">
+<meta property="og:image" content="http://7xsq10.com2.z0.glb.clouddn.com/view_PG_T3_2.jpg">
+<meta property="og:updated_time" content="2016-04-19T04:08:56.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="View-PG">
+<meta name="twitter:description" content="windows和view呈现应用的内容到屏幕上。
+window主要功能可以认为是一个容器，协调管理views与用户的交互。
+view用于封装需要展示的内容作为window的一部分呈现，占用区域一定是一个矩形。绘制内容、touch交互事件、管理子视图布局。绘制涉及到的图形技术主要是Core Graphics，OpenGL ES，以及UIKit提供的封装。
+Animations是和应用发生交互时，在界">
+<meta name="twitter:image" content="http://7xsq10.com2.z0.glb.clouddn.com/view_PG_F1_7.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="天晷" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天晷</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">脑容量有限，清理出来装灵感吧！</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-View-PG" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/18/View-PG/" class="article-date">
+  <time datetime="2016-04-18T02:42:01.000Z" itemprop="datePublished">2016-04-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      View-PG
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>windows和view呈现应用的内容到屏幕上。</p>
+<p>window主要功能可以认为是一个容器，协调管理views与用户的交互。</p>
+<p>view用于封装需要展示的内容作为window的一部分呈现，占用区域一定是一个矩形。绘制内容、touch交互事件、管理子视图布局。绘制涉及到的图形技术主要是Core Graphics，OpenGL ES，以及UIKit提供的封装。</p>
+<p>Animations是和应用发生交互时，在界面上以可视的效果给用户进行实时反馈的机制。</p>
+<h2 id="view-and-window构造"><a href="#view-and-window构造" class="headerlink" title="view and window构造"></a>view and window构造</h2><p>view对象在屏幕上定义一个矩形区域用于绘制和处理在区域内的touch事件。view同时可以作为其它view的父视图，管理子视图的位置和大小。</p>
+<p>view结合Core Animation的layer处理渲染内容和动画展示。每个view都需要结合一个Layer完成渲染和动画动作。iOS采用layer对象方式在性能提升方面有很重要的作用。</p>
+<h5 id="content-mode"><a href="#content-mode" class="headerlink" title="content mode"></a>content mode</h5><p>view的Content mode定义当改变视图几何属性时，如何重新使用content的机制。当一个视图第一次显示，视图渲染内容并在后台保持底层的位图。当以下情况发生时，由content mode属性决定如何重新使用位图进行展示：</p>
+<ol>
+<li>改变视图的宽度或者高度引起frame和bounds的改变。</li>
+<li>改变视图transform属性引起缩放因子的改变。</li>
+</ol>
+<h5 id="Animation-Support"><a href="#Animation-Support" class="headerlink" title="Animation Support"></a>Animation Support</h5><p>由于view视图内容是基于layer对象，此机制使执行与view相关的动画非常容易。</p>
+<p>view大多数属性是支持动画执行，可以定义为半自动的执行方式，通过基于view的属性执行动画，需要按照以下步骤：</p>
+<ol>
+<li>告诉UIKit框架需要执行动画。</li>
+<li>改变需要执行动画view的属性的值。</li>
+</ol>
+<h5 id="view-几何特性与坐标系统"><a href="#view-几何特性与坐标系统" class="headerlink" title="view 几何特性与坐标系统"></a>view 几何特性与坐标系统</h5><p>默认的坐标系统是以左上角为原点，坐标轴从原点垂直向下和水平向右扩展。每个子视图都依赖其自身的坐标系统。</p>
+<h6 id="Frame、Bounds、Center关系"><a href="#Frame、Bounds、Center关系" class="headerlink" title="Frame、Bounds、Center关系"></a>Frame、Bounds、Center关系</h6><p>view对象通过Frame、Bounds、Center属性展示其位置和大小：</p>
+<ol>
+<li>frame属性是一个矩形区域，指定当前视图在其父视图内的位置和大小。</li>
+<li>bounds属性是一个矩形区域，指定是的当前视图包含区域，定义视图的本地坐标系统。</li>
+<li>center属性指定当前视图的anchor点在其父视图内的位置。</li>
+<li>当改变frame属性，会引起bounds、center的改变。</li>
+<li>当改变bounds属性，会引起frame的改变，不会影响center。</li>
+<li>当改变center属性，会引起frame的改变，不会影响bounds。</li>
+</ol>
+<h5 id="运行时交互模型"><a href="#运行时交互模型" class="headerlink" title="运行时交互模型"></a>运行时交互模型</h5><p>任何时间当用户与界面产生交互，或者程序代码引起一些变化，将会产生一系列复杂的事件提供给UIKit框架去处理相应的交互。在该系列事件特定关键点上，UIKit框架唤起view对应的class对象，给予程序代码响应程序事件的机会。下图展示了事件发生时，唤起事件处理的关键点：</p>
+<p><img src="http://7xsq10.com2.z0.glb.clouddn.com/view_PG_F1_7.jpg" alt="view_PG_F1_7"></p>
+<p>上图按步骤表述了事件执行序列并解释不同步骤发生了什么，同时说明在程序代码内如何去作出响应：</p>
+<ol>
+<li>用户在屏幕上点击。</li>
+<li>系统硬件将事件转化后，转发到UIKit框架。</li>
+<li>UIKit框架打包touch事件，并分发到相应的view。（该过程由Event Handle PG处理）</li>
+<li>事件处理代码负责响应事件：（a）改变视图的属性。（b）调用setNeedsLayout方法，标记view需要更新布局。（c）调用setNeedsDisplay或者setNeedsDisplayInRect：方法标记视图（包括子视图）需要重新绘制。（d）通知controller更改数据块。</li>
+<li>如果视图的几何属性发生改变，UIKit框架根据以下规则更新子视图：（a）如果视图配置auto resize规则，则根据相应规则更新视图。（b）如果view实现的layoutSubviews方法，UIKit框架调用些方法。<strong>可以通过此方法适配任何子视图的位置和大小</strong>。</li>
+<li>如果视图的任何部分被标记为需要重新绘制，UIKit框架询问view进行重绘。对于自定义视图，UIKit框架明确调用drawRect：方法。此方法只处理视图绘制相关的工作，不能用于处理数据等工作。</li>
+<li>任何更新过的view视图与应用其它部分可视内容被打包到一起，发送到图形硬件进行显示。</li>
+<li>图形硬件转化渲染内容到屏幕上。</li>
+</ol>
+<p>在以上的步骤中，主要用于自定义视图的集成点：</p>
+<ol>
+<li>event-handling方法：</li>
+<li>layoutSubviews方法。</li>
+<li>drawRect:方法。</li>
+</ol>
+<h2 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h2><p>每个iOS应用程序需要至少一个window。window对象主要的职责：</p>
+<ol>
+<li>展示应用程序的可视化内容。</li>
+<li>充当一个分发touch事件到指定view视图和其它应用对象的角色。</li>
+<li>和view controllers协同工作响应设备方向的改变。</li>
+</ol>
+<h6 id="window-Level"><a href="#window-Level" class="headerlink" title="window Level"></a>window Level</h6><p>用一个浮点数表示(public typealias UIWindowLevel = CGFloat<br>)，常用的三种层次：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">print(UIWindowLevelNormal)  // 0.0</span><br><span class="line">print(UIWindowLevelStatusBar)    // 1000.0</span><br><span class="line">print(UIWindowLevelAlert)      // 2000.0</span><br></pre></td></tr></table></figure>
+<h6 id="Monitor-Window-changes"><a href="#Monitor-Window-changes" class="headerlink" title="Monitor Window changes"></a>Monitor Window changes</h6><p>与window相关的通知：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">UIWindowDidBecomeVisibleNotification</span><br><span class="line">UIWindowDidBecomeHiddenNotification</span><br><span class="line">UIWindowDidBecomeKeyNotification</span><br><span class="line">UIWindowDidResignKeyNotification</span><br></pre></td></tr></table></figure>
+<h4 id="External-Display"><a href="#External-Display" class="headerlink" title="External Display"></a>External Display</h4><p>主要的基本处理过程如下：</p>
+<ol>
+<li>在程序启动时，注册screen的连接和断开连接通知。</li>
+<li>当需要在扩展屏幕上显示内容时，创建和配置一个window：（a）通过UIScreen的screens获得扩展屏幕对象。（b）创建一个window对象并配置适当的大小。（c）当扩展屏幕对象赋值给新建的window对象。（d）根据屏幕分辨率适配显示内容。（e）添加任何适当的内容到window上。</li>
+<li>显示window对象，并正常的处理更新。</li>
+</ol>
+<h2 id="Views"><a href="#Views" class="headerlink" title="Views"></a>Views</h2><p>view对象提供应用与用户主要的交互方式，必须执行相应的职责：</p>
+<ol>
+<li>布局与子视图管理：（a）视图定义自己的resizing行为关联到其父视图上。（b）一个视图能管理多个子视图。（c）视图可以根据需要动态改变子视图的位置与大小。（d）视图可以将自坐标系统里的点转换到对应的视图或者window坐标系统上。</li>
+<li>绘制图象和动画呈现：（a）在视图的矩形区域内绘制图象内容。（b）改变视图属性，以动画形势给用户反馈，属性值改变。</li>
+<li>事件处理：（a）视图可以接收事件。（b）事件是事件响应链的一部分。</li>
+</ol>
+<h4 id="Adjusting-the-Size-and-Position-of-Views-at-Runtime"><a href="#Adjusting-the-Size-and-Position-of-Views-at-Runtime" class="headerlink" title="Adjusting the Size and Position of Views at Runtime"></a>Adjusting the Size and Position of Views at Runtime</h4><p>当视图的size发生变化，其子视图的位置与大小必须依据情况作出改变。视图支持自动和手动改变布局。在自动布局情况下，子视图依据父视图设置的规则进行变化；在手动情况下，在应用来创建代码根据需要来控制子视图的大小和位置。</p>
+<h6 id="Layout-change-触发事件"><a href="#Layout-change-触发事件" class="headerlink" title="Layout change 触发事件"></a>Layout change 触发事件</h6><p>Layout发生改变，当有以下事件发生时：</p>
+<ol>
+<li>视图的bounds的size发生改变。</li>
+<li>当设备方向发生变化，通常根据是应用触发的根视图的bounds矩形发生变化。</li>
+<li>当一组子图层关联的父图层发生变化并需要重新布局时。</li>
+<li>当应用调用setNeedsLayout或者layoutIfNeeded方法强制更新视图时。</li>
+<li>当应用在关联的视图图层调用setNeedsLayout方法强制布局更新。</li>
+</ol>
+<h5 id="使用Autoresizing-Rules处理自动布局"><a href="#使用Autoresizing-Rules处理自动布局" class="headerlink" title="使用Autoresizing Rules处理自动布局"></a>使用Autoresizing Rules处理自动布局</h5><p>父视图的autoresizesSubviews属性决定子视图是否支持resize。如果该属性设置成YES，则在父视图发生改变要求子视图需要重新布局时，子视图用autoresizingMask属性来决定如何改变位置和大小。</p>
+<p>下表列出autoresizingMask可用的取值：<br><img src="http://7xsq10.com2.z0.glb.clouddn.com/view_PG_T3_2.jpg" alt="view_PG_T3_2"></p>
+<p>当视图在同一轴上有超过一个灵活配置属性，UIKit框架分配等比例在相应的空间上。</p>
+<h5 id="通过代码直接控制View布局"><a href="#通过代码直接控制View布局" class="headerlink" title="通过代码直接控制View布局"></a>通过代码直接控制View布局</h5><p>当视图的size发生变化，UIKit框架应用autoresizing行为在子视图上，然后再调用视图layoutSubviews方法使应用可以再次通过代码控制视图布局。我们可以在应用内实现layoutSubviews方法，当autoresizing行为不能满足要求时，再通过code改变。</p>
+<p>在layoutSubviews方法内，可以实现如下功能：</p>
+<ol>
+<li>适配任何内存子视图的位置和大小。</li>
+<li>添加或者移出子视图或者图层。</li>
+<li>调用setNeedsDisplay或者setNeedsDisplayInRect:方法强制子视图进行重绘。</li>
+</ol>
+<h4 id="运行时修改视图"><a href="#运行时修改视图" class="headerlink" title="运行时修改视图"></a>运行时修改视图</h4><p>当应用程序接收到输入事件，应用需要适配界面来响应相应的输入。此时，应用会修改视图或者重排子视图，改变大小或者位置等。在iOS应用内，有多个地方和方法执行相应动作：</p>
+<ol>
+<li>在VC内：（a）一个VC在显示视图内容前必须创建它们，不管是能纯代码还是通过nib加载。最后在不使用它们时销毁。（b）当设备方向发生改变时，VC需要适配视图的大小和位置。或者会增加、移出部分视图。（c）当VC管理可编辑的内容时，VC会改变或者移动视图的层级关系。</li>
+<li>在动画块内：（a）当过渡多组不同的视图展现用户界面时，需要在动画块内显示或者隐藏部分视图。（b）当需要实现特殊的效果里，则需要在动画块内改变视图指定的属性。</li>
+<li>其它方式：（a）当发生touch事件或者手势时，界面需要响应视图加载或者改变等。（b）当用户与scroll view交互时，一个大的滑动区域需要动态显示和隐藏子视图。（c）当键盘出现或者隐藏时，需要重新设计视图的位置。</li>
+</ol>
+<h4 id="图层对象相互关联"><a href="#图层对象相互关联" class="headerlink" title="图层对象相互关联"></a>图层对象相互关联</h4><p>每个视图对象都有一个专用的图层管理内容的呈现和视图内容在屏幕上的动画。应用可以与视图对象交互，也可以直接与图层对象进行交互。视图可以嵌入其它的layer对象。</p>
+<p>通过实现类方法layerClass指定view关联的layer对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">+ (Class)layerClass</span><br><span class="line">&#123;</span><br><span class="line">    return [CATiledLayer class];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="自定义视图注意点"><a href="#自定义视图注意点" class="headerlink" title="自定义视图注意点"></a>自定义视图注意点</h4><p>当系统框架提供的视图组件不能满足业务需求时，应用可以自定义控件，以下是自定义控件要注意的地方：</p>
+<ol>
+<li>需要为视图指定适当的初始化方法：（a）如果采用纯代码的方式实现自定义，则需要实现initWithFrame:方法或者自定义一个初始化方法。（b）如果采用nib的方式实现，则需要实现initWithCoder:方法，并使用该方法设置视图到初始化的状态。</li>
+<li>根据情况实现dealloc方法清理数据。</li>
+<li>对于采用代码绘制图像内容，则需要复写drawRect:方法并在此方法内实现内容的绘制。</li>
+<li>设置自定义视图的autoresizingMask属性定义autoresizing行为。</li>
+<li>如果视图类管理多个子视图：（a）在视图初始化的节点上创建子视图。（b）在子视图创建时设置对应的autoresizingMask属性。（c）如果视图需要对子视图采用定制的布局，则需要复写layoutSubviews方法并实现定制的布局代码。</li>
+<li>处理touch事件相关的事件：（a）使用addGestureRecognizer:方法添加适当的手势识别器到view上。（b）当手势不能满足需要时，可以复写 touchesBegan:withEvent:, touchesMoved:withEvent:, touchesEnded:withEvent:, 和 touchesCancelled:withEvent: 方法对事件进行定制处理。</li>
+<li>如果想为视图实现打印且打印板式与屏幕上不同，需要实现drawRect:forViewPrintFormatter:方法。具体情况需要参照Drawing and Printing PG。</li>
+</ol>
+<p>对于视图事件响应处理，要参考Event Handling PG。</p>
+<p>参考官方文档：<a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/ViewPG_iPhoneOS/Introduction/Introduction.html" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/ViewPG_iPhoneOS/Introduction/Introduction.html</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/18/View-PG/" data-id="cin6wvsbi0011khzlknjva297" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/04/12/Concurrency-PG/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Concurrency-PG</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 15px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 17.5px;">Swift</a> <a href="/tags/iOS/" style="font-size: 20px;">iOS</a> <a href="/tags/后端/" style="font-size: 17.5px;">后端</a> <a href="/tags/工具/" style="font-size: 12.5px;">工具</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/18/View-PG/">View-PG</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/12/Concurrency-PG/">Concurrency-PG</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/11/RunLoop/">RunLoop</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/09/KVO-PG/">KVO_PG</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/08/KVC-PG/">KVC_PG</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 天晷<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
