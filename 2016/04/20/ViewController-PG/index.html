@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>ViewController-PG | 天晷</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="view Controllers作为应用的结构基础，每个VC管理应用的用户界面并且管理界面与底层数据的交互，同时负责处理用户界面之间的过渡。
+有两种类型的VC：1.承载内容VC：作为主要的VC类型，管理应用的内容呈现。2.容器VC：集合子VC的信息，协调子VC的切换与呈现。
+VC担当角色VC定义方法和属性管理界面视图、处理事件、负责视图之间切换、协调不同应用不同部分。应用继承UIViewContr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ViewController-PG">
+<meta property="og:url" content="http://yoursite.com/2016/04/20/ViewController-PG/index.html">
+<meta property="og:site_name" content="天晷">
+<meta property="og:description" content="view Controllers作为应用的结构基础，每个VC管理应用的用户界面并且管理界面与底层数据的交互，同时负责处理用户界面之间的过渡。
+有两种类型的VC：1.承载内容VC：作为主要的VC类型，管理应用的内容呈现。2.容器VC：集合子VC的信息，协调子VC的切换与呈现。
+VC担当角色VC定义方法和属性管理界面视图、处理事件、负责视图之间切换、协调不同应用不同部分。应用继承UIViewContr">
+<meta property="og:image" content="http://yoursite.com/./vc_PG/vc_PG_F1_3.jpg">
+<meta property="og:updated_time" content="2016-04-21T15:06:36.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ViewController-PG">
+<meta name="twitter:description" content="view Controllers作为应用的结构基础，每个VC管理应用的用户界面并且管理界面与底层数据的交互，同时负责处理用户界面之间的过渡。
+有两种类型的VC：1.承载内容VC：作为主要的VC类型，管理应用的内容呈现。2.容器VC：集合子VC的信息，协调子VC的切换与呈现。
+VC担当角色VC定义方法和属性管理界面视图、处理事件、负责视图之间切换、协调不同应用不同部分。应用继承UIViewContr">
+<meta name="twitter:image" content="http://yoursite.com/./vc_PG/vc_PG_F1_3.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="天晷" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天晷</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">脑容量有限，清理出来装灵感吧！</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-ViewController-PG" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/20/ViewController-PG/" class="article-date">
+  <time datetime="2016-04-20T02:06:06.000Z" itemprop="datePublished">2016-04-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      ViewController-PG
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>view Controllers作为应用的结构基础，每个VC管理应用的用户界面并且管理界面与底层数据的交互，同时负责处理用户界面之间的过渡。</p>
+<p>有两种类型的VC：1.承载内容VC：作为主要的VC类型，管理应用的内容呈现。2.容器VC：集合子VC的信息，协调子VC的切换与呈现。</p>
+<h2 id="VC担当角色"><a href="#VC担当角色" class="headerlink" title="VC担当角色"></a>VC担当角色</h2><p>VC定义方法和属性管理界面视图、处理事件、负责视图之间切换、协调不同应用不同部分。应用继承UIViewController添加自定义的代码实现定制行为。</p>
+<h4 id="View管理"><a href="#View管理" class="headerlink" title="View管理"></a>View管理</h4><p>负责管理view层次结构，每个VC有一个根视图用于添加需要显示的子内容视图。VC一直引用根视图，根视图对每一个添加的子视图都是强引用。</p>
+<p>内容VC管理根视图内全部的子视图。容器VC仅管理自身的根视图和全部子VC的根视图。容器VC只对子VC的根视图位置和大小进行管理，子VC的内容全部由相应的VC控制管理。</p>
+<h4 id="数据配置"><a href="#数据配置" class="headerlink" title="数据配置"></a>数据配置</h4><p>VC在管理的视图与应用的数据之间扮演一个中介者的作用。UIViewController的属性和方法用管理应用的内容呈现，当我们继承UIViewController使用时，添加适当的变量对数据进行管理。同时，在VC内我们必须保持数据对象与VC关系的独立性。大概关系如下：<br><img src="./vc_PG/vc_PG_F1_3.jpg" alt="vc_PG_F1_3"></p>
+<h4 id="用户交互"><a href="#用户交互" class="headerlink" title="用户交互"></a>用户交互</h4><p>虽然VC作为一个响应者对象，并且有能力处理从响应都链传递过来的事件，但是VC一般情况下是不会直接处理的。相反地，由视图处理相应的事件，并用delegate或者target-Action的方法转化成处理方法。</p>
+<h4 id="资源管理"><a href="#资源管理" class="headerlink" title="资源管理"></a>资源管理</h4><p>在VC里，几乎所有的资源都是自动管理的，对于一部分由程序代码创建的资源，需要由程序代码进行控制释放。</p>
+<p>当内存收到内存告警时，需要对不使用或者能够重新创建的资源进行释放，避免因为内存的原因造成程序Crash。</p>
+<h4 id="适配"><a href="#适配" class="headerlink" title="适配"></a>适配</h4><p>VC的职责是负责呈现视图内容，并且根据底层的环境适配内容的呈现。每个应用都应该能够运行在不同尺寸的iOS设备上。为了避免在不同的设备上运行不同的VC进行控制显示，我们应该使用一个VC根据空间的变化进行适配。</p>
+<p>在iOS系统中，应用需要处理两种类型的变化：粗粒度（底层特性）和细粒度（视图尺寸）。iOS布局给VC定义了两个重要的特性：水平和垂直的size classes，用来表明VC在不同的维度上的空间使用情况。旋转设备可能会引起特性（traits）的变化，也有可能引起细粒度的变化。应用程序需要根据特性的变化，适配合适的布局。</p>
+<h2 id="VC层次结构"><a href="#VC层次结构" class="headerlink" title="VC层次结构"></a>VC层次结构</h2><p>VC视图间的关系定义了不同VC之间的行为。我们应该按照UIKit框架定义的方式使用VC，保持VC间适当的关联关系，以保证正确的事件行为能够自动分发到指定的VC上。如果打破了预定义的行为或者呈现内容方式，应用可能会出现未定义的行为。</p>
+<h4 id="Root-VC"><a href="#Root-VC" class="headerlink" title="Root VC"></a>Root VC</h4><p>根VC是作为整个VC层次结构的锚点。每个window都需要指定一个根控制器，让其根视图填充整个内容区域。</p>
+<h4 id="容器VC"><a href="#容器VC" class="headerlink" title="容器VC"></a>容器VC</h4><p>容器VC让应用合成其它管理或者重用单元生成复杂的用户界面。一个容器控制器将子视图控制器的内容混合在一起形成最终的界面。UIKit框架预定义的容器控制器： UINavigationController, UISplitViewController, and UIPageViewController。</p>
+<h4 id="Presented-控制器"><a href="#Presented-控制器" class="headerlink" title="Presented 控制器"></a>Presented 控制器</h4><p>Presented VC都采用模态的方式展现新的内容。通常是隐藏之前的内容，呈现的内容替换当前正在展示的VC的内容。</p>
+<p><strong>当呈现一个VC时，UIKit框架会在presenting VC和presented VC建立关联关系</strong>。</p>
+<h3 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h3><ol>
+<li>尽可能使用框架定义的VC</li>
+<li>保持不同的VC之间相互独立，不应该让不同的VC涉及或者管理其它VC的内容和状态。如果有VC间的交互，应该采用delegate等机制进行状态隔离。</li>
+<li>将VC的根视图作为其它视图的容器进行使用。</li>
+<li>清楚数据的生命周期。</li>
+<li>适配不同的设备。</li>
+</ol>
+<h2 id="定义子控制器"><a href="#定义子控制器" class="headerlink" title="定义子控制器"></a>定义子控制器</h2><p>当定义子控制器用作内容控制器，根据视图的所有子视图都负责展示内容数据。框架定义的几个常用内容控制器：1.UITableViewController指定VC的根视图为一个Table。2.UICollectionViewController 定义VC的根视图为一个视图集合。3.UIViewController作为最基础的类。</p>
+<p>与内容控制器相反，容器控制器仅仅只管理子控制器的根视图。可以根据需要选择框架内合适的容器控制器，如果需要自定义容器控制，则需要继承UIViewController。</p>
+<h4 id="定义用户界面"><a href="#定义用户界面" class="headerlink" title="定义用户界面"></a>定义用户界面</h4><p>应用可以使用storyboard editor或者编程的方式实现用户界面。</p>
+<p>使用storyboard editor定义界面，按照如下流程：</p>
+<ol>
+<li>添加、安排、配置控制器的视图。</li>
+<li>连接outlets 和 actions。</li>
+<li>创建控制器之间的关联和segues。</li>
+<li>自定义控制器在不同的size classes下的布局和视图情况。</li>
+<li>添加手势处理用户在视图上的交互。</li>
+</ol>
+<h4 id="处理用户交互"><a href="#处理用户交互" class="headerlink" title="处理用户交互"></a>处理用户交互</h4><p>应用的响应者对象处理传入的事件并采取适当的动作。虽然控制器作为响应链上的响应对象，但是很少直接处理点击事件，而是通过以下的方式进行事件处理：</p>
+<ol>
+<li>控制器定义动作方法处理高层的事件。（a）指定动作：Control或者View调用动作方法响应指定的交互。（b）手势识别器调用动作方法响应交互。</li>
+<li>控制器注册成为观察者接收系统或者其它对象的通知，响应事件。</li>
+<li>控制器扮演其它对象的数据源或者代理。</li>
+</ol>
+<h4 id="视图运行时展示"><a href="#视图运行时展示" class="headerlink" title="视图运行时展示"></a>视图运行时展示</h4><p>采用Storyboards处理加载和展示VC的视图非常简单。按照以下步骤执行：</p>
+<ol>
+<li>使用storyboard文件里的信息初始化视图。</li>
+<li>连接所有的outlets和actions。</li>
+<li>将生成的根视图赋值给控制器的view属性。</li>
+<li>调用控制器的awakeFromNib方法。当此方法被调用后，控制器的特性还未被确认，所以子视图都没显示在最终的位置。</li>
+<li>调用控制器的viewDidLoad方法。使用此方法添加或者删除视图、修改视图布局、为视图加载数据。</li>
+</ol>
+<p>要使控制器内容最终展现到屏幕上，UIKit框架插入了附加的步骤，供使程序具有更多的控制权：</p>
+<ol>
+<li>调用viewWillAppear:方法，通知该视图即将要展示到屏幕上。</li>
+<li>更新视图的布局。</li>
+<li>显示内容在屏幕上。</li>
+<li>调用viewDidAppear:方法，通知视图已经展示在屏幕上了。</li>
+</ol>
+<h4 id="管理视图布局"><a href="#管理视图布局" class="headerlink" title="管理视图布局"></a>管理视图布局</h4><p>当视图的位置或者大小发生改变，UIKit框架更新视图层次的布局信息。在布局处理过程中，UIKit框架需要做如下处理影响控制器的布局：</p>
+<ol>
+<li>更新控制器的根视图或者子视图的trait特性。</li>
+<li>调用控制器的viewWillLayoutSubviews方法。</li>
+<li>调用上下文里UIPresentationController对象的containerViewWillLayoutSubviews方法。<strong>该方法在iOS8.0后出现</strong>。</li>
+<li>调用控制器的根视图的layoutSubviews方法。<strong>该方法的默认实现通过可用的约束计算新的布局信息，然后该方法依据视图层次结构调用子视图的layoutSubviews。</strong></li>
+<li>应用计算好的布局信息到视图。</li>
+<li>调用控制器的viewDidLayoutSubviews方法。</li>
+<li>调用上下文里UIPresentationController对象的containerViewDidLayoutSubviews方法。<strong>该方法在iOS8.0后出现</strong>。</li>
+</ol>
+<p>控制器的viewWillLayoutSubviews and viewDidLayoutSubviews方法有助于执行附加的布局处理流程。在布局前可以添加或者删除视图。在布局后，可以更新视图数据。</p>
+<p>一点tips使用布局：</p>
+<ol>
+<li>使用AutoLayout。</li>
+<li>利用top 或者 bottom layout guides。</li>
+<li>当添加或者删除视图时，需要更新约束。</li>
+<li>当操作控制器的动画时，临时移出约束。</li>
+</ol>
+<h2 id="实现容器控制器"><a href="#实现容器控制器" class="headerlink" title="实现容器控制器"></a>实现容器控制器</h2><h4 id="设计容器控制器"><a href="#设计容器控制器" class="headerlink" title="设计容器控制器"></a>设计容器控制器</h4><p>容器控制器与内容控制器区域在于容器控制器的视图内容来自于其它子控制器的根视图，合成到自己的视图层次结构中。关于容器控制实现，我们需要考虑的几点：</p>
+<ol>
+<li>容器与子控制器分别有何作用吗？</li>
+<li>有多少个子控制器需要同时显示？</li>
+<li>兄弟视图控制器之间是怎样的关系？</li>
+<li>子视图控制器是如何添加和移出的？</li>
+<li>子视图控制器的位置和大小能改变吗？如果能改变，在什么情况下会发生改变？</li>
+<li>容器视图控制器会视图提供修饰或者导航？</li>
+<li>父子视图控制器之间是如何通信？父视图控制器需要分发特别的事件到子视图控制器？</li>
+<li>父视图控制器在不同的方式下需要有不同的呈现状态？</li>
+</ol>
+<h4 id="添加子视图控制器"><a href="#添加子视图控制器" class="headerlink" title="添加子视图控制器"></a>添加子视图控制器</h4><p>采用编程方式添加子视图控制器，需要创建父子视图控制器之间的关系采用以下步骤：</p>
+<ol>
+<li>调用父视图控制器的addChildViewController：方法。</li>
+<li>添加子视图控制器的根视图到父视图的层次结构中。</li>
+<li>添加管理子视图控制器的根视图的布局约束。</li>
+<li>调用子视图控制器的didMoveToParentViewController:方法。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">- (void) displayContentController: (UIViewController*) content &#123;</span><br><span class="line">   [self addChildViewController:content];</span><br><span class="line">   content.view.frame = [self frameForContentController];</span><br><span class="line">   [self.view addSubview:self.currentClientView];</span><br><span class="line">   [content didMoveToParentViewController:self];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="移出子视图控制器"><a href="#移出子视图控制器" class="headerlink" title="移出子视图控制器"></a>移出子视图控制器</h4><p>移出子视图控制器，需要移出父子视图控制器之间的关系采用以下步骤：</p>
+<ol>
+<li>调用子视图控制器的willMoveToParentViewController:方法使用nil参数。</li>
+<li>移出子视图控制器根视图的布局约束。</li>
+<li>将子视图控制器根视图从父视图控制器根视图层次结构中移出。</li>
+<li>调用子视图控制器的removeFromParentViewController方法。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (void) hideContentController: (UIViewController*) content &#123;</span><br><span class="line">   [content willMoveToParentViewController:nil];</span><br><span class="line">   [content.view removeFromSuperview];</span><br><span class="line">   [content removeFromParentViewController];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="管理子视图控制器出现"><a href="#管理子视图控制器出现" class="headerlink" title="管理子视图控制器出现"></a>管理子视图控制器出现</h4><p>当添加子视图控制器，父视图控制器自动转发出现相关的事件。同时也可以复写shouldAutomaticallyForwardAppearanceMethods方法通知UIKit框架，需要如何处理事件的分发。</p>
+<p>以下代码自定义出现事件的分发：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL) shouldAutomaticallyForwardAppearanceMethods &#123;</span><br><span class="line">    return NO;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">-(void) viewWillAppear:(BOOL)animated &#123;</span><br><span class="line">    [self.child beginAppearanceTransition: YES animated: animated];</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">-(void) viewDidAppear:(BOOL)animated &#123;</span><br><span class="line">    [self.child endAppearanceTransition];</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">-(void) viewWillDisappear:(BOOL)animated &#123;</span><br><span class="line">    [self.child beginAppearanceTransition: NO animated: animated];</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">-(void) viewDidDisappear:(BOOL)animated &#123;</span><br><span class="line">    [self.child endAppearanceTransition];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="构建容器视图控制器建议"><a href="#构建容器视图控制器建议" class="headerlink" title="构建容器视图控制器建议"></a>构建容器视图控制器建议</h5><ol>
+<li>父视图控制器应该只接触到子视图控制器的根视图。</li>
+<li>子视图控制器应该尽量采用delegate等方法减少对父视图的关联。</li>
+<li>尽量使用框架内已经定义好的视图。</li>
+</ol>
+<h5 id="代理子视图控制器进行控制"><a href="#代理子视图控制器进行控制" class="headerlink" title="代理子视图控制器进行控制"></a>代理子视图控制器进行控制</h5><ol>
+<li><strong>让子视图控制器决定状态栏的方式</strong>。父视图控制器需要复写其中一个或者全部，childViewControllerForStatusBarStyle和childViewControllerForStatusBarHidden方法。</li>
+<li>让子视图控制器优先决定视图的大小。</li>
+</ol>
+<h2 id="保存和恢复状态"><a href="#保存和恢复状态" class="headerlink" title="保存和恢复状态"></a>保存和恢复状态</h2><p>链接：<a href="https://developer.apple.com/library/ios/featuredarticles/ViewControllerPGforiPhoneOS/PreservingandRestoringState.html#//apple_ref/doc/uid/TP40007457-CH28-SW1" target="_blank" rel="external">https://developer.apple.com/library/ios/featuredarticles/ViewControllerPGforiPhoneOS/PreservingandRestoringState.html#//apple_ref/doc/uid/TP40007457-CH28-SW1</a></p>
+<h2 id="呈现视图控制器"><a href="#呈现视图控制器" class="headerlink" title="呈现视图控制器"></a>呈现视图控制器</h2><p>有两种主要的方式展示一个视图控制器在屏幕上：嵌入到一个容器视图控制器、展示或者呈现。</p>
+<p>UIKit框架为UIViewController植入了对呈现视图控制器的支持，所以应用可以在任意一个视图控制器上呈现其它的视图控制器，<strong>这个呈现请求可能会被转移到其它的视图控制器上</strong>。呈现一个视图控制器会在<strong>接受请求的视图控制器</strong>与<strong>被要求呈现的视图控制器</strong>之间创建一个关联关系，这个关联关系作为视图控制器的视图层次结构的一部分，并保持到<strong>被呈现的视图控制器消失为止</strong>。</p>
+<h4 id="呈现与过渡"><a href="#呈现与过渡" class="headerlink" title="呈现与过渡"></a>呈现与过渡</h4><p>UIKit框架内置的呈现机制，可以让应用使用内置或者自定义的过渡动画。</p>
+<h6 id="呈现方式"><a href="#呈现方式" class="headerlink" title="呈现方式"></a>呈现方式</h6><p>视图控制器的呈现方式决定视图在屏幕上的展现方式。UIKit框架定义了多种标准的呈现方式，每种方式都有特定的展现形式和用途。根据应用需要给视图控制器modalPresentationStyle属性设置适当的值作为呈现样式。</p>
+<p><strong>对于部分呈现样式，UIKit框架会在呈现与被呈现的视图控制器的视图层之间插入一个变暗的调光视图层</strong></p>
+<ol>
+<li>Full-Screen Styles：覆盖整个屏幕，阻止与底层的内容进行交互。</li>
+<li>Popover Style：将视图控制器的内容展示到一个popover视图里。在水平方向正常的情况下，popover视图只覆盖屏幕的一部分；在水平方向受限的情况下，popover适配成Full-Screen Styles。所以<strong>应当根据情况，适配popover的消失逻辑处理</strong>。</li>
+<li>Current Context Styles：覆盖特定视图控制器内容部分，且特定的视图控制器definesPresentationContext属性需要设置为true。（a）使用此方式，可以用实呈现的视图控制器的modalTransitionStyle属性设置过渡动画，<strong>如果呈现VC的providesPresentationContextTransitionStyle 属性设置为true，则使用呈现VC的modalTransitionStyle设置的动画方式</strong>。（b）在水平方向受限的情况下，被默认适配成Full-Screen Styles。</li>
+<li>Custom Presentation Styles：使用UIModalPresentationCustom设定自定义呈现方式。创建UIPresentationController子类使用方法控制屏幕上的视图的动画等，设置被呈现的视图控制器的视图大小和位置。presentation控制器还需要处理在过渡期间由于特性变化引起的适配情况。</li>
+</ol>
+<h6 id="过渡方式"><a href="#过渡方式" class="headerlink" title="过渡方式"></a>过渡方式</h6><p>过渡的方式定义了被呈现视图控制器视图显示的动画。对于UIKit框架内置的过渡方式，使用modalTransitionStyle属性进行设置。</p>
+<p>应用可以使用animator对象和transitioning代理自定义过渡时的动画。animator对象创建视图控制器在屏幕上的动画。transitioning代理根据合适的时机使用对应的animator对象。</p>
+<h6 id="显示与呈现方式对比"><a href="#显示与呈现方式对比" class="headerlink" title="显示与呈现方式对比"></a>显示与呈现方式对比</h6><p>视图控制器提供两种方式展现VC：</p>
+<ol>
+<li>showViewController:sender: 和showDetailViewController:sender: 方法提供灵活与适配的方式展现VC。此方法让被请求呈现的视图控制器<strong>决定更好的方式处理presentation</strong>。例如，容器视图控制器可能会把被呈现的视图控制器添加为子视图控制器。<strong>默认的处理方式是modally</strong>。</li>
+<li>presentViewController:animated:completion: 方法总是采用modally方式展现视图控制器。<strong>调用此方法的视图控制器不一定是最后处理presentation的视图控制器</strong>。</li>
+</ol>
+<h4 id="呈现一个视图控制器"><a href="#呈现一个视图控制器" class="headerlink" title="呈现一个视图控制器"></a>呈现一个视图控制器</h4><p>可以使用Segues、showViewController:sender: or showDetailViewController:sender:方法、presentViewController:animated:completion: 方法发起一个呈现视图控制器的请求。</p>
+<h6 id="Showing-View-Controllers"><a href="#Showing-View-Controllers" class="headerlink" title="Showing View Controllers"></a>Showing View Controllers</h6><p>调用showViewController:sender: and showDetailViewController:sender: 方法实现presentation直接如下：</p>
+<ol>
+<li>创建一个需要被呈现的视图控制器。</li>
+<li>设置创建的视图控制器的modalPresentationStyle属性预定义呈现方式。但不一定是最后使用的呈现方式。</li>
+<li>设置创建的视图控制器的 modalTransitionStyle 属性定义过渡时的动画。但最后过渡不一定会使用该动画。</li>
+<li>在当前的VC中调用showViewController:sender: and showDetailViewController:sender:方法。</li>
+</ol>
+<p>UIKit框架会转发showViewController:sender: and showDetailViewController:sender:调用到适当的presenting view controller，该VC会根据需要决定如何处理presentation and transition styles。例如，navigation controller might push the view controller onto its navigation stack。</p>
+<h6 id="Presenting-View-Controllers-Modally"><a href="#Presenting-View-Controllers-Modally" class="headerlink" title="Presenting View Controllers Modally"></a>Presenting View Controllers Modally</h6><p>直接 presenting a view controller，调用方法如下：</p>
+<ol>
+<li>创建一个视图控制器。</li>
+<li>设置视图控制器的modalPresentationStyle属性决定呈现方式。</li>
+<li>设置视图控制器的modalTransitionStyle属性设置过渡时的动画。</li>
+<li>在当前的VC上调用presentViewController:animated:completion:方法。</li>
+</ol>
+<p>当presentViewController:animated:completion:方法被调用后，UIKit框架会沿着控制器的层次结构找到合适的presenting view controller，并且会更新涉及到的视图控制器的presentingViewController and presentedViewController属性关系。</p>
+<h6 id="Presenting-a-View-Controller-in-a-Popover"><a href="#Presenting-a-View-Controller-in-a-Popover" class="headerlink" title="Presenting a View Controller in a Popover"></a>Presenting a View Controller in a Popover</h6><p>如果要采用Popovers方式呈现一个视图控制器，在设置VC的modalPresentationStyle属性为UIModalPresentationPopover后，还需要做以下设置：</p>
+<ol>
+<li>设置被呈现视图控制器的 preferredContentSize属性。</li>
+<li>通过VC的 popoverPresentationController属性获得关联的UIPopoverPresentationController对象，并需要设置popover的锚点。设置以下其中之一：（a）设置一个bar button item关联到barButtonItem属性。（b）指定 sourceView and sourceRect在特定的视图区域上。</li>
+</ol>
+<h6 id="Dismissing-a-Presented-View-Controller"><a href="#Dismissing-a-Presented-View-Controller" class="headerlink" title="Dismissing a Presented View Controller"></a>Dismissing a Presented View Controller</h6><p>要消失一个被呈现的视图控制器，直接在presenting view controller调用dismissViewControllerAnimated:completion: 方法。也可以在presented view controller上调用dismissViewControllerAnimated:completion: 方法，UIKit框架会自动转发请求到对应的presenting view controller上。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/20/ViewController-PG/" data-id="cinbftvsk001kw8zlo04cq6tx" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/04/21/ViewController2-PG/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          ViewController2-PG
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/04/18/View-PG/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">View-PG</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 15px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 17.5px;">Swift</a> <a href="/tags/iOS/" style="font-size: 20px;">iOS</a> <a href="/tags/后端/" style="font-size: 17.5px;">后端</a> <a href="/tags/工具/" style="font-size: 12.5px;">工具</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/21/ViewController2-PG/">ViewController2-PG</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/20/ViewController-PG/">ViewController-PG</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/18/View-PG/">View-PG</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/12/Concurrency-PG/">Concurrency-PG</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/11/RunLoop/">RunLoop</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 天晷<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

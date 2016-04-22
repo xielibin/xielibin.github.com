@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Tag: Pattern | 天晷</title>
+  <title>天晷</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description">
 <meta property="og:type" content="website">
 <meta property="og:title" content="天晷">
-<meta property="og:url" content="http://yoursite.com/tags/Pattern/index.html">
+<meta property="og:url" content="http://yoursite.com/page/4/index.html">
 <meta property="og:site_name" content="天晷">
 <meta property="og:description">
 <meta name="twitter:card" content="summary">
@@ -65,93 +65,64 @@
       <div class="outer">
         <section id="main">
   
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2016" class="archive-year">2016</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2016/04/06/责任链/" class="archive-article-date">
-  <time datetime="2016-04-06T07:24:25.000Z" itemprop="datePublished">Apr 6</time>
+    <article id="post-Hexo-安装与使用" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/03/Hexo-安装与使用/" class="article-date">
+  <time datetime="2015-05-03T12:37:33.000Z" itemprop="datePublished">2015-05-03</time>
 </a>
-      
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/04/06/责任链/">责任链</a>
+      <a class="article-title" href="/2015/05/03/Hexo-安装与使用/">Hexo安装与本地预览</a>
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2016/04/03/AOP/" class="archive-article-date">
-  <time datetime="2016-04-03T13:08:18.000Z" itemprop="datePublished">Apr 3</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/04/03/AOP/">AOP</a>
-    </h1>
-  
+        <p>#Git安装<br>在网上看其它文章布置hexo都是先装git的，由于装Xcode的时已经自带装过git了，因此此处就没有探究了。此处只是准备运行至通过本地能够查看hexo服务，也不清楚不安装git会对此处有影响。</p>
+<p>#Node环境搭建</p>
+<p>参考：<a href="http://www.cnblogs.com/zhangran/p/3679333.html" target="_blank" rel="external">http://www.cnblogs.com/zhangran/p/3679333.html</a></p>
+<p>###安装Homebrew<br>安装homebrew 只需要在terminal下执行（不过在执行以下命令的时候为提示地址以过期，根据新地址进行安装）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby -e &quot;$(curl -fsSkL https://raw.github.com/Homebrew/homebrew/go/install)&quot;</span><br></pre></td></tr></table></figure></p>
+<p>安装完成后，执行 brew doctor 命令。这是homebrew 完成后必须做的一件事，检查homebrew各模块是否正常。</p>
+<p>###安装Node<br>1.执行 brew install node, 自动安装node和npm(npm是node包分发管理工具)。</p>
+<p>#hexo环境搭建</p>
+<p>参考文章：<a href="http://www.cnblogs.com/zhcncn/p/4097881.html" target="_blank" rel="external">http://www.cnblogs.com/zhcncn/p/4097881.html</a></p>
+<p>###安装hexo</p>
+<p>执行下面的命令安装hexo:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo</span><br></pre></td></tr></table></figure></p>
+<p>###初始化本地hexo</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir Hexo  //建一个存放资源，名为Hexo的文件夹</span><br><span class="line">hexo init</span><br></pre></td></tr></table></figure>
+<p>根据提示在目标文件夹建立网站所需要的文件。在Hexo文件下执行以下命令:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure></p>
+<p>会自动在Hexo目录中安装node_modules。</p>
+<p>###启动hexo本地预览<br>运行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo server 或者 hexo s</span><br><span class="line">[info] Hexo is running at http://localhost:4000/. Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure></p>
+<p>表明Hexo Server 已经启动，可以通过 <a href="http://localhost:4000/进行访问。" target="_blank" rel="external">http://localhost:4000/进行访问。</a></p>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2016/04/03/策略模式/" class="archive-article-date">
-  <time datetime="2016-04-03T05:41:10.000Z" itemprop="datePublished">Apr 3</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/04/03/策略模式/">策略模式</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2016/03/26/观察者模式/" class="archive-article-date">
-  <time datetime="2016-03-26T11:05:26.000Z" itemprop="datePublished">Mar 26</time>
-</a>
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/03/Hexo-安装与使用/" data-id="cinbftvqx0009w8zl6tkvgvcj" class="article-share-link">Share</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2016/03/26/观察者模式/">观察者模式</a>
-    </h1>
-  
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
 
-    </header>
+    </footer>
   </div>
+  
 </article>
+
+
   
   
-    </div></section>
+    <nav id="page-nav">
+      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
+    </nav>
   
 </section>
         

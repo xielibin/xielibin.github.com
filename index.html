@@ -65,6 +65,314 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-ViewController2-PG" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/21/ViewController2-PG/" class="article-date">
+  <time datetime="2016-04-21T15:07:24.000Z" itemprop="datePublished">2016-04-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/04/21/ViewController2-PG/">ViewController2-PG</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Customizing-the-Transition-Animations"><a href="#Customizing-the-Transition-Animations" class="headerlink" title="Customizing the Transition Animations"></a>Customizing the Transition Animations</h2><p>过渡动画提供应用界面变化可视化反馈。UIKit框架提供标准的过渡动画方式用于呈现VC，程序内也可以自定义过渡作为标准过渡的补充。</p>
+<h4 id="The-Transition-Animation-Sequence"><a href="#The-Transition-Animation-Sequence" class="headerlink" title="The Transition Animation Sequence"></a>The Transition Animation Sequence</h4><p>过渡动画交换两个视图控制器视图内容，有两种类型的过渡：呈现和消失。</p>
+<p>实现过渡动画需要抓取相关的对象信息，UIKit框架提供包含在过渡动画内所有对象的默认信息，可以在应用内自定义全部或者部分对象。如果选择合适的对象组合，则只需要编写少量的代码就能实现过渡动画。</p>
+<h6 id="Transitioning-Delegate"><a href="#Transitioning-Delegate" class="headerlink" title="Transitioning Delegate"></a>Transitioning Delegate</h6><p>Transitioning Delegate是过渡动画与自定义呈现的起动点。代理对象需要实现UIViewControllerTransitioningDelegate协议，并向UIKit框架提供以下信息对象：</p>
+<ol>
+<li>Animator objects：用于创建显示和消失视图控制器视图的动画，需要符合UIViewControllerAnimatedTransitioning协议。</li>
+<li>Interactive animator objects：用于驱动自定义动画时间曲线，需要符合UIViewControllerInteractiveTransitioning协议。<strong>比较简便的方式是继承UIPercentDrivenInteractiveTransition，实现相应的事件处理即可</strong>。</li>
+<li>Presentation controller：用于管理视图控制器在屏幕上的呈现方式。</li>
+</ol>
+<p>给视图控制器的 transitioningDelegate属性设置代理对象，告诉UIKit框架应用需要执行自定义过渡或者呈现方式。代理可以决定需要提供哪些对象，如果没有提供animator对象，UIKit框架使用由视图控制器 modalTransitionStyle属性提供的标准的过渡动画。</p>
+<h6 id="Custom-Animation-Sequence"><a href="#Custom-Animation-Sequence" class="headerlink" title="Custom Animation Sequence"></a>Custom Animation Sequence</h6><p>当presented VC的transitioningDelegate属性提供一个有效的对象，UIKit框架则用自定义的动画呈现VC。UIKit框架调用 animationControllerForPresentedController:presentingController:sourceController:方法检索一个自定义的animator对象，如果有一个可用的对象，则按照以下流程执行：</p>
+<ol>
+<li>UIKit框架调用代理对象的interactionControllerForPresentation:方法，查看是否提供交互animator对象，如果没有提供相应对象，则框架采用非交互的动画驱动方式。</li>
+<li>UIKit框架调用animator对象的 transitionDuration:方法获取动画执行时间。</li>
+<li>UIKit框架调用适当的方法开始执行动画：（a）对象非交互式方式，调用animator对象的animateTransition:方法。（b）对交互方式，调用提供的交互对象的startInteractiveTransition:方式。</li>
+<li>UIKit框架等待animator对象调用过渡上下文对象的 completeTransition:方法。<strong>当animator对象执行完成，则必须调用些方法，使用框架能够处理presentViewController:animated:completion:方法的completion内容</strong>。</li>
+</ol>
+<p>当消失一个视图控制器时，UIKit框架调用代理对象animationControllerForDismissedController:方法获取animator对象，并执行以下步骤：</p>
+<ol>
+<li>UIKit框架调用代理对象的interactionControllerForDismissal:方法，查看是否提供交互animator对象，如果没有提供相应对象，则框架采用非交互的动画驱动方式。</li>
+<li>UIKit框架调用animator对象的 transitionDuration:方法获取动画执行时间。</li>
+<li>UIKit框架调用适当的方法开始执行动画：（a）对象非交互式方式，调用animator对象的animateTransition:方法。（b）对交互方式，调用提供的交互对象的startInteractiveTransition:方式。</li>
+<li>UIKit框架等待animator对象调用过渡上下文对象的 completeTransition:方法。<strong>当animator对象执行完成，则必须调用些方法，使用框架能够处理presentViewController:animated:completion:方法的completion内容</strong>。</li>
+</ol>
+<h6 id="Transitioning-Context-Object"><a href="#Transitioning-Context-Object" class="headerlink" title="Transitioning Context Object"></a>Transitioning Context Object</h6><p>在开始执行过渡动画之前，UIKit框架创建一个过渡上下文对象，并设置执行动画的相关信息。该对象实现了UIViewControllerContextTransitioning协议，包含了执行动画需要的必要信息。下图显示了上下文对象引用的对象信息：</p>
+<p><img src="./vc_PG/vc_PG_F10_2.jpg" alt="vc_PG_F10_2"></p>
+<h6 id="Transition-Coordinator"><a href="#Transition-Coordinator" class="headerlink" title="Transition Coordinator"></a>Transition Coordinator</h6><p>对于内置或者自定义的过渡动画，UIKit框架创建了一个过渡时的协调器对象触发一些需要执行的附加动画。除了呈现或者消失视图控制器，当屏幕发生旋转或者VC尺寸发生变化也会引起transitions。此类的transitions主要是改变视图层次结构显示，跟踪变化并使用动画反馈给用户。transition coordinator对象只存在于过渡期间，通过被影响的VC的transitionCoordinator属性获得对象，对象实现UIViewControllerTransitionCoordinatorContext协议。对象引用的对象信息如下：</p>
+<p><img src="./vc_PG/vc_PG_F10_3.jpg" alt="vc_PG_F10_3"></p>
+<h4 id="Presenting-a-View-Controller-Using-Custom-Animations"><a href="#Presenting-a-View-Controller-Using-Custom-Animations" class="headerlink" title="Presenting a View Controller Using Custom Animations"></a>Presenting a View Controller Using Custom Animations</h4><p>用自定义动画实现视图控制器的呈现，按照以下流程执行：</p>
+<ol>
+<li>创建一个视图控制器。</li>
+<li>创建一个过渡代理对象赋值给被呈现的视图控制器的transitioningDelegate属性。代理对象的对应方法需要创建并返回animator对象。</li>
+<li>最后调用presentViewController:animated:completion:方法。</li>
+</ol>
+<h4 id="Implementing-the-Transitioning-Delegate"><a href="#Implementing-the-Transitioning-Delegate" class="headerlink" title="Implementing the Transitioning Delegate"></a>Implementing the Transitioning Delegate</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- (id&lt;UIViewControllerAnimatedTransitioning&gt;)</span><br><span class="line">    animationControllerForPresentedController:(UIViewController *)presented</span><br><span class="line">                         presentingController:(UIViewController *)presenting</span><br><span class="line">                             sourceController:(UIViewController *)source &#123;</span><br><span class="line">    MyAnimator* animator = [[MyAnimator alloc] init];</span><br><span class="line">    return animator;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Animator-Objects"><a href="#Animator-Objects" class="headerlink" title="Animator Objects"></a>Animator Objects</h4><p>Animator Objects是一个任意实现了 UIViewControllerAnimatedTransitioning协议的对象。该对象创建一个固定时间周期的动画。其中animateTransition:方法需要负责实现：（a）获取动画需要的参数信息。（b）使用Core Anination或者UIView动画方法实现动画。（c）动画完成后清理。</p>
+<h6 id="Getting-the-Animation-Parameters"><a href="#Getting-the-Animation-Parameters" class="headerlink" title="Getting the Animation Parameters"></a>Getting the Animation Parameters</h6><ol>
+<li>调用viewControllerForKey: 方法使用“from”或者“to”关键字获取上下文里的VC。</li>
+<li>调用containerView方法获取动画执行的父视图。</li>
+<li>调用viewForKey:方法获取视图对象。</li>
+<li>调用finalFrameForViewController:方法获取视图对象的最后位置信息。</li>
+</ol>
+<h6 id="Creating-the-Transition-Animations"><a href="#Creating-the-Transition-Animations" class="headerlink" title="Creating the Transition Animations"></a>Creating the Transition Animations</h6><p>设置代理代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">extension ViewController : UIViewControllerTransitioningDelegate &#123;</span><br><span class="line">    @objc private func buttonTouched(sender : UIButton) &#123;</span><br><span class="line">        let presentedVC = PresentedViewController()</span><br><span class="line">        presentedVC.transitioningDelegate = self</span><br><span class="line">        self.presentViewController(presentedVC, animated: true, completion: nil)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -&gt; UIViewControllerAnimatedTransitioning? &#123;</span><br><span class="line">        animator.presenting = true</span><br><span class="line">        return animator</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func animationControllerForDismissedController(dismissed: UIViewController) -&gt; UIViewControllerAnimatedTransitioning? &#123;</span><br><span class="line">        animator.presenting = false</span><br><span class="line">        return animator</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Animator代码如下：<br><strong>在编写代码时要注意，改变索引对象的值；dismiss时toViewStartFrame是（0，0，0，0），按照官方文档实现会消失后，会导致toView不显示</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">class PreAnimator: NSObject, UIViewControllerAnimatedTransitioning &#123;</span><br><span class="line">    var presenting : Bool = false</span><br><span class="line">    </span><br><span class="line">    func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -&gt; NSTimeInterval &#123;</span><br><span class="line">        return 0.5</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func animateTransition(transitionContext: UIViewControllerContextTransitioning) &#123;</span><br><span class="line">        let containerView = transitionContext.containerView()!</span><br><span class="line">        let fromVC = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey)!</span><br><span class="line">        let toVC = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey)!</span><br><span class="line">        </span><br><span class="line">        let toView = transitionContext.viewForKey(UITransitionContextToViewKey)!</span><br><span class="line">        let fromView = transitionContext.viewForKey(UITransitionContextFromViewKey)!</span><br><span class="line">        </span><br><span class="line">        let containerFrame = containerView.frame</span><br><span class="line">        var toViewStartFrame = transitionContext.initialFrameForViewController(toVC)</span><br><span class="line">        let toViewFinalFrame = transitionContext.finalFrameForViewController(toVC)</span><br><span class="line">        var fromViewFinalFrame = transitionContext.finalFrameForViewController(fromVC)</span><br><span class="line">        </span><br><span class="line">        if presenting &#123;</span><br><span class="line">            toViewStartFrame.origin.x = containerFrame.size.width</span><br><span class="line">            toViewStartFrame.origin.y = containerFrame.size.height</span><br><span class="line">            containerView.insertSubview(toView, aboveSubview: fromView)  //此处改动</span><br><span class="line">            toView.frame = toViewStartFrame  //此处改动</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            fromViewFinalFrame = CGRectMake(containerFrame.width, containerFrame.height, toView.frame.width, toView.frame.height)</span><br><span class="line">            containerView.insertSubview(toView, belowSubview: fromView)  //此处改动</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        UIView.animateWithDuration(self.transitionDuration(transitionContext), animations: &#123;</span><br><span class="line">            if self.presenting &#123;</span><br><span class="line">                toView.frame = toViewFinalFrame</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                fromView.frame = fromViewFinalFrame</span><br><span class="line">            &#125;</span><br><span class="line">            &#125;) &#123; (finished) in</span><br><span class="line">                let success = !transitionContext.transitionWasCancelled()</span><br><span class="line">                </span><br><span class="line">                if (self.presenting &amp;&amp; !success) || (!self.presenting &amp;&amp; success) &#123;</span><br><span class="line">                    toView.removeFromSuperview()</span><br><span class="line">                &#125;</span><br><span class="line">                </span><br><span class="line">                transitionContext.completeTransition(success)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="Adding-Interactivity-to-Your-Transitions"><a href="#Adding-Interactivity-to-Your-Transitions" class="headerlink" title="Adding Interactivity to Your Transitions"></a>Adding Interactivity to Your Transitions</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">class PercentAnimator: UIPercentDrivenInteractiveTransition &#123;</span><br><span class="line">    var context : UIViewControllerContextTransitioning!</span><br><span class="line">    </span><br><span class="line">    override func startInteractiveTransition(transitionContext: UIViewControllerContextTransitioning) &#123;</span><br><span class="line">        super.startInteractiveTransition(transitionContext)</span><br><span class="line">        </span><br><span class="line">        context = transitionContext</span><br><span class="line">        </span><br><span class="line">        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(self.handleSwipeUpdate(_:)))</span><br><span class="line">        panGesture.maximumNumberOfTouches = 1</span><br><span class="line">        </span><br><span class="line">        transitionContext.containerView()?.addGestureRecognizer(panGesture)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func handleSwipeUpdate(sender : UIPanGestureRecognizer) &#123;</span><br><span class="line">        let container = context.containerView()!</span><br><span class="line">        </span><br><span class="line">        switch sender.state &#123;</span><br><span class="line">        case .Began:</span><br><span class="line">            sender.setTranslation(CGPointMake(0, 0), inView: container)</span><br><span class="line">        case .Changed:</span><br><span class="line">            let point = sender.translationInView(container)</span><br><span class="line">            </span><br><span class="line">            let per = point.x / CGRectGetWidth(container.bounds)</span><br><span class="line">            self.updateInteractiveTransition(per)</span><br><span class="line">            print(per)</span><br><span class="line">        case .Ended:</span><br><span class="line">            self.finishInteractiveTransition()</span><br><span class="line">            container.removeGestureRecognizer(sender)</span><br><span class="line">        default:</span><br><span class="line">            self.cancelInteractiveTransition()</span><br><span class="line">            container.removeGestureRecognizer(sender)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="Creating-Animations-that-Run-Alongside-a-Transition"><a href="#Creating-Animations-that-Run-Alongside-a-Transition" class="headerlink" title="Creating Animations that Run Alongside a Transition"></a>Creating Animations that Run Alongside a Transition</h6><p>视图控制器在执行transition的过程中，有可能需要调整自身的视图层次结构，或者调用动画给予界面可视反馈。在transition过程中会存在一个transition coordinator对象，通过视图控制器transitionCoordinator属性获取，调用对象 animateAlongsideTransition:completion: or animateAlongsideTransitionInView:animation:completion:方法创建动画。</p>
+<h2 id="Creating-Custom-Presentations"><a href="#Creating-Custom-Presentations" class="headerlink" title="Creating Custom Presentations"></a>Creating Custom Presentations</h2><p>UIKit框架分离视图控制器的内容呈现和展示在屏幕上两个部分。底层的presentation controller对象管理被呈现的视图控制器，该控制器对象还管理视图控制器的视图呈现方式，presentation controller对象可能负责的任务：</p>
+<ol>
+<li>设置被呈现的视图控制器的大小。</li>
+<li>添加自定义的视图用于改变被呈现内容的可视效果。</li>
+<li>提供自定义视图的过渡动画。</li>
+<li>当应用的当前状态环境发生变化时presentation起到适配的可视效果作用。</li>
+</ol>
+<h4 id="Custom-Presentation-Process"><a href="#Custom-Presentation-Process" class="headerlink" title="Custom Presentation Process"></a>Custom Presentation Process</h4><p>当呈现的视图控制器presentation方式被设置为UIModalPresentationCustom时，UIKit框架寻找自定义的presentation控制器管理呈现过程。</p>
+<p>presentation控制器伴随着过渡效果整个过程，animator对象操作视图控制器内容的动画，而presentation控制器操作其它的操作。被animator对象操作的视图可以通过复写presentedView()方法改变。</p>
+<p>presentation呈现过程：</p>
+<ol>
+<li>调用过渡代理对象presentationControllerForPresentedViewController:presentingViewController:sourceViewController:取得自定义的presentation控制器。</li>
+<li>寻问过渡代理对象的animator和interactive animater对象。</li>
+<li>调用presentation控制器 presentationTransitionWillBegin方法。<strong>可以在该方法内添加自定义的视图，设置视图层次结构</strong></li>
+<li>调用presentedView()方法获取由animator对象操作的视图。<strong>默认情况下，返回的是被呈现视图控制器的根视图。程序也可以自定义其它视图，但是必须将被呈现的视图控制器的根视图合成到视图层次结构中</strong>。</li>
+<li>执行过渡动画。在此过程中UIKit框架会调用containerViewWillLayoutSubviews and containerViewDidLayoutSubviews方法让presentation控制器可以布局自定义视图。</li>
+<li>调用 presentationTransitionDidEnd:方法。</li>
+</ol>
+<p>消失过程：</p>
+<ol>
+<li>从当前可视的视图控制器获取presentation控制器。</li>
+<li>寻问过渡代理对象的animator和interactive animater对象。</li>
+<li>调用presentation控制器 presentationTransitionWillBegin方法。<strong>可以在该方法内添加自定义的视图，设置视图层次结构</strong>。</li>
+<li>调用presentedView()方法获取由animator对象操作的视图。</li>
+<li>执行过渡动画。在此过程中UIKit框架会调用containerViewWillLayoutSubviews and containerViewDidLayoutSubviews方法让presentation控制器可以布局自定义视图。</li>
+<li>调用 presentationTransitionDidEnd:方法。</li>
+</ol>
+<p><strong>在处理过程中， frameOfPresentedViewInContainerView and presentedView方法可能会被多次调用，方法应该尽快完成处理</strong></p>
+<h4 id="Creating-a-Custom-Presentation-Controller"><a href="#Creating-a-Custom-Presentation-Controller" class="headerlink" title="Creating a Custom Presentation Controller"></a>Creating a Custom Presentation Controller</h4><p>设置启动需要的步骤，可以采用内置的过渡动画；由于在呈现时UITransitionContextFromViewKey和消失时UITransitionContextToViewKey对应的值都为nil，所以记录一下。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">@objc private func buttonTouched(sender : UIButton) &#123;</span><br><span class="line">    let presentedVC = PresentedViewController()</span><br><span class="line">    presentedVC.transitioningDelegate = self</span><br><span class="line">    presentedVC.modalPresentationStyle = .Custom</span><br><span class="line">    self.presentViewController(presentedVC, animated: true, completion: nil)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -&gt; UIViewControllerAnimatedTransitioning? &#123;</span><br><span class="line">    return PreCPAnimator()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func animationControllerForDismissedController(dismissed: UIViewController) -&gt; UIViewControllerAnimatedTransitioning? &#123;</span><br><span class="line">    animator.presenting = false</span><br><span class="line">    return PreCDAnimator()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">func presentationControllerForPresentedViewController(presented: UIViewController, presentingViewController presenting: UIViewController, sourceViewController source: UIViewController) -&gt; UIPresentationController? &#123;</span><br><span class="line">    let presentation = CustomPresentationController(presentedViewController: presented, presentingViewController: presenting)</span><br><span class="line">    </span><br><span class="line">    return presentation</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line">class CustomPresentationController: UIPresentationController &#123;</span><br><span class="line">    </span><br><span class="line">    let dimmingView : UIView</span><br><span class="line">    </span><br><span class="line">    override init(presentedViewController: UIViewController, presentingViewController: UIViewController) &#123;</span><br><span class="line">        dimmingView = UIView()</span><br><span class="line">        dimmingView.backgroundColor = UIColor.init(white: 0.0, alpha: 0.4)</span><br><span class="line">        dimmingView.alpha = 0.0</span><br><span class="line">        </span><br><span class="line">        super.init(presentedViewController: presentedViewController, presentingViewController: presentingViewController)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func frameOfPresentedViewInContainerView() -&gt; CGRect &#123;</span><br><span class="line">        let bounds = self.containerView!.bounds</span><br><span class="line">        </span><br><span class="line">        return CGRectInset(bounds, 30, 30)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func presentationTransitionWillBegin() &#123;</span><br><span class="line">        let containerView = self.containerView!</span><br><span class="line">        </span><br><span class="line">        dimmingView.frame = containerView.bounds</span><br><span class="line">        dimmingView.alpha = 0.0</span><br><span class="line">        </span><br><span class="line">        containerView.insertSubview(dimmingView, atIndex: 0)</span><br><span class="line">        </span><br><span class="line">        if let coordinator = presentedViewController.transitionCoordinator() &#123;</span><br><span class="line">            coordinator.animateAlongsideTransition(&#123; (context) in</span><br><span class="line">                self.dimmingView.alpha = 1.0</span><br><span class="line">                &#125;, completion: nil)</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            dimmingView.alpha = 1.0</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func dismissalTransitionWillBegin() &#123;</span><br><span class="line">        if let coordiantor = presentedViewController.transitionCoordinator() &#123;</span><br><span class="line">            coordiantor.animateAlongsideTransition(&#123; (context) in</span><br><span class="line">                self.dimmingView.alpha = 0.0</span><br><span class="line">                &#125;, completion: nil)</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            dimmingView.alpha = 0.0</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func dismissalTransitionDidEnd(completed: Bool) &#123;</span><br><span class="line">        if completed &#123;</span><br><span class="line">            dimmingView.removeFromSuperview()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class PreCPAnimator: NSObject, UIViewControllerAnimatedTransitioning &#123;</span><br><span class="line">    </span><br><span class="line">    func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -&gt; NSTimeInterval &#123;</span><br><span class="line">        return 0.5</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func animateTransition(transitionContext: UIViewControllerContextTransitioning) &#123;</span><br><span class="line">        let containerView = transitionContext.containerView()!</span><br><span class="line">        let toVC = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey)!</span><br><span class="line">        </span><br><span class="line">        let toView = transitionContext.viewForKey(UITransitionContextToViewKey)!</span><br><span class="line">        </span><br><span class="line">        let containerFrame = containerView.frame</span><br><span class="line">        var toViewStartFrame = transitionContext.initialFrameForViewController(toVC)</span><br><span class="line">        let toViewFinalFrame = transitionContext.finalFrameForViewController(toVC)</span><br><span class="line">        </span><br><span class="line">        toViewStartFrame.origin.x = containerFrame.size.width</span><br><span class="line">        toViewStartFrame.origin.y = containerFrame.size.height</span><br><span class="line">        containerView.addSubview(toView)</span><br><span class="line">        toView.frame = toViewStartFrame</span><br><span class="line">        </span><br><span class="line">        UIView.animateWithDuration(self.transitionDuration(transitionContext), animations: &#123;</span><br><span class="line">            toView.frame = toViewFinalFrame</span><br><span class="line">        &#125;) &#123; (finished) in</span><br><span class="line">            let success = !transitionContext.transitionWasCancelled()</span><br><span class="line">            </span><br><span class="line">            transitionContext.completeTransition(success)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class PreCDAnimator: NSObject, UIViewControllerAnimatedTransitioning &#123;</span><br><span class="line">    var presenting : Bool = false</span><br><span class="line">    </span><br><span class="line">    func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -&gt; NSTimeInterval &#123;</span><br><span class="line">        return 0.5</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func animateTransition(transitionContext: UIViewControllerContextTransitioning) &#123;</span><br><span class="line">        let fromVC = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey)!</span><br><span class="line">        </span><br><span class="line">        let containerView = transitionContext.containerView()!</span><br><span class="line">        let fromView = transitionContext.viewForKey(UITransitionContextFromViewKey)!</span><br><span class="line">        </span><br><span class="line">        let containerFrame = containerView.frame</span><br><span class="line">        var fromViewFinalFrame = transitionContext.finalFrameForViewController(fromVC)</span><br><span class="line">        </span><br><span class="line">        fromViewFinalFrame.origin.x = containerFrame.width</span><br><span class="line">        fromViewFinalFrame.origin.y = containerFrame.height</span><br><span class="line">        </span><br><span class="line">        UIView.animateWithDuration(self.transitionDuration(transitionContext), animations: &#123;</span><br><span class="line">            fromView.frame = fromViewFinalFrame</span><br><span class="line">        &#125;) &#123; (finished) in</span><br><span class="line">            let success = !transitionContext.transitionWasCancelled()</span><br><span class="line">            </span><br><span class="line">            transitionContext.completeTransition(success)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/21/ViewController2-PG/" data-id="cinbftvs80018w8zl8h19oken" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-ViewController-PG" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/20/ViewController-PG/" class="article-date">
+  <time datetime="2016-04-20T02:06:06.000Z" itemprop="datePublished">2016-04-20</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/04/20/ViewController-PG/">ViewController-PG</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>view Controllers作为应用的结构基础，每个VC管理应用的用户界面并且管理界面与底层数据的交互，同时负责处理用户界面之间的过渡。</p>
+<p>有两种类型的VC：1.承载内容VC：作为主要的VC类型，管理应用的内容呈现。2.容器VC：集合子VC的信息，协调子VC的切换与呈现。</p>
+<h2 id="VC担当角色"><a href="#VC担当角色" class="headerlink" title="VC担当角色"></a>VC担当角色</h2><p>VC定义方法和属性管理界面视图、处理事件、负责视图之间切换、协调不同应用不同部分。应用继承UIViewController添加自定义的代码实现定制行为。</p>
+<h4 id="View管理"><a href="#View管理" class="headerlink" title="View管理"></a>View管理</h4><p>负责管理view层次结构，每个VC有一个根视图用于添加需要显示的子内容视图。VC一直引用根视图，根视图对每一个添加的子视图都是强引用。</p>
+<p>内容VC管理根视图内全部的子视图。容器VC仅管理自身的根视图和全部子VC的根视图。容器VC只对子VC的根视图位置和大小进行管理，子VC的内容全部由相应的VC控制管理。</p>
+<h4 id="数据配置"><a href="#数据配置" class="headerlink" title="数据配置"></a>数据配置</h4><p>VC在管理的视图与应用的数据之间扮演一个中介者的作用。UIViewController的属性和方法用管理应用的内容呈现，当我们继承UIViewController使用时，添加适当的变量对数据进行管理。同时，在VC内我们必须保持数据对象与VC关系的独立性。大概关系如下：<br><img src="./vc_PG/vc_PG_F1_3.jpg" alt="vc_PG_F1_3"></p>
+<h4 id="用户交互"><a href="#用户交互" class="headerlink" title="用户交互"></a>用户交互</h4><p>虽然VC作为一个响应者对象，并且有能力处理从响应都链传递过来的事件，但是VC一般情况下是不会直接处理的。相反地，由视图处理相应的事件，并用delegate或者target-Action的方法转化成处理方法。</p>
+<h4 id="资源管理"><a href="#资源管理" class="headerlink" title="资源管理"></a>资源管理</h4><p>在VC里，几乎所有的资源都是自动管理的，对于一部分由程序代码创建的资源，需要由程序代码进行控制释放。</p>
+<p>当内存收到内存告警时，需要对不使用或者能够重新创建的资源进行释放，避免因为内存的原因造成程序Crash。</p>
+<h4 id="适配"><a href="#适配" class="headerlink" title="适配"></a>适配</h4><p>VC的职责是负责呈现视图内容，并且根据底层的环境适配内容的呈现。每个应用都应该能够运行在不同尺寸的iOS设备上。为了避免在不同的设备上运行不同的VC进行控制显示，我们应该使用一个VC根据空间的变化进行适配。</p>
+<p>在iOS系统中，应用需要处理两种类型的变化：粗粒度（底层特性）和细粒度（视图尺寸）。iOS布局给VC定义了两个重要的特性：水平和垂直的size classes，用来表明VC在不同的维度上的空间使用情况。旋转设备可能会引起特性（traits）的变化，也有可能引起细粒度的变化。应用程序需要根据特性的变化，适配合适的布局。</p>
+<h2 id="VC层次结构"><a href="#VC层次结构" class="headerlink" title="VC层次结构"></a>VC层次结构</h2><p>VC视图间的关系定义了不同VC之间的行为。我们应该按照UIKit框架定义的方式使用VC，保持VC间适当的关联关系，以保证正确的事件行为能够自动分发到指定的VC上。如果打破了预定义的行为或者呈现内容方式，应用可能会出现未定义的行为。</p>
+<h4 id="Root-VC"><a href="#Root-VC" class="headerlink" title="Root VC"></a>Root VC</h4><p>根VC是作为整个VC层次结构的锚点。每个window都需要指定一个根控制器，让其根视图填充整个内容区域。</p>
+<h4 id="容器VC"><a href="#容器VC" class="headerlink" title="容器VC"></a>容器VC</h4><p>容器VC让应用合成其它管理或者重用单元生成复杂的用户界面。一个容器控制器将子视图控制器的内容混合在一起形成最终的界面。UIKit框架预定义的容器控制器： UINavigationController, UISplitViewController, and UIPageViewController。</p>
+<h4 id="Presented-控制器"><a href="#Presented-控制器" class="headerlink" title="Presented 控制器"></a>Presented 控制器</h4><p>Presented VC都采用模态的方式展现新的内容。通常是隐藏之前的内容，呈现的内容替换当前正在展示的VC的内容。</p>
+<p><strong>当呈现一个VC时，UIKit框架会在presenting VC和presented VC建立关联关系</strong>。</p>
+<h3 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h3><ol>
+<li>尽可能使用框架定义的VC</li>
+<li>保持不同的VC之间相互独立，不应该让不同的VC涉及或者管理其它VC的内容和状态。如果有VC间的交互，应该采用delegate等机制进行状态隔离。</li>
+<li>将VC的根视图作为其它视图的容器进行使用。</li>
+<li>清楚数据的生命周期。</li>
+<li>适配不同的设备。</li>
+</ol>
+<h2 id="定义子控制器"><a href="#定义子控制器" class="headerlink" title="定义子控制器"></a>定义子控制器</h2><p>当定义子控制器用作内容控制器，根据视图的所有子视图都负责展示内容数据。框架定义的几个常用内容控制器：1.UITableViewController指定VC的根视图为一个Table。2.UICollectionViewController 定义VC的根视图为一个视图集合。3.UIViewController作为最基础的类。</p>
+<p>与内容控制器相反，容器控制器仅仅只管理子控制器的根视图。可以根据需要选择框架内合适的容器控制器，如果需要自定义容器控制，则需要继承UIViewController。</p>
+<h4 id="定义用户界面"><a href="#定义用户界面" class="headerlink" title="定义用户界面"></a>定义用户界面</h4><p>应用可以使用storyboard editor或者编程的方式实现用户界面。</p>
+<p>使用storyboard editor定义界面，按照如下流程：</p>
+<ol>
+<li>添加、安排、配置控制器的视图。</li>
+<li>连接outlets 和 actions。</li>
+<li>创建控制器之间的关联和segues。</li>
+<li>自定义控制器在不同的size classes下的布局和视图情况。</li>
+<li>添加手势处理用户在视图上的交互。</li>
+</ol>
+<h4 id="处理用户交互"><a href="#处理用户交互" class="headerlink" title="处理用户交互"></a>处理用户交互</h4><p>应用的响应者对象处理传入的事件并采取适当的动作。虽然控制器作为响应链上的响应对象，但是很少直接处理点击事件，而是通过以下的方式进行事件处理：</p>
+<ol>
+<li>控制器定义动作方法处理高层的事件。（a）指定动作：Control或者View调用动作方法响应指定的交互。（b）手势识别器调用动作方法响应交互。</li>
+<li>控制器注册成为观察者接收系统或者其它对象的通知，响应事件。</li>
+<li>控制器扮演其它对象的数据源或者代理。</li>
+</ol>
+<h4 id="视图运行时展示"><a href="#视图运行时展示" class="headerlink" title="视图运行时展示"></a>视图运行时展示</h4><p>采用Storyboards处理加载和展示VC的视图非常简单。按照以下步骤执行：</p>
+<ol>
+<li>使用storyboard文件里的信息初始化视图。</li>
+<li>连接所有的outlets和actions。</li>
+<li>将生成的根视图赋值给控制器的view属性。</li>
+<li>调用控制器的awakeFromNib方法。当此方法被调用后，控制器的特性还未被确认，所以子视图都没显示在最终的位置。</li>
+<li>调用控制器的viewDidLoad方法。使用此方法添加或者删除视图、修改视图布局、为视图加载数据。</li>
+</ol>
+<p>要使控制器内容最终展现到屏幕上，UIKit框架插入了附加的步骤，供使程序具有更多的控制权：</p>
+<ol>
+<li>调用viewWillAppear:方法，通知该视图即将要展示到屏幕上。</li>
+<li>更新视图的布局。</li>
+<li>显示内容在屏幕上。</li>
+<li>调用viewDidAppear:方法，通知视图已经展示在屏幕上了。</li>
+</ol>
+<h4 id="管理视图布局"><a href="#管理视图布局" class="headerlink" title="管理视图布局"></a>管理视图布局</h4><p>当视图的位置或者大小发生改变，UIKit框架更新视图层次的布局信息。在布局处理过程中，UIKit框架需要做如下处理影响控制器的布局：</p>
+<ol>
+<li>更新控制器的根视图或者子视图的trait特性。</li>
+<li>调用控制器的viewWillLayoutSubviews方法。</li>
+<li>调用上下文里UIPresentationController对象的containerViewWillLayoutSubviews方法。<strong>该方法在iOS8.0后出现</strong>。</li>
+<li>调用控制器的根视图的layoutSubviews方法。<strong>该方法的默认实现通过可用的约束计算新的布局信息，然后该方法依据视图层次结构调用子视图的layoutSubviews。</strong></li>
+<li>应用计算好的布局信息到视图。</li>
+<li>调用控制器的viewDidLayoutSubviews方法。</li>
+<li>调用上下文里UIPresentationController对象的containerViewDidLayoutSubviews方法。<strong>该方法在iOS8.0后出现</strong>。</li>
+</ol>
+<p>控制器的viewWillLayoutSubviews and viewDidLayoutSubviews方法有助于执行附加的布局处理流程。在布局前可以添加或者删除视图。在布局后，可以更新视图数据。</p>
+<p>一点tips使用布局：</p>
+<ol>
+<li>使用AutoLayout。</li>
+<li>利用top 或者 bottom layout guides。</li>
+<li>当添加或者删除视图时，需要更新约束。</li>
+<li>当操作控制器的动画时，临时移出约束。</li>
+</ol>
+<h2 id="实现容器控制器"><a href="#实现容器控制器" class="headerlink" title="实现容器控制器"></a>实现容器控制器</h2><h4 id="设计容器控制器"><a href="#设计容器控制器" class="headerlink" title="设计容器控制器"></a>设计容器控制器</h4><p>容器控制器与内容控制器区域在于容器控制器的视图内容来自于其它子控制器的根视图，合成到自己的视图层次结构中。关于容器控制实现，我们需要考虑的几点：</p>
+<ol>
+<li>容器与子控制器分别有何作用吗？</li>
+<li>有多少个子控制器需要同时显示？</li>
+<li>兄弟视图控制器之间是怎样的关系？</li>
+<li>子视图控制器是如何添加和移出的？</li>
+<li>子视图控制器的位置和大小能改变吗？如果能改变，在什么情况下会发生改变？</li>
+<li>容器视图控制器会视图提供修饰或者导航？</li>
+<li>父子视图控制器之间是如何通信？父视图控制器需要分发特别的事件到子视图控制器？</li>
+<li>父视图控制器在不同的方式下需要有不同的呈现状态？</li>
+</ol>
+<h4 id="添加子视图控制器"><a href="#添加子视图控制器" class="headerlink" title="添加子视图控制器"></a>添加子视图控制器</h4><p>采用编程方式添加子视图控制器，需要创建父子视图控制器之间的关系采用以下步骤：</p>
+<ol>
+<li>调用父视图控制器的addChildViewController：方法。</li>
+<li>添加子视图控制器的根视图到父视图的层次结构中。</li>
+<li>添加管理子视图控制器的根视图的布局约束。</li>
+<li>调用子视图控制器的didMoveToParentViewController:方法。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">- (void) displayContentController: (UIViewController*) content &#123;</span><br><span class="line">   [self addChildViewController:content];</span><br><span class="line">   content.view.frame = [self frameForContentController];</span><br><span class="line">   [self.view addSubview:self.currentClientView];</span><br><span class="line">   [content didMoveToParentViewController:self];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="移出子视图控制器"><a href="#移出子视图控制器" class="headerlink" title="移出子视图控制器"></a>移出子视图控制器</h4><p>移出子视图控制器，需要移出父子视图控制器之间的关系采用以下步骤：</p>
+<ol>
+<li>调用子视图控制器的willMoveToParentViewController:方法使用nil参数。</li>
+<li>移出子视图控制器根视图的布局约束。</li>
+<li>将子视图控制器根视图从父视图控制器根视图层次结构中移出。</li>
+<li>调用子视图控制器的removeFromParentViewController方法。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (void) hideContentController: (UIViewController*) content &#123;</span><br><span class="line">   [content willMoveToParentViewController:nil];</span><br><span class="line">   [content.view removeFromSuperview];</span><br><span class="line">   [content removeFromParentViewController];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="管理子视图控制器出现"><a href="#管理子视图控制器出现" class="headerlink" title="管理子视图控制器出现"></a>管理子视图控制器出现</h4><p>当添加子视图控制器，父视图控制器自动转发出现相关的事件。同时也可以复写shouldAutomaticallyForwardAppearanceMethods方法通知UIKit框架，需要如何处理事件的分发。</p>
+<p>以下代码自定义出现事件的分发：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL) shouldAutomaticallyForwardAppearanceMethods &#123;</span><br><span class="line">    return NO;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">-(void) viewWillAppear:(BOOL)animated &#123;</span><br><span class="line">    [self.child beginAppearanceTransition: YES animated: animated];</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">-(void) viewDidAppear:(BOOL)animated &#123;</span><br><span class="line">    [self.child endAppearanceTransition];</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">-(void) viewWillDisappear:(BOOL)animated &#123;</span><br><span class="line">    [self.child beginAppearanceTransition: NO animated: animated];</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">-(void) viewDidDisappear:(BOOL)animated &#123;</span><br><span class="line">    [self.child endAppearanceTransition];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="构建容器视图控制器建议"><a href="#构建容器视图控制器建议" class="headerlink" title="构建容器视图控制器建议"></a>构建容器视图控制器建议</h5><ol>
+<li>父视图控制器应该只接触到子视图控制器的根视图。</li>
+<li>子视图控制器应该尽量采用delegate等方法减少对父视图的关联。</li>
+<li>尽量使用框架内已经定义好的视图。</li>
+</ol>
+<h5 id="代理子视图控制器进行控制"><a href="#代理子视图控制器进行控制" class="headerlink" title="代理子视图控制器进行控制"></a>代理子视图控制器进行控制</h5><ol>
+<li><strong>让子视图控制器决定状态栏的方式</strong>。父视图控制器需要复写其中一个或者全部，childViewControllerForStatusBarStyle和childViewControllerForStatusBarHidden方法。</li>
+<li>让子视图控制器优先决定视图的大小。</li>
+</ol>
+<h2 id="保存和恢复状态"><a href="#保存和恢复状态" class="headerlink" title="保存和恢复状态"></a>保存和恢复状态</h2><p>链接：<a href="https://developer.apple.com/library/ios/featuredarticles/ViewControllerPGforiPhoneOS/PreservingandRestoringState.html#//apple_ref/doc/uid/TP40007457-CH28-SW1" target="_blank" rel="external">https://developer.apple.com/library/ios/featuredarticles/ViewControllerPGforiPhoneOS/PreservingandRestoringState.html#//apple_ref/doc/uid/TP40007457-CH28-SW1</a></p>
+<h2 id="呈现视图控制器"><a href="#呈现视图控制器" class="headerlink" title="呈现视图控制器"></a>呈现视图控制器</h2><p>有两种主要的方式展示一个视图控制器在屏幕上：嵌入到一个容器视图控制器、展示或者呈现。</p>
+<p>UIKit框架为UIViewController植入了对呈现视图控制器的支持，所以应用可以在任意一个视图控制器上呈现其它的视图控制器，<strong>这个呈现请求可能会被转移到其它的视图控制器上</strong>。呈现一个视图控制器会在<strong>接受请求的视图控制器</strong>与<strong>被要求呈现的视图控制器</strong>之间创建一个关联关系，这个关联关系作为视图控制器的视图层次结构的一部分，并保持到<strong>被呈现的视图控制器消失为止</strong>。</p>
+<h4 id="呈现与过渡"><a href="#呈现与过渡" class="headerlink" title="呈现与过渡"></a>呈现与过渡</h4><p>UIKit框架内置的呈现机制，可以让应用使用内置或者自定义的过渡动画。</p>
+<h6 id="呈现方式"><a href="#呈现方式" class="headerlink" title="呈现方式"></a>呈现方式</h6><p>视图控制器的呈现方式决定视图在屏幕上的展现方式。UIKit框架定义了多种标准的呈现方式，每种方式都有特定的展现形式和用途。根据应用需要给视图控制器modalPresentationStyle属性设置适当的值作为呈现样式。</p>
+<p><strong>对于部分呈现样式，UIKit框架会在呈现与被呈现的视图控制器的视图层之间插入一个变暗的调光视图层</strong></p>
+<ol>
+<li>Full-Screen Styles：覆盖整个屏幕，阻止与底层的内容进行交互。</li>
+<li>Popover Style：将视图控制器的内容展示到一个popover视图里。在水平方向正常的情况下，popover视图只覆盖屏幕的一部分；在水平方向受限的情况下，popover适配成Full-Screen Styles。所以<strong>应当根据情况，适配popover的消失逻辑处理</strong>。</li>
+<li>Current Context Styles：覆盖特定视图控制器内容部分，且特定的视图控制器definesPresentationContext属性需要设置为true。（a）使用此方式，可以用实呈现的视图控制器的modalTransitionStyle属性设置过渡动画，<strong>如果呈现VC的providesPresentationContextTransitionStyle 属性设置为true，则使用呈现VC的modalTransitionStyle设置的动画方式</strong>。（b）在水平方向受限的情况下，被默认适配成Full-Screen Styles。</li>
+<li>Custom Presentation Styles：使用UIModalPresentationCustom设定自定义呈现方式。创建UIPresentationController子类使用方法控制屏幕上的视图的动画等，设置被呈现的视图控制器的视图大小和位置。presentation控制器还需要处理在过渡期间由于特性变化引起的适配情况。</li>
+</ol>
+<h6 id="过渡方式"><a href="#过渡方式" class="headerlink" title="过渡方式"></a>过渡方式</h6><p>过渡的方式定义了被呈现视图控制器视图显示的动画。对于UIKit框架内置的过渡方式，使用modalTransitionStyle属性进行设置。</p>
+<p>应用可以使用animator对象和transitioning代理自定义过渡时的动画。animator对象创建视图控制器在屏幕上的动画。transitioning代理根据合适的时机使用对应的animator对象。</p>
+<h6 id="显示与呈现方式对比"><a href="#显示与呈现方式对比" class="headerlink" title="显示与呈现方式对比"></a>显示与呈现方式对比</h6><p>视图控制器提供两种方式展现VC：</p>
+<ol>
+<li>showViewController:sender: 和showDetailViewController:sender: 方法提供灵活与适配的方式展现VC。此方法让被请求呈现的视图控制器<strong>决定更好的方式处理presentation</strong>。例如，容器视图控制器可能会把被呈现的视图控制器添加为子视图控制器。<strong>默认的处理方式是modally</strong>。</li>
+<li>presentViewController:animated:completion: 方法总是采用modally方式展现视图控制器。<strong>调用此方法的视图控制器不一定是最后处理presentation的视图控制器</strong>。</li>
+</ol>
+<h4 id="呈现一个视图控制器"><a href="#呈现一个视图控制器" class="headerlink" title="呈现一个视图控制器"></a>呈现一个视图控制器</h4><p>可以使用Segues、showViewController:sender: or showDetailViewController:sender:方法、presentViewController:animated:completion: 方法发起一个呈现视图控制器的请求。</p>
+<h6 id="Showing-View-Controllers"><a href="#Showing-View-Controllers" class="headerlink" title="Showing View Controllers"></a>Showing View Controllers</h6><p>调用showViewController:sender: and showDetailViewController:sender: 方法实现presentation直接如下：</p>
+<ol>
+<li>创建一个需要被呈现的视图控制器。</li>
+<li>设置创建的视图控制器的modalPresentationStyle属性预定义呈现方式。但不一定是最后使用的呈现方式。</li>
+<li>设置创建的视图控制器的 modalTransitionStyle 属性定义过渡时的动画。但最后过渡不一定会使用该动画。</li>
+<li>在当前的VC中调用showViewController:sender: and showDetailViewController:sender:方法。</li>
+</ol>
+<p>UIKit框架会转发showViewController:sender: and showDetailViewController:sender:调用到适当的presenting view controller，该VC会根据需要决定如何处理presentation and transition styles。例如，navigation controller might push the view controller onto its navigation stack。</p>
+<h6 id="Presenting-View-Controllers-Modally"><a href="#Presenting-View-Controllers-Modally" class="headerlink" title="Presenting View Controllers Modally"></a>Presenting View Controllers Modally</h6><p>直接 presenting a view controller，调用方法如下：</p>
+<ol>
+<li>创建一个视图控制器。</li>
+<li>设置视图控制器的modalPresentationStyle属性决定呈现方式。</li>
+<li>设置视图控制器的modalTransitionStyle属性设置过渡时的动画。</li>
+<li>在当前的VC上调用presentViewController:animated:completion:方法。</li>
+</ol>
+<p>当presentViewController:animated:completion:方法被调用后，UIKit框架会沿着控制器的层次结构找到合适的presenting view controller，并且会更新涉及到的视图控制器的presentingViewController and presentedViewController属性关系。</p>
+<h6 id="Presenting-a-View-Controller-in-a-Popover"><a href="#Presenting-a-View-Controller-in-a-Popover" class="headerlink" title="Presenting a View Controller in a Popover"></a>Presenting a View Controller in a Popover</h6><p>如果要采用Popovers方式呈现一个视图控制器，在设置VC的modalPresentationStyle属性为UIModalPresentationPopover后，还需要做以下设置：</p>
+<ol>
+<li>设置被呈现视图控制器的 preferredContentSize属性。</li>
+<li>通过VC的 popoverPresentationController属性获得关联的UIPopoverPresentationController对象，并需要设置popover的锚点。设置以下其中之一：（a）设置一个bar button item关联到barButtonItem属性。（b）指定 sourceView and sourceRect在特定的视图区域上。</li>
+</ol>
+<h6 id="Dismissing-a-Presented-View-Controller"><a href="#Dismissing-a-Presented-View-Controller" class="headerlink" title="Dismissing a Presented View Controller"></a>Dismissing a Presented View Controller</h6><p>要消失一个被呈现的视图控制器，直接在presenting view controller调用dismissViewControllerAnimated:completion: 方法。也可以在presented view controller上调用dismissViewControllerAnimated:completion: 方法，UIKit框架会自动转发请求到对应的presenting view controller上。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/20/ViewController-PG/" data-id="cinbftvsk001kw8zlo04cq6tx" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-View-PG" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/04/18/View-PG/" class="article-date">
@@ -199,7 +507,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/18/View-PG/" data-id="cin6wvsbi0011khzlknjva297" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/18/View-PG/" data-id="cinbftvsc001cw8zl3xu97w9v" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -343,7 +651,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/12/Concurrency-PG/" data-id="cin6wvsab0009khzlfsxby3x6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/12/Concurrency-PG/" data-id="cinbftvqk0004w8zlgk6r6obu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -462,7 +770,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/11/RunLoop/" data-id="cin6wvsb9000ukhzlscbnumn1" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/11/RunLoop/" data-id="cinbftvs00010w8zl3ls8dh1f" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -540,7 +848,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cin6wvsao000hkhzlujrjzpkq" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cinbftvrb000hw8zl8k2x5qz4" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -697,7 +1005,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="cin6wvsaj000ckhzldtzi4nlk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="cinbftvr9000ew8zl9xjczqlf" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -780,7 +1088,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cin6wvsam000ekhzls9n370iz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cinbftvqn0006w8zl8n1e3d7v" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -869,7 +1177,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cin6wvsaz000mkhzll8j35z3x" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cinbftvry000ww8zlg87rozx3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -909,7 +1217,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cin6wvsbu001bkhzljjntbs6x" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cinbftvt1001zw8zlnwu0tjr6" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -921,193 +1229,9 @@ if source != nil {
 
 
   
-    <article id="post-Unicode-UFT8-概记" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/05/Unicode-UFT8-概记/" class="article-date">
-  <time datetime="2016-04-05T11:32:24.000Z" itemprop="datePublished">2016-04-05</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/04/05/Unicode-UFT8-概记/">Unicode_UFT8_概记</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Unicode（统一码、万国码、单一码）是计算机科学领域里的一项业界标准,包括字符集、编码方案等。Unicode 是为了解决传统的字符编码方案的局限而产生的，它为每种语言中的每个字符设定了统一并且唯一的二进制编码，以满足跨语言、跨平台进行文本转换、处理的要求。1990年开始研发，1994年正式公布。</p>
-<p>Unicode是国际组织制定的可以容纳世界上所有文字和符号的字符编码方案。目前的Unicode字符分为17组编排，0x0000 至 0x10FFFF，每组称为平面（Plane），而每平面拥有65536个码位，共1114112个。然而目前只用了少数平面。UTF-8、UTF-16、UTF-32都是将数字转换到程序数据的编码方案。</p>
-<p>Unicode计划使用了17个平面，一共有17×65536=1114112个码位。在Unicode 5.0.0版本中，已定义的码位只有238605个，分布在平面0、平面1、平面2、平面14、平面15、平面16。其中平面15和平面16上只是定义了两个各占65534个码位的专用区（Private Use Area），分别是0xF0000-0xFFFFD和0x100000-0x10FFFD。所谓专用区，就是保留给大家放自定义字符的区域，可以简写为PUA。</p>
-<p>平面0也有一个专用区：0xE000-0xF8FF，有6400个码位。平面0的0xD800-0xDFFF，共2048个码位，是一个被称作代理区（Surrogate）的特殊区域。代理区的目的用两个UTF-16字符表示BMP以外的字符。</p>
-<p>如前所述在Unicode 5.0.0版本中，238605-65534*2-6400-2048=99089。余下的99089个已定义码位分布在平面0、平面1、平面2和平面14上，它们对应着Unicode定义的99089个字符，其中包括71226个汉字。平面0、平面1、平面2和平面14上分别定义了52080、3419、43253和337个字符。平面2的43253个字符都是汉字。平面0上定义了27973个汉字。</p>
-<p>在Unicode中：汉字“字”对应的数字是23383（十进制），十六进制表示为5B57。在Unicode中，我们有很多方式将数字23383表示成程序中的数据，包括：UTF-8、UTF-16、UTF-32。<strong><em>UTF是“Unicode Transformation Format”的缩写，可以翻译成Unicode字符集转换格式，即怎样将Unicode定义的数字转换成程序数据。</em></strong><br>例如，“汉字”对应的数字是0x6c49和0x5b57，而编码的程序数据是：</p>
-<p>| | | |<br>|<br>|1 | char  |    data_utf8[]={0xE6,0xB1,0x89,0xE5,0xAD,0x97};//UTF-8编码|<br>|2 | char16_t |  data_utf16[]={0x6C49,0x5B57};        //UTF-16编码|<br>|3 | char32_t |  data_utf32[]={0x00006C49,0x00005B57};//UTF-32编码|</p>
-<p><strong><em>UTF是“Unicode Transformation Format”的缩写，可以翻译成Unicode字符集转换格式</em></strong></p>
-<h2 id="UTF-8"><a href="#UTF-8" class="headerlink" title="UTF-8"></a>UTF-8</h2><p>UTF-8以字节为单位对Unicode进行编码。从Unicode到UTF-8的编码方式如下：</p>
-<p>|Unicode编码(十六进制)　|UTF-8 字节流(二进制)|<br>|<br>|00000000 - 0000007F | 0xxxxxxx |<br>|00000080 - 000007FF | 110xxxxx 10xxxxxx |<br>|00000800 - 0000FFFF | 1110xxxx 10xxxxxx 10xxxxxx |<br>|00010000 - 001FFFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx |<br>|00200000 - 03FFFFFF |    111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx |<br>|04000000 - 7FFFFFFF |    1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx |</p>
-<p>UTF-8的特点是对不同范围的字符使用不同长度的编码。对于0x00-0x7F之间的字符，UTF-8编码与ASCII编码完全相同。UTF-8编码的最大长度是6个字节。从上表可以看出，6字节模板有31个x，即可以容纳31位二进制数字。Unicode的最大码位0x7FFFFFFF也只有31位。</p>
-<h6 id="例1：“汉”字的Unicode编码是0x6C49。0x6C49在0x0800-0xFFFF之间，使用用3字节模板了：1110xxxx-10xxxxxx-10xxxxxx。将0x6C49写成二进制是：0110-1100-0100-1001，-用这个比特流依次代替模板中的x，得到：11100110-10110001-10001001，即E6-B1-89。"><a href="#例1：“汉”字的Unicode编码是0x6C49。0x6C49在0x0800-0xFFFF之间，使用用3字节模板了：1110xxxx-10xxxxxx-10xxxxxx。将0x6C49写成二进制是：0110-1100-0100-1001，-用这个比特流依次代替模板中的x，得到：11100110-10110001-10001001，即E6-B1-89。" class="headerlink" title="例1：“汉”字的Unicode编码是0x6C49。0x6C49在0x0800-0xFFFF之间，使用用3字节模板了：1110xxxx 10xxxxxx 10xxxxxx。将0x6C49写成二进制是：0110 1100 0100 1001， 用这个比特流依次代替模板中的x，得到：11100110 10110001 10001001，即E6 B1 89。"></a>例1：“汉”字的Unicode编码是0x6C49。0x6C49在0x0800-0xFFFF之间，使用用3字节模板了：1110xxxx 10xxxxxx 10xxxxxx。将0x6C49写成二进制是：0110 1100 0100 1001， 用这个比特流依次代替模板中的x，得到：11100110 10110001 10001001，即E6 B1 89。</h6><h6 id="例2：Unicode编码0x20C30在0x010000-0x10FFFF之间，使用用4字节模板了：11110xxx-10xxxxxx-10xxxxxx-10xxxxxx。将0x20C30写成21位二进制数字（不足21位就在前面补0）：0-0010-0000-1100-0011-0000，用这个比特流依次代替模板中的x，得到：11110000-10100000-10110000-10110000，即F0-A0-B0-B0。"><a href="#例2：Unicode编码0x20C30在0x010000-0x10FFFF之间，使用用4字节模板了：11110xxx-10xxxxxx-10xxxxxx-10xxxxxx。将0x20C30写成21位二进制数字（不足21位就在前面补0）：0-0010-0000-1100-0011-0000，用这个比特流依次代替模板中的x，得到：11110000-10100000-10110000-10110000，即F0-A0-B0-B0。" class="headerlink" title="例2：Unicode编码0x20C30在0x010000-0x10FFFF之间，使用用4字节模板了：11110xxx 10xxxxxx 10xxxxxx 10xxxxxx。将0x20C30写成21位二进制数字（不足21位就在前面补0）：0 0010 0000 1100 0011 0000，用这个比特流依次代替模板中的x，得到：11110000 10100000 10110000 10110000，即F0 A0 B0 B0。"></a>例2：Unicode编码0x20C30在0x010000-0x10FFFF之间，使用用4字节模板了：11110xxx 10xxxxxx 10xxxxxx 10xxxxxx。将0x20C30写成21位二进制数字（不足21位就在前面补0）：0 0010 0000 1100 0011 0000，用这个比特流依次代替模板中的x，得到：11110000 10100000 10110000 10110000，即F0 A0 B0 B0。</h6><h2 id="UTF-16"><a href="#UTF-16" class="headerlink" title="UTF-16"></a>UTF-16</h2><p>UTF-16编码以16位无符号整数为单位。我们把Unicode<br>unicode<br>unicode<br>编码记作U。编码规则如下：<br>如果U&lt;0x10000，U的UTF-16编码就是U对应的16位无符号整数（为书写简便，下文将16位无符号整数记作WORD）。<br>如果U≥0x10000，我们先计算U’=U-0x10000，然后将U’写成二进制形式：yyyy yyyy yyxx xxxx xxxx，U的UTF-16编码（二进制）就是：110110yyyyyyyyyy 110111xxxxxxxxxx。</p>
-<p>百度链接 ： <a href="http://baike.baidu.com/link?url=Knk24RC6XBNUrL6Rd6oMkiJvB5ZPut2fNasaco1BoKCwgPj254kWmXc-JizuydvO7MLJmLknsygroeOyCjOsb_" target="_blank" rel="external">http://baike.baidu.com/link?url=Knk24RC6XBNUrL6Rd6oMkiJvB5ZPut2fNasaco1BoKCwgPj254kWmXc-JizuydvO7MLJmLknsygroeOyCjOsb_</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cin6wvsbf000ykhzlqbz9fexy" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Other/">Other</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Revel-Filter-Chain" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/04/Revel-Filter-Chain/" class="article-date">
-  <time datetime="2016-04-04T14:09:20.000Z" itemprop="datePublished">2016-04-04</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/04/04/Revel-Filter-Chain/">Revel Filter Chain</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>之前有提到在启用服务后，在Handle回调内处理请求会调用 <code>Filters[0](c, Filters[1:])</code>。<br>关于Filter整个处理涉及到知识点过多，对于不太理解的地方待以后慢慢补充。。。。</p>
-<h2 id="filter-go"><a href="#filter-go" class="headerlink" title="filter.go"></a>filter.go</h2><p>在filter.go文件内定义了官方标准Filter chain的11个Filter：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var Filters = []Filter&#123;</span><br><span class="line">	PanicFilter,             // Recover from panics and display an error page instead.</span><br><span class="line">	RouterFilter,            // Use the routing table to select the right Action.</span><br><span class="line">	FilterConfiguringFilter, // A hook for adding or removing per-Action filters.</span><br><span class="line">	ParamsFilter,            // Parse parameters into Controller.Params.</span><br><span class="line">	SessionFilter,           // Restore and write the session cookie.</span><br><span class="line">	FlashFilter,             // Restore and write the flash cookie.</span><br><span class="line">	ValidationFilter,        // Restore kept validation errors and save new ones from cookie.</span><br><span class="line">	I18nFilter,              // Resolve the requested language.</span><br><span class="line">	InterceptorFilter,       // Run interceptors around the action.</span><br><span class="line">	CompressFilter,          // Compress the result.</span><br><span class="line">	ActionInvoker,           // Invoke the action.</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="PanicFilter"><a href="#PanicFilter" class="headerlink" title="PanicFilter"></a>PanicFilter</h4><p>在panic.go内，这个Filter定义的功能相对简单，定义一个defer func等待处理 Package builtin 的 panic 调用。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">func PanicFilter(c *Controller, fc []Filter) &#123;</span><br><span class="line">	defer func() &#123;</span><br><span class="line">		if err := recover(); err != nil &#123;</span><br><span class="line">			handleInvocationPanic(c, err)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br><span class="line">	fc[0](c, fc[1:])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>如果在整个Chain内有错误发生，则抓取错误信息作为c.Result渲染。</p>
-<h4 id="RouterFilter"><a href="#RouterFilter" class="headerlink" title="RouterFilter"></a>RouterFilter</h4><p>在router.go内，从MainRouter 根据Request 找出路由信息：</p>
-<ol>
-<li>判定路由如果不存在，则渲染 NotFound 错误。</li>
-<li>判定route 的Action 如果是404，则渲染 NotFound 错误。</li>
-<li>如果给Controller 设置 Action 出现错误， 则渲染 NotFound 错误。</li>
-</ol>
-<p>然后：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">// Add the route and fixed params to the Request Params.</span><br><span class="line">c.Params.Route = route.Params</span><br><span class="line"></span><br><span class="line">// Add the fixed parameters mapped by name.</span><br><span class="line">// TODO: Pre-calculate this mapping.</span><br><span class="line">for i, value := range route.FixedParams &#123;</span><br><span class="line">	if c.Params.Fixed == nil &#123;</span><br><span class="line">		c.Params.Fixed = make(url.Values)</span><br><span class="line">	&#125;</span><br><span class="line">	if i &lt; len(c.MethodType.Args) &#123;</span><br><span class="line">		arg := c.MethodType.Args[i]</span><br><span class="line">		c.Params.Fixed.Set(arg.Name, value)</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		WARN.Println(&quot;Too many parameters to&quot;, route.Action, &quot;trying to add&quot;, value)</span><br><span class="line">		break</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fc[0](c, fc[1:])</span><br></pre></td></tr></table></figure>
-<ol>
-<li><code>c.Params.Route = route.Params</code>， 类似REST声明的参数赋值给 Params.Route（Route url.Values // Parameters extracted from the route,  e.g. /customers/{id}）</li>
-<li>在配置Router里可以设置固定参数，现在将固定参数赋值给 Params.Fixed (Fixed url.Values // Fixed parameters from the route, e.g. App.Action(“fixed param”))</li>
-</ol>
-<h4 id="FilterConfiguringFilter"><a href="#FilterConfiguringFilter" class="headerlink" title="FilterConfiguringFilter"></a>FilterConfiguringFilter</h4><p>filterconfig.go是针对Controller.Action定制Filter 的地方，并声明一个 <code>var filterOverrides = make(map[string][]Filter)</code> 管理定制的Filter Chain。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// Note: the last filter stage is not subject to the configurator.  In</span><br><span class="line">// particular, Add() adds a filter to the second-to-last place.</span><br><span class="line">type FilterConfigurator struct &#123;</span><br><span class="line">	key            string // e.g. &quot;App&quot;, &quot;App.Action&quot;</span><br><span class="line">	controllerName string // e.g. &quot;App&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>定义了3个生成 FilterConfigurator 的方法：</p>
-<ol>
-<li><code>func newFilterConfigurator(controllerName, methodName string) FilterConfigurator</code></li>
-<li><code>func FilterController(controllerInstance interface{}) FilterConfigurator</code></li>
-<li><code>func FilterAction(methodRef interface{}) FilterConfigurator</code></li>
-</ol>
-<p>再定义如Add、Remove等操作方法。</p>
-<h6 id="FilterConfiguringFilter-操作"><a href="#FilterConfiguringFilter-操作" class="headerlink" title="FilterConfiguringFilter 操作"></a>FilterConfiguringFilter 操作</h6><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// FilterConfiguringFilter is a filter stage that customizes the remaining</span><br><span class="line">// filter chain for the action being invoked.</span><br><span class="line">func FilterConfiguringFilter(c *Controller, fc []Filter) &#123;</span><br><span class="line">	if newChain := getOverrideChain(c.Name, c.Action); newChain != nil &#123;</span><br><span class="line">		newChain[0](c, newChain[1:])</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	fc[0](c, fc[1:])</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// getOverrideChain retrieves the overrides for the action that is set</span><br><span class="line">func getOverrideChain(controllerName, action string) []Filter &#123;</span><br><span class="line">	if newChain, ok := filterOverrides[action]; ok &#123;</span><br><span class="line">		return newChain</span><br><span class="line">	&#125;</span><br><span class="line">	if newChain, ok := filterOverrides[controllerName]; ok &#123;</span><br><span class="line">		return newChain</span><br><span class="line">	&#125;</span><br><span class="line">	return nil</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>判定是否有定制的Filter Chain，如果有则接着定制的Filter Chain走。</li>
-<li>判定如果没有 则继续 正常的Filter Chain。</li>
-</ol>
-<h2 id="ParamsFilter"><a href="#ParamsFilter" class="headerlink" title="ParamsFilter"></a>ParamsFilter</h2><p>这个很直接，为了解析请求参数，这个Filter内定义了三个功能步骤：<br>第一步，解析参数：</p>
-<ol>
-<li><code>params.Query = req.URL.Query()</code>， 设置查询参数 （Query url.Values // Parameters from the query string, e.g. /index?limit=10）</li>
-<li>如果是application/x-www-form-urlencoded，解析Form参数，<code>params.Form = req.Form</code>， （Form  url.Values // Parameters from the request body.）</li>
-<li>如果是multipart/form-data，解析Form信息，设置 (Form  url.Values // Parameters from the request body.)、（Files    map[string][]*multipart.FileHeader // Files uploaded in a multipart form）</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">params.Form = req.MultipartForm.Value</span><br><span class="line">params.Files = req.MultipartForm.File</span><br></pre></td></tr></table></figure>
-<p>第二步，定义defer func，负责在最后的Filter Chain调用完成后清理 请求参数。<br>第三步，继续Filter Chain。</p>
-<h2 id="SessionFilter"><a href="#SessionFilter" class="headerlink" title="SessionFilter"></a>SessionFilter</h2><p>在session.go里，主要功能是配置 和 保存 session，关于session的管理未记录。</p>
-<ol>
-<li><code>c.Session = restoreSession(c.Request.Request)</code>，恢复一个session（如果有则直接取出，没有则重新初始化一个session）</li>
-<li><code>c.RenderArgs[&quot;session&quot;] = c.Session</code>，设置render参数session。</li>
-<li>继续执行Filster Chain.</li>
-<li>执行完后续Filter Chain后，判定是否存在session，设置Cookie。</li>
-</ol>
-<h2 id="FlashFilter"><a href="#FlashFilter" class="headerlink" title="FlashFilter"></a>FlashFilter</h2><p>在flash.go里，主要功能是配置 和 保存 flash cookie信息。<br>说来比较惭愧，关于Flash Cookie这个名字还真是第一次听说。</p>
-<p>同Http Cookie一样，Flash Cookie也就是记录用户在访问Flash网页的时候保留的信息，鉴于Flash技术的普遍性，几乎所有的网站都采用，所以具有同Http Cookie一样的作用。但是相比起Http Cookie，Flash Cookie更加强大：1、容量更大，Flash Cookie可以容纳最多100千字节的数据，而一个标准的HTTP Cookie只有4千字节;2、FlashCookie没有默认的过期时间;3、FlashCookie将被存储在不同的地点，这使得它们很难被找到。而在10.3版本之前，几乎没有简单删除Flash Cookie的办法。</p>
-<ol>
-<li><code>c.Flash = restoreFlash(c.Request.Request)</code>，恢复一个 flash。</li>
-<li><code>c.RenderArgs[&quot;flash&quot;] = c.Flash.Data</code>，设置render参数flash。</li>
-<li>继续执行Filster Chain。</li>
-<li>在执行完Filster Chain后，拼接flashValue值。</li>
-<li>最后用flashValue生成http.Cookie，给controller设置Cookie。</li>
-</ol>
-<h2 id="ValidationFilter"><a href="#ValidationFilter" class="headerlink" title="ValidationFilter"></a>ValidationFilter</h2><p>在validation.go里， 这个文件定义了检验常规内容的func功能，并会保存成 ValidationError。</p>
-<ol>
-<li>恢复Cookie对应的Error信息。</li>
-<li>为controller赋值一个Validation。</li>
-<li><code>hasCookie := (err != http.ErrNoCookie)</code>，判定是否存在Error Cookie。</li>
-<li>继续执行Filter Chain。</li>
-<li>执行完Filter Chain后，<code>c.RenderArgs[&quot;errors&quot;] = c.Validation.ErrorMap()</code>，设置render校验错误参数errors。</li>
-<li>拼接错误信息，给controller将错误信息设置成错误Cookie信息。</li>
-</ol>
-<h2 id="I18nFilter"><a href="#I18nFilter" class="headerlink" title="I18nFilter"></a>I18nFilter</h2><p>在i18n.go里，处理国际化相关内容，具体应用待研究。</p>
-<ol>
-<li><code>hasLocaleCookie(c.Request)</code>，判定是否存在Cookie设置本地化信息，如果有则以此为准。</li>
-<li>cookie不成功后，<code>hasAcceptLanguageHeader(c.Request)</code>，判定是否存在接收语言设置本地化。</li>
-<li>如果以上都不存在的情况下，则设置为空。</li>
-<li>继续执行Filter Chain。</li>
-</ol>
-<h2 id="InterceptorFilter"><a href="#InterceptorFilter" class="headerlink" title="InterceptorFilter"></a>InterceptorFilter</h2><p>在intercept.go里，主要功能是采用AOP思维，插入操作功能。</p>
-<p>添加方式：revel.InterceptMethod((*FoodController).Before, revel.BEFORE)</p>
-<ol>
-<li>针对controller查找嵌入的BEFORE功能点，并执行。</li>
-<li>嵌入BEFORE后，Result是否为空，不为空就结束。</li>
-<li>继续执行Filter Chain。</li>
-<li>完成后，针对controller查找嵌入的AFTER的功能点，并执行。</li>
-<li>采用defer 判定是否存在 panic嵌入功能点，如果存在则执行。</li>
-<li>采用defer，针对controller查找嵌入的FINALLY的功能点，并执行。</li>
-</ol>
-<h2 id="CompressFilter"><a href="#CompressFilter" class="headerlink" title="CompressFilter"></a>CompressFilter</h2><p>在compress.go里，主要处理HTTP响应需要的格式信息。</p>
-<ol>
-<li>执行后续的Filter Chain。</li>
-<li>后续功能完成后，执行响应数据封装—-需要研究下，这里对HTTP响应的处理工作。</li>
-</ol>
-<h2 id="ActionInvoker"><a href="#ActionInvoker" class="headerlink" title="ActionInvoker"></a>ActionInvoker</h2><p>在invoker.go里，完成controller的调用工作。</p>
-<ol>
-<li>根据reflect得到method。</li>
-<li>组装获取请求参数。</li>
-<li>调用得到Result。</li>
-</ol>
-<h4 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h4><p>也可以自定义Filter，追加到合适的位置：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) &#123;</span><br><span class="line">	// Add some common security headers</span><br><span class="line">	c.Response.Out.Header().Add(&quot;X-Frame-Options&quot;, &quot;SAMEORIGIN&quot;)</span><br><span class="line">	c.Response.Out.Header().Add(&quot;X-XSS-Protection&quot;, &quot;1; mode=block&quot;)</span><br><span class="line">	c.Response.Out.Header().Add(&quot;X-Content-Type-Options&quot;, &quot;nosniff&quot;)</span><br><span class="line"></span><br><span class="line">	fc[0](c, fc[1:]) // Execute the next filter stage.</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cin6wvsc4001ikhzl5lev7cgg" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
   
 </section>
@@ -1120,7 +1244,7 @@ if source != nil {
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -1138,7 +1262,7 @@ if source != nil {
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -1150,6 +1274,14 @@ if source != nil {
       <ul>
         
           <li>
+            <a href="/2016/04/21/ViewController2-PG/">ViewController2-PG</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/20/ViewController-PG/">ViewController-PG</a>
+          </li>
+        
+          <li>
             <a href="/2016/04/18/View-PG/">View-PG</a>
           </li>
         
@@ -1159,14 +1291,6 @@ if source != nil {
         
           <li>
             <a href="/2016/04/11/RunLoop/">RunLoop</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/09/KVO-PG/">KVO_PG</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/08/KVC-PG/">KVC_PG</a>
           </li>
         
       </ul>

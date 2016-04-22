@@ -65,6 +65,168 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Revel-run干了什么？" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/28/Revel-run干了什么？/" class="article-date">
+  <time datetime="2016-03-28T13:13:11.000Z" itemprop="datePublished">2016-03-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/28/Revel-run干了什么？/">Revel-run干了什么？</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>revel run 命令调用执行主要代码位于/revel/cmd/revel/run.go。</p>
+<p>运行命令的方式：revel run github.com/revel/samples/chat prod 8080<code>，和new一样revel命令会对运行参数进行进行最后将run后面的参数提取出来作为调用</code>func runApp(args []string)`的参数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">if len(args) == 0 &#123;</span><br><span class="line">	errorf(&quot;No import path given.\nRun &apos;revel help run&apos; for usage.\n&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Determine the run mode.</span><br><span class="line">mode := &quot;dev&quot;</span><br><span class="line">if len(args) &gt;= 2 &#123;</span><br><span class="line">	mode = args[1]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>判定参数数量，如果多于2个参数则用第一个参数dev或者prod作为运行模式，不然采用默认dev运行模式。</p>
+<h2 id="Revel-Init"><a href="#Revel-Init" class="headerlink" title="Revel.Init"></a>Revel.Init</h2><p>接着调用revel.go下 <code>func Init(mode, importPath, srcPath string)</code>，调用代码：<code>revel.Init(mode, args[0], &quot;&quot;)</code></p>
+<p>1.该方法先设置各种路径。</p>
+<ol>
+<li><code>Config, err = LoadConfig(&quot;app.conf&quot;)</code>提取配置文件，读取配置参数。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">func LoadConfig(confName string) (*MergedConfig, error) &#123;</span><br><span class="line">	var err error</span><br><span class="line">	for _, confPath := range ConfPaths &#123;</span><br><span class="line">		conf, err := config.ReadDefault(path.Join(confPath, confName))</span><br><span class="line">		if err == nil &#123;</span><br><span class="line">			return &amp;MergedConfig&#123;conf, &quot;&quot;&#125;, nil</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	if err == nil &#123;</span><br><span class="line">		err = errors.New(&quot;not found&quot;)</span><br><span class="line">	&#125;</span><br><span class="line">	return nil, err</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其实config为另一个库 <code>&quot;github.com/robfig/config&quot;</code>。</p>
+<p>3.<code>func getLogger(name string) *log.Logger</code>方法生成TRACE、INFO、WARN、ERROR四个Logger。</p>
+<ol>
+<li><code>func loadModules()</code>加载各种资源模块。</li>
+</ol>
+<h2 id="Revel-LoadMimeConfig"><a href="#Revel-LoadMimeConfig" class="headerlink" title="Revel.LoadMimeConfig"></a>Revel.LoadMimeConfig</h2><p>此方法位于revel/util.go文件内。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">func LoadMimeConfig() &#123;</span><br><span class="line">	var err error</span><br><span class="line">	mimeConfig, err = LoadConfig(&quot;mime-types.conf&quot;)</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		ERROR.Fatalln(&quot;Failed to load mime type config:&quot;, err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>加载Revel目录下conf/mime-types.conf文件。</p>
+<hr>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// Determine the override port, if any.</span><br><span class="line">port := revel.HttpPort</span><br><span class="line">if len(args) == 3 &#123;</span><br><span class="line">	var err error</span><br><span class="line">	if port, err = strconv.Atoi(args[2]); err != nil &#123;</span><br><span class="line">		errorf(&quot;Failed to parse port as integer: %s&quot;, args[2])</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">revel.INFO.Printf(&quot;Running %s (%s) in %s mode\n&quot;, revel.AppName, revel.ImportPath, mode)</span><br><span class="line">revel.TRACE.Println(&quot;Base path:&quot;, revel.BasePath)</span><br></pre></td></tr></table></figure>
+<p>提取运行的端口，打印将要运行的Server信息。</p>
+<hr>
+<h2 id="Source-Watch"><a href="#Source-Watch" class="headerlink" title="Source-Watch"></a>Source-Watch</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// If the app is run in &quot;watched&quot; mode, use the harness to run it.</span><br><span class="line">if revel.Config.BoolDefault(&quot;watch&quot;, true) &amp;&amp; revel.Config.BoolDefault(&quot;watch.code&quot;, true) &#123;</span><br><span class="line">	revel.TRACE.Println(&quot;Running in watched mode.&quot;)</span><br><span class="line">	revel.HttpPort = port</span><br><span class="line">	harness.NewHarness().Run() // Never returns.</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果配置文件内运行的watch模式，则要对src下的资源文件进行监控，发现有变化则要重新自动编译并运行。</p>
+<p>在/revel/cmd/harness/harness.go文件里<code>func NewHarness() *Harness</code>生成一个harness。</p>
+<h5 id="Harness-Run"><a href="#Harness-Run" class="headerlink" title="Harness.Run"></a>Harness.Run</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var paths []string</span><br><span class="line">if revel.Config.BoolDefault(&quot;watch.gopath&quot;, false) &#123;</span><br><span class="line">	gopaths := filepath.SplitList(build.Default.GOPATH)</span><br><span class="line">	paths = append(paths, gopaths...)</span><br><span class="line">&#125;</span><br><span class="line">paths = append(paths, revel.CodePaths...)</span><br></pre></td></tr></table></figure>
+<p>准备Watcher需要的path  src的Code路径和gopath路径。</p>
+<p>用revel/watcher.go生成watcher，文件内watcher引用其它库<code>&quot;gopkg.in/fsnotify.v1&quot;</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">watcher = revel.NewWatcher()</span><br><span class="line">watcher.Listen(h, paths...)</span><br></pre></td></tr></table></figure>
+<h6 id="1-通过监听文件变化触发rebuild"><a href="#1-通过监听文件变化触发rebuild" class="headerlink" title="1. 通过监听文件变化触发rebuild"></a>1. 通过监听文件变化触发rebuild</h6><p>Listen方法内目前内容比较深入，就先不分析具体功能，不过我们需要注意到：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">	if w.eagerRebuildEnabled() &#123;</span><br><span class="line">		// Create goroutine to notify file changes in real time</span><br><span class="line">		go w.NotifyWhenUpdated(listener, watcher)</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">// If watcher.mode is set to eager, the application is rebuilt immediately</span><br><span class="line">// when a source file is changed.</span><br><span class="line">// This feature is available only in dev mode.</span><br><span class="line">func (w *Watcher) eagerRebuildEnabled() bool &#123;</span><br><span class="line">	return Config.BoolDefault(&quot;mode.dev&quot;, true) &amp;&amp;</span><br><span class="line">		Config.BoolDefault(&quot;watch&quot;, true) &amp;&amp;</span><br><span class="line">		Config.StringDefault(&quot;watcher.mode&quot;, &quot;normal&quot;) == &quot;eager&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">在配置文件内：</span><br><span class="line">//#If you set watcher.mode = &quot;eager&quot;, the server starts to recompile</span><br><span class="line">//#your application every time your application&apos;s files change.</span><br><span class="line">watcher.mode = &quot;normal&quot;</span><br></pre></td></tr></table></figure></p>
+<h6 id="2-通过-ReverseProxy-实现请求时观察是否变化再重新rebuild"><a href="#2-通过-ReverseProxy-实现请求时观察是否变化再重新rebuild" class="headerlink" title="2. 通过 ReverseProxy 实现请求时观察是否变化再重新rebuild"></a>2. 通过 ReverseProxy 实现请求时观察是否变化再重新rebuild</h6><p>在<code>func NewHarness() *Harness</code>方法内设置反向代理：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">serverUrl, _ := url.ParseRequestURI(fmt.Sprintf(scheme+&quot;://%s:%d&quot;, addr, port))</span><br><span class="line"></span><br><span class="line">harness := &amp;Harness&#123;</span><br><span class="line">	port:       port,</span><br><span class="line">	serverHost: serverUrl.String()[len(scheme+&quot;://&quot;):],</span><br><span class="line">	proxy:      httputil.NewSingleHostReverseProxy(serverUrl),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">go func() &#123;</span><br><span class="line">		addr := fmt.Sprintf(&quot;%s:%d&quot;, revel.HttpAddr, revel.HttpPort)</span><br><span class="line">		revel.INFO.Printf(&quot;Listening on %s&quot;, addr)</span><br><span class="line"></span><br><span class="line">		var err error</span><br><span class="line">		if revel.HttpSsl &#123;</span><br><span class="line">			err = http.ListenAndServeTLS(addr, revel.HttpSslCert,</span><br><span class="line">				revel.HttpSslKey, h)</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			err = http.ListenAndServe(addr, h)</span><br><span class="line">		&#125;</span><br><span class="line">		if err != nil &#123;</span><br><span class="line">			revel.ERROR.Fatalln(&quot;Failed to start reverse proxy:&quot;, err)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;()</span><br></pre></td></tr></table></figure>
+<p>用go的并发开启接收请求的代理服务器，将harness作为回调入口。因为harness实现了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">A Handler responds to an HTTP request.</span><br><span class="line"></span><br><span class="line">type Handler interface &#123;</span><br><span class="line">        ServeHTTP(ResponseWriter, *Request)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">// ServeHTTP handles all requests.</span><br><span class="line">// It checks for changes to app, rebuilds if necessary, and forwards the request.</span><br><span class="line">func (hp *Harness) ServeHTTP(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">	// Don&apos;t rebuild the app for favicon requests.</span><br><span class="line">	if lastRequestHadError &gt; 0 &amp;&amp; r.URL.Path == &quot;/favicon.ico&quot; &#123;</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	// Flush any change events and rebuild app if necessary.</span><br><span class="line">	// Render an error page if the rebuild / restart failed.</span><br><span class="line">	err := watcher.Notify()</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		atomic.CompareAndSwapInt32(&amp;lastRequestHadError, 0, 1)</span><br><span class="line">		renderError(w, r, err)</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	atomic.CompareAndSwapInt32(&amp;lastRequestHadError, 1, 0)</span><br><span class="line"></span><br><span class="line">	// Reverse proxy the request.</span><br><span class="line">	// (Need special code for websockets, courtesy of bradfitz)</span><br><span class="line">	if strings.EqualFold(r.Header.Get(&quot;Upgrade&quot;), &quot;websocket&quot;) &#123;</span><br><span class="line">		proxyWebsocket(w, r, hp.serverHost)</span><br><span class="line">	&#125; else &#123;</span><br><span class="line">		hp.proxy.ServeHTTP(w, r)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>err := watcher.Notify()</code>此处会触发watcher的Notify方法，最后调用harness的Refresh方法进行重新build。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">// Rebuild the Revel application and run it on the given port.</span><br><span class="line">func (h *Harness) Refresh() (err *revel.Error) &#123;</span><br><span class="line">	if h.app != nil &#123;</span><br><span class="line">		h.app.Kill()</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	revel.TRACE.Println(&quot;Rebuild&quot;)</span><br><span class="line">	h.app, err = Build()</span><br><span class="line">	if err != nil &#123;</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	h.app.Port = h.port</span><br><span class="line">	if err2 := h.app.Cmd().Start(); err2 != nil &#123;</span><br><span class="line">		return &amp;revel.Error&#123;</span><br><span class="line">			Title:       &quot;App failed to start up&quot;,</span><br><span class="line">			Description: err2.Error(),</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>h.app, err = Build()</code> 和 RunApp 方法内 <code>app, err := harness.Build()</code> 后，是进行build操作。</p>
+<p>在harness.go文件的 <code>func (hp *Harness) ServeHTTP(w http.ResponseWriter, r *http.Request)</code>方法内处理完rebuild并重新开始服务器后，最后利用 ReverseProxy <code>hp.proxy.ServeHTTP(w, r)</code> 传入请求进行处理。</p>
+<h1 id="Build"><a href="#Build" class="headerlink" title="Build"></a>Build</h1><p>开始执行/revel/cmd/revel/build.go文件内 <code>func Build(buildFlags ...string) (app *App, compileError *revel.Error)</code> 方法。</p>
+<p><code>cleanSource(&quot;tmp&quot;, &quot;routes&quot;)</code>：在new的时候提到过，tmp、routes是编译时自动生成的，所以在rebuild里需要先清理一下。</p>
+<p>接下来准备source info 和 dbImportPath：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sourceInfo, compileError := ProcessSource(revel.CodePaths)</span><br><span class="line">if compileError != nil &#123;</span><br><span class="line">	return nil, compileError</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Add the db.import to the import paths.</span><br><span class="line">if dbImportPath, found := revel.Config.String(&quot;db.import&quot;); found &#123;</span><br><span class="line">	sourceInfo.InitImportPaths = append(sourceInfo.InitImportPaths, dbImportPath)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再接下来就是生成 main.go 和 routes.go ，这个在后面部分再深究：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// Generate two source files.</span><br><span class="line">templateArgs := map[string]interface&#123;&#125;&#123;</span><br><span class="line">	&quot;Controllers&quot;:    sourceInfo.ControllerSpecs(),</span><br><span class="line">	&quot;ValidationKeys&quot;: sourceInfo.ValidationKeys,</span><br><span class="line">	&quot;ImportPaths&quot;:    calcImportAliases(sourceInfo),</span><br><span class="line">	&quot;TestSuites&quot;:     sourceInfo.TestSuites(),</span><br><span class="line">&#125;</span><br><span class="line">genSource(&quot;tmp&quot;, &quot;main.go&quot;, MAIN, templateArgs)</span><br><span class="line">genSource(&quot;routes&quot;, &quot;routes.go&quot;, ROUTES, templateArgs)</span><br></pre></td></tr></table></figure>
+<p><code>buildTags := revel.Config.StringDefault(&quot;build.tags&quot;, &quot;&quot;)</code>, buildTags读入。</p>
+<p><code>goPath, err := exec.LookPath(&quot;go&quot;)</code>,go执行路径。</p>
+<p><code>pkg, err := build.Default.Import(revel.ImportPath, &quot;&quot;, build.FindOnly)</code>，应用资源目录。</p>
+<p><code>binName := path.Join(pkg.BinDir, &quot;revel.d&quot;, revel.ImportPath, path.Base(revel.BasePath))</code>，这个需要注意一下，是生成的可执行包要导出的位置。</p>
+<p>准备编译可执行文件需要的参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">appVersion := getAppVersion()</span><br><span class="line">		versionLinkerFlags := fmt.Sprintf(&quot;-X %s/app.APP_VERSION \&quot;%s\&quot;&quot;, revel.ImportPath, appVersion)</span><br><span class="line">		flags := []string&#123;</span><br><span class="line">			&quot;build&quot;,</span><br><span class="line">			&quot;-ldflags&quot;, versionLinkerFlags,</span><br><span class="line">			&quot;-tags&quot;, buildTags,</span><br><span class="line">			&quot;-o&quot;, binName&#125;</span><br><span class="line"></span><br><span class="line">		// Add in build flags</span><br><span class="line">		flags = append(flags, buildFlags...)</span><br><span class="line"></span><br><span class="line">		// The main path</span><br><span class="line">		flags = append(flags, path.Join(revel.ImportPath, &quot;app&quot;, &quot;tmp&quot;))</span><br></pre></td></tr></table></figure>
+<p>生成可执行文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">buildCmd := exec.Command(goPath, flags...)</span><br><span class="line">revel.TRACE.Println(&quot;Exec:&quot;, buildCmd.Args)</span><br><span class="line">output, err := buildCmd.CombinedOutput()</span><br></pre></td></tr></table></figure>
+<p>再关注到/revel/cmd/harness/app.go文件，用<code>func NewApp(binPath string) *App</code>生成应用返回到run.go的runApp方法内，调用app的 <code>func (a *App) Cmd() AppCmd</code> and <code>func (cmd AppCmd) Run()</code> 开始运行程序。</p>
+<h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>在harness内还有</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// Kill the app on signal.</span><br><span class="line">	ch := make(chan os.Signal)</span><br><span class="line">	signal.Notify(ch, os.Interrupt, os.Kill)</span><br><span class="line">	&lt;-ch</span><br><span class="line">	if h.app != nil &#123;</span><br><span class="line">		h.app.Kill()</span><br><span class="line">	&#125;</span><br><span class="line">	os.Exit(1)</span><br></pre></td></tr></table></figure>
+<p>用Channel 等待 signal 的os.Interrupt 或者 os.Kill 信号事件，如果h.app存在刚kill掉应用，最后退出revel应用。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/03/28/Revel-run干了什么？/" data-id="cinbftvrt000sw8zl3kpwz63j" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Bond-Observable" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/03/28/Bond-Observable/" class="article-date">
+  <time datetime="2016-03-28T08:35:09.000Z" itemprop="datePublished">2016-03-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/28/Bond-Observable/">Bond-Observable</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Swift Bond是一个binding framework，与ReactiveCocoa、RxSwift都有相通之处。</p>
+<p>github : <a href="https://github.com/SwiftBond/Bond" target="_blank" rel="external">https://github.com/SwiftBond/Bond</a></p>
+<p>运用Swift Bond可以让UI管理更容易，同时它的核心概念部分是纯Swift写的，可以参考用于完成其它任务。<br>在raywenderlich有一文(<a href="https://www.raywenderlich.com/123108/bond-tutorial)讲解Swift" target="_blank" rel="external">https://www.raywenderlich.com/123108/bond-tutorial)讲解Swift</a> Bond的用法，同时运用Bond讲解如何实现MVVM。</p>
+<p>这里说明Swift Bond最基础的Observable处理流程。</p>
+<h1 id="EventProducerType"><a href="#EventProducerType" class="headerlink" title="EventProducerType"></a>EventProducerType</h1><p>这是框架最为核心的protocol：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public protocol EventProducerType &#123;</span><br><span class="line">  </span><br><span class="line">  /// Type of event objects or values that the observable generates.</span><br><span class="line">  typealias EventType</span><br><span class="line">  </span><br><span class="line">  /// Maximum number of past events that will be sent to each new observer upon registering.</span><br><span class="line">  /// Actual number of sent events may be less if not enough events were generated previously.</span><br><span class="line">  var replayLength: Int &#123; get &#125;</span><br><span class="line">  </span><br><span class="line">  /// Registers the given observer and returns a disposable that can cancel observing.</span><br><span class="line">  func observe(observer: EventType -&gt; Void) -&gt; DisposableType</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>replayLength</code>属性结合<code>public struct Buffer&lt;EventType&gt;</code>主要功能记录主题对象最近的事件值。</p>
+<p><code>func observe(observer: EventType -&gt; Void)</code>增加新的观察对象。</p>
+<p><code>public class EventProducer&lt;Event&gt;: EventProducerType</code> 是框架内直接实现的 EventProducerType 的类，<code>public final class Observable&lt;Wrapped&gt;: EventProducer&lt;Wrapped&gt;</code>是继承 EventProducer 而来，被定义为final，在应用内简单使用 Observable 类定义主题对象就行。</p>
+<h1 id="Buffer"><a href="#Buffer" class="headerlink" title="Buffer"></a>Buffer</h1><p>Buffer定义了一个size大小FIFO的队列用于记录主题对象最近size次事件值。</p>
+<p>push func管理队列值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public mutating func push(event: EventType) &#123;</span><br><span class="line">    if size == 1 &#123;</span><br><span class="line">      if buffer.count == 0 &#123;</span><br><span class="line">        buffer.append(event)</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        buffer[0] = event;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      buffer.append(event)</span><br><span class="line">      if buffer.count &gt; size &#123;</span><br><span class="line">        buffer.removeFirst()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>replayTo func 重放输出事件值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public func replayTo(sink: EventType -&gt; Void) &#123;</span><br><span class="line">  for event in buffer &#123;</span><br><span class="line">    sink(event)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="Observable"><a href="#Observable" class="headerlink" title="Observable"></a>Observable</h1><p>观察主题对象类，直接初始化使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public init(_ value: Wrapped) &#123;</span><br><span class="line">  super.init(replayLength: 1)</span><br><span class="line">  next(value)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public func next(event: Event) &#123;</span><br><span class="line">  replayBuffer?.push(event)</span><br><span class="line">  dispatchNext(event)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>1.定义一个length为1的Buffer<br>2.分发初始值：push到Buffer，分发</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public var value: Wrapped &#123;</span><br><span class="line">  get &#123;</span><br><span class="line">    // We&apos;ve created buffer of size 1 and we own it so it is safe</span><br><span class="line">    // to force unwrap both the buffer and the last element.</span><br><span class="line">    return replayBuffer!.last!</span><br><span class="line">  &#125;</span><br><span class="line">  set &#123;</span><br><span class="line">    next(newValue)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>定义一个value变量用于存储当前事件值，运用Swift的属性观察机制触发事件分发。</p>
+<h1 id="运行调用observe"><a href="#运行调用observe" class="headerlink" title="运行调用observe"></a>运行调用observe</h1><p>要注册观察者需要调用 EventProducerType 的 <code>func observe(observer: EventType -&gt; Void) -&gt; DisposableType</code>，此方法在 EventProducer 内实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">public func observe(observer: Event -&gt; Void) -&gt; DisposableType &#123;</span><br><span class="line">  </span><br><span class="line">  if lifecycle == .Managed &#123;</span><br><span class="line">    selfReference?.retain()</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  let eventProducerBaseDisposable = addObserver(observer)</span><br><span class="line">  </span><br><span class="line">  replayBuffer?.replayTo(observer)</span><br><span class="line">  </span><br><span class="line">  let observerDisposable = BlockDisposable &#123; [weak self] in</span><br><span class="line">    eventProducerBaseDisposable.dispose()</span><br><span class="line">    </span><br><span class="line">    if let unwrappedSelf = self &#123;</span><br><span class="line">      if unwrappedSelf.observers.count == 0 &#123;</span><br><span class="line">        unwrappedSelf.selfReference?.release()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  deinitDisposable += observerDisposable</span><br><span class="line">  return observerDisposable</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此方法内大部分代码都是管理引用，<code>let eventProducerBaseDisposable = addObserver(observer)</code> 增加观察都对象 和 <code>replayBuffer?.replayTo(observer)</code> 将Buffer里的事件值向新增加的观察都观象重放输入。</p>
+<p>在 EventProducer 内实现标准的观察者主题的方法如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">private func dispatchNext(event: Event) &#123;</span><br><span class="line">  guard !isDispatchInProgress else &#123; return &#125;</span><br><span class="line">  </span><br><span class="line">  lock.lock()</span><br><span class="line">  isDispatchInProgress = true</span><br><span class="line">  for (_, send) in observers &#123;</span><br><span class="line">    send(event)</span><br><span class="line">  &#125;</span><br><span class="line">  isDispatchInProgress = false</span><br><span class="line">  lock.unlock()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private func addObserver(observer: Event -&gt; Void) -&gt; DisposableType &#123;</span><br><span class="line">  lock.lock()</span><br><span class="line">  let token = nextToken</span><br><span class="line">  nextToken = nextToken + 1</span><br><span class="line">  lock.unlock()</span><br><span class="line">  </span><br><span class="line">  observers[token] = observer</span><br><span class="line">  return EventProducerDisposable(eventProducer: self, token: token)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">private func removeObserver(disposable: EventProducerDisposable&lt;Event&gt;) &#123;</span><br><span class="line">  observers.removeValueForKey(disposable.token)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="运行代码"><a href="#运行代码" class="headerlink" title="运行代码"></a>运行代码</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">class BindViewModel &#123;</span><br><span class="line">    let object = Observable&lt;String&gt;(&quot;init&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class BindViewController : UIViewController &#123;</span><br><span class="line">    </span><br><span class="line">    let viewModel = BindViewModel()</span><br><span class="line">    </span><br><span class="line">    override func viewDidLoad() &#123;</span><br><span class="line">        super.viewDidLoad()</span><br><span class="line">        </span><br><span class="line">        viewModel.object.observe &#123; (eventValue) -&gt; Void in</span><br><span class="line">            print(eventValue)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func action() &#123;</span><br><span class="line">        viewModel.object.value = &quot;1&quot;</span><br><span class="line">        viewModel.object.value = &quot;2&quot;</span><br><span class="line">        viewModel.object.value = &quot;3&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">运行输出：</span><br><span class="line">init</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+<h4 id="observeNew"><a href="#observeNew" class="headerlink" title="observeNew"></a>observeNew</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public func observeNew(observer: EventType -&gt; Void) -&gt; DisposableType &#123;</span><br><span class="line">  var skip: Int = replayLength</span><br><span class="line">  return observe &#123; value in</span><br><span class="line">    if skip &gt; 0 &#123;</span><br><span class="line">      skip--</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      observer(value)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此方法为 EventProducerType extension方法，对observe封装一层，让新注册的观察者对象skip replayLength次事件值的分发，可以理解为跳过主题对象Buffer存储的旧事件，只有在注册后的新值才会被分发，，，结合名称就很好理解了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">class BindViewModel &#123;</span><br><span class="line">    let object = Observable&lt;String&gt;(&quot;init&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">class BindViewController : UIViewController &#123;</span><br><span class="line">    </span><br><span class="line">    let viewModel = BindViewModel()</span><br><span class="line">    </span><br><span class="line">    override func viewDidLoad() &#123;</span><br><span class="line">        super.viewDidLoad()</span><br><span class="line">        </span><br><span class="line">        viewModel.object.observeNew &#123; (eventValue) -&gt; Void in</span><br><span class="line">            print(eventValue)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func action() &#123;</span><br><span class="line">        viewModel.object.value = &quot;1&quot;</span><br><span class="line">        viewModel.object.value = &quot;2&quot;</span><br><span class="line">        viewModel.object.value = &quot;3&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">运行输出：</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/03/28/Bond-Observable/" data-id="cinbftvqt0008w8zlsq2yaa1t" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Revel-新建一个应用" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/03/27/Revel-新建一个应用/" class="article-date">
@@ -135,7 +297,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/27/Revel-新建一个应用/" data-id="cin6wvsb8000skhzlwjl8zmb3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/27/Revel-新建一个应用/" data-id="cinbftvrz000yw8zl5gndwiso" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -183,7 +345,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/27/后端小记开始/" data-id="cin6wvsbp0016khzlmh1qbhvo" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/27/后端小记开始/" data-id="cinbftvsd001fw8zlbyrcqymf" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -227,7 +389,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/26/观察者模式/" data-id="cin6wvsbw001dkhzlxi09z53q" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/26/观察者模式/" data-id="cinbftvt0001xw8zlord2o71f" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -294,7 +456,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/26/Mirror/" data-id="cin6wvscb001nkhzlngbechom" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/26/Mirror/" data-id="cinbftvrf000iw8zlfg52usad" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -344,7 +506,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/25/Swift-元类型简介/" data-id="cin6wvsbc000wkhzlxrh8r43r" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/25/Swift-元类型简介/" data-id="cinbftvs20013w8zl4qaq2ok1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -410,7 +572,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/" data-id="cin6wvsa40006khzlir1g4b22" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/08/18/Jenkins环境搭建与iOS自动构建包-0/" data-id="cinbftvr4000cw8zlts4th36b" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
@@ -506,7 +668,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/运用github-pages发布本地hexo/" data-id="cin6wvsc1001fkhzlbbx6ubjz" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/03/运用github-pages发布本地hexo/" data-id="cinbftvt30021w8zl89hfldgl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
@@ -553,63 +715,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/hello-world/" data-id="cin6wvsbl0013khzlzx73z04i" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/03/hello-world/" data-id="cinbftvsa001aw8zljduaehi4" class="article-share-link">Share</a>
       
       
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Hexo-安装与使用" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/05/03/Hexo-安装与使用/" class="article-date">
-  <time datetime="2015-05-03T12:37:33.000Z" itemprop="datePublished">2015-05-03</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/05/03/Hexo-安装与使用/">Hexo安装与本地预览</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#Git安装<br>在网上看其它文章布置hexo都是先装git的，由于装Xcode的时已经自带装过git了，因此此处就没有探究了。此处只是准备运行至通过本地能够查看hexo服务，也不清楚不安装git会对此处有影响。</p>
-<p>#Node环境搭建</p>
-<p>参考：<a href="http://www.cnblogs.com/zhangran/p/3679333.html" target="_blank" rel="external">http://www.cnblogs.com/zhangran/p/3679333.html</a></p>
-<p>###安装Homebrew<br>安装homebrew 只需要在terminal下执行（不过在执行以下命令的时候为提示地址以过期，根据新地址进行安装）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby -e &quot;$(curl -fsSkL https://raw.github.com/Homebrew/homebrew/go/install)&quot;</span><br></pre></td></tr></table></figure></p>
-<p>安装完成后，执行 brew doctor 命令。这是homebrew 完成后必须做的一件事，检查homebrew各模块是否正常。</p>
-<p>###安装Node<br>1.执行 brew install node, 自动安装node和npm(npm是node包分发管理工具)。</p>
-<p>#hexo环境搭建</p>
-<p>参考文章：<a href="http://www.cnblogs.com/zhcncn/p/4097881.html" target="_blank" rel="external">http://www.cnblogs.com/zhcncn/p/4097881.html</a></p>
-<p>###安装hexo</p>
-<p>执行下面的命令安装hexo:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo</span><br></pre></td></tr></table></figure></p>
-<p>###初始化本地hexo</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir Hexo  //建一个存放资源，名为Hexo的文件夹</span><br><span class="line">hexo init</span><br></pre></td></tr></table></figure>
-<p>根据提示在目标文件夹建立网站所需要的文件。在Hexo文件下执行以下命令:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure></p>
-<p>会自动在Hexo目录中安装node_modules。</p>
-<p>###启动hexo本地预览<br>运行以下命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo server 或者 hexo s</span><br><span class="line">[info] Hexo is running at http://localhost:4000/. Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure></p>
-<p>表明Hexo Server 已经启动，可以通过 <a href="http://localhost:4000/进行访问。" target="_blank" rel="external">http://localhost:4000/进行访问。</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/Hexo-安装与使用/" data-id="cin6wvsa30004khzln8ro5opk" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
-
     </footer>
   </div>
   
@@ -619,7 +727,7 @@
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
     </nav>
   
 </section>
@@ -632,7 +740,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">7</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -650,7 +758,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">13</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -662,6 +770,14 @@
       <ul>
         
           <li>
+            <a href="/2016/04/21/ViewController2-PG/">ViewController2-PG</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/20/ViewController-PG/">ViewController-PG</a>
+          </li>
+        
+          <li>
             <a href="/2016/04/18/View-PG/">View-PG</a>
           </li>
         
@@ -671,14 +787,6 @@
         
           <li>
             <a href="/2016/04/11/RunLoop/">RunLoop</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/09/KVO-PG/">KVO_PG</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/08/KVC-PG/">KVC_PG</a>
           </li>
         
       </ul>
