@@ -65,6 +65,101 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-ViewController3-PG" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/22/ViewController3-PG/" class="article-date">
+  <time datetime="2016-04-22T08:55:31.000Z" itemprop="datePublished">2016-04-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/04/22/ViewController3-PG/">ViewController3-PG</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="自适应模式"><a href="#自适应模式" class="headerlink" title="自适应模式"></a>自适应模式</h2><p>自适应的应用界面表现最合适的方式使用可用的界面空间，支持自适应表现为针对任意的iOS设备将自动调整内容布局。采用自适应技术能够用少量的代码将应用适配到不同尺寸的设备上。</p>
+<p>Auto Layout是构建自适应界面的重要工具。使用自动布局定义约束规则管理控制器的视图结构，可以通过IB或者代码创建约束规则。当父视图的尺寸发生变化，iOS系统自动根据约束条件调整相应的视图。</p>
+<p>Traits是自适应界面模式的另一个重要组件，traits描述视图控制器和视图当前运行所处的环境，traits将界面描述抽象成更高层的描述方式。</p>
+<h4 id="The-Role-of-Traits"><a href="#The-Role-of-Traits" class="headerlink" title="The Role of Traits"></a>The Role of Traits</h4><p>视图控制器有多种时机改变界面布局，单独使用线束不能满足布局管理。视图控制器、视图、其它对象管理一组当前环境特定的特性到关联的对象上。下表描述了特定的trait对界面的影响：</p>
+<p><img src="http://7xsq10.com2.z0.glb.clouddn.com/vc_PG_T12_1.jpg" alt="vc_PG_T12_1"></p>
+<p>关于使用trait的建议：</p>
+<ol>
+<li>使用size classes技术作为界面特性改变很大时检测布局。</li>
+<li>不应该假定size classes下视图的某个特性关联特定的高度或者宽度。</li>
+<li>使用IB为不同的size classes适当的指定不同的布局约束。</li>
+<li>避免使用idiom信息作为界面布局的决定因素。</li>
+</ol>
+<h4 id="When-Do-Trait-and-Size-Changes-Happen"><a href="#When-Do-Trait-and-Size-Changes-Happen" class="headerlink" title="When Do Trait and Size Changes Happen?"></a>When Do Trait and Size Changes Happen?</h4><p>Trait不会频繁发生变化，但是它还是会发生。Size class发生变化的主要原因如下：</p>
+<ol>
+<li>由于设备发生旋转，导致视图控制器对应window改变引起视图控制器的水平或者垂直方向的size class改变。</li>
+<li>由于容器视图控制器的水平或者垂直方向的size class改变引起。</li>
+<li>子视图控制器的水平或者垂直方向的size class明确的被其父视图控制器改变。</li>
+</ol>
+<p>Size class改变会沿着VC层次结构传播到底层的子视图控制器。Window作为整个视图层次结构的根，向root VC提供基准size class traits。当设备方向发生改变时，window改变自身特性并沿着控制器层次结构传播。<strong>容器控制器能直接改变或者复写子视图控制器的特性</strong>。</p>
+<p>在iOS8及之后，window的origin总是upper-left，当设备方向发生改变时window改变bounds。window传播size class改变到子视图控制器，每个视图控制器调用以下方法：</p>
+<ol>
+<li>willTransitionToTraitCollection:withTransitionCoordinator:告知子视图控制器特性将要改变。</li>
+<li>viewWillTransitionToSize:withTransitionCoordinator: 告知子视图控制器视图大小将要改变。</li>
+<li>traitCollectionDidChange:告知关联的子视图控制器，特性已经改变。</li>
+</ol>
+<p>UIKit框架只会在size class发生改变时才会进行报告。<strong>当一个容器视图控制器复写了子视图控制器的size class，则该子视图控制器在父VC的size class改变时不会被通知。同时，当一个视图控制器的视图有固定的长度或者宽度时，也不会收到size class改变的通知</strong>。</p>
+<p>下图表明了整个通知过程的时机变化：</p>
+<p><img src="http://7xsq10.com2.z0.glb.clouddn.com/vc_PG_F12_2.jpg" alt="vc_PG_F12_2"></p>
+<h4 id="设备默认的Size-Class特性"><a href="#设备默认的Size-Class特性" class="headerlink" title="设备默认的Size Class特性"></a>设备默认的Size Class特性</h4><p>如下图：</p>
+<p><img src="http://7xsq10.com2.z0.glb.clouddn.com/vc_PG_T12_2.jpg" alt="vc_PG_T12_2.jpg"></p>
+<h2 id="构建自适应界面"><a href="#构建自适应界面" class="headerlink" title="构建自适应界面"></a>构建自适应界面</h2><p>自适应界面需要同时响应trait与size的改变。在视图控制器层面，应用大致的对内容进行布局，根据不同的size class进行布局。在界面大局确定之后，根据size大小对内容做更精细的布局。</p>
+<h4 id="Adapting-to-Trait-Changes"><a href="#Adapting-to-Trait-Changes" class="headerlink" title="Adapting to Trait Changes"></a>Adapting to Trait Changes</h4><ol>
+<li>应用应该使用StoryBoard针对不同的trait进行粗糙布局。</li>
+<li>使用Image asset配置不同的图片。</li>
+</ol>
+<h4 id="改变子视图控制器Trait"><a href="#改变子视图控制器Trait" class="headerlink" title="改变子视图控制器Trait"></a>改变子视图控制器Trait</h4><p>子视图控制器默认继承父视图控制器的Trait。VC可以调用 setOverrideTraitCollection:forChildViewController:方法对子VC的Trait进行复写。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">UITraitCollection* horizTrait = [UITraitCollection</span><br><span class="line">                 traitCollectionWithHorizontalSizeClass:UIUserInterfaceSizeClassRegular];</span><br><span class="line">UITraitCollection* vertTrait = [UITraitCollection</span><br><span class="line">                 traitCollectionWithVerticalSizeClass:UIUserInterfaceSizeClassCompact];</span><br><span class="line">UITraitCollection* childTraits = [UITraitCollection</span><br><span class="line">                 traitCollectionWithTraitsFromCollections:@[horizTrait, vertTrait]];</span><br><span class="line"> </span><br><span class="line">[self setOverrideTraitCollection:childTraits forChildViewController:self.childViewControllers[0]];</span><br></pre></td></tr></table></figure>
+<p><strong>当父视图控制器Trait改变时，子VC继承没有被明确复写的Trait。其中被明确复写的Trait不变</strong>。</p>
+<h4 id="Adapting-Presented-View-Controllers-to-a-New-Style"><a href="#Adapting-Presented-View-Controllers-to-a-New-Style" class="headerlink" title="Adapting Presented View Controllers to a New Style"></a>Adapting Presented View Controllers to a New Style</h4><p>被呈现的视图控制器自动适应水平或者垂直环境因素。但部分情况，直接使用默认的呈现方式会存在问题。所以要改变默认的presentation style，为presentation controller对象设置代理，可以根据需要提供改变presentation style或者选用其它的VC代替显示。</p>
+<ol>
+<li>使用代理的 adaptivePresentationStyleForPresentationController:方法改变呈现方式。</li>
+<li>如果要替换被呈现的视图控制器，则使用代理的presentationController:viewControllerForAdaptivePresentationStyle:方法。</li>
+</ol>
+<h6 id="适配Popover建议"><a href="#适配Popover建议" class="headerlink" title="适配Popover建议"></a>适配Popover建议</h6><ol>
+<li>将Popover视图控制器Push到已存在的导航堆栈里。</li>
+<li>增加控制器用于在全屏模式下让Popover视图控制器消失。</li>
+<li>使用presentation视图控制器代理消除任何的适配改变。</li>
+</ol>
+<h4 id="响应尺寸大小改变"><a href="#响应尺寸大小改变" class="headerlink" title="响应尺寸大小改变"></a>响应尺寸大小改变</h4><p>尺寸改变主要的原因如下：</p>
+<ol>
+<li>设备旋转引起window变化。</li>
+<li>父视图控制器调整子视图控制器的大小。</li>
+<li>presentation controller调整被呈现的视图控制器大小。</li>
+</ol>
+<p>当视图尺寸大小改变，UIKit框架通过正常的布局处理流程更新视图的大小和位置。如果使用Auto Layout约束布局，应用自动根据各种变化调整。</p>
+<p>如果Auto Layout约束不能满足布局的需要，还可以在viewWillTransitionToSize:withTransitionCoordinator: 方法内调整布局。同时，当设备发生旋转时，也可用 transition coordinator的targetTransform属性创建对应旋转的界面效果。</p>
+<p>官方链接：<a href="https://developer.apple.com/library/ios/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html#//apple_ref/doc/uid/TP40007457-CH19-SW1" target="_blank" rel="external">https://developer.apple.com/library/ios/featuredarticles/ViewControllerPGforiPhoneOS/TheAdaptiveModel.html#//apple_ref/doc/uid/TP40007457-CH19-SW1</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/22/ViewController3-PG/" data-id="cinbsbv9i001dsgzl5tzzm6sz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-ViewController2-PG" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/04/21/ViewController2-PG/" class="article-date">
@@ -112,9 +207,9 @@
 <li>UIKit框架等待animator对象调用过渡上下文对象的 completeTransition:方法。<strong>当animator对象执行完成，则必须调用些方法，使用框架能够处理presentViewController:animated:completion:方法的completion内容</strong>。</li>
 </ol>
 <h6 id="Transitioning-Context-Object"><a href="#Transitioning-Context-Object" class="headerlink" title="Transitioning Context Object"></a>Transitioning Context Object</h6><p>在开始执行过渡动画之前，UIKit框架创建一个过渡上下文对象，并设置执行动画的相关信息。该对象实现了UIViewControllerContextTransitioning协议，包含了执行动画需要的必要信息。下图显示了上下文对象引用的对象信息：</p>
-<p><img src="./vc_PG/vc_PG_F10_2.jpg" alt="vc_PG_F10_2"></p>
+<p><img src="http://7xsq10.com2.z0.glb.clouddn.com/vc_PG_F10_2.jpg" alt="vc_PG_F10_2"></p>
 <h6 id="Transition-Coordinator"><a href="#Transition-Coordinator" class="headerlink" title="Transition Coordinator"></a>Transition Coordinator</h6><p>对于内置或者自定义的过渡动画，UIKit框架创建了一个过渡时的协调器对象触发一些需要执行的附加动画。除了呈现或者消失视图控制器，当屏幕发生旋转或者VC尺寸发生变化也会引起transitions。此类的transitions主要是改变视图层次结构显示，跟踪变化并使用动画反馈给用户。transition coordinator对象只存在于过渡期间，通过被影响的VC的transitionCoordinator属性获得对象，对象实现UIViewControllerTransitionCoordinatorContext协议。对象引用的对象信息如下：</p>
-<p><img src="./vc_PG/vc_PG_F10_3.jpg" alt="vc_PG_F10_3"></p>
+<p><img src="http://7xsq10.com2.z0.glb.clouddn.com/vc_PG_F10_3.jpg" alt="vc_PG_F10_3"></p>
 <h4 id="Presenting-a-View-Controller-Using-Custom-Animations"><a href="#Presenting-a-View-Controller-Using-Custom-Animations" class="headerlink" title="Presenting a View Controller Using Custom Animations"></a>Presenting a View Controller Using Custom Animations</h4><p>用自定义动画实现视图控制器的呈现，按照以下流程执行：</p>
 <ol>
 <li>创建一个视图控制器。</li>
@@ -169,7 +264,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/21/ViewController2-PG/" data-id="cinbftvs80018w8zl8h19oken" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/21/ViewController2-PG/" data-id="cinbsbv9n001hsgzl1n895sqh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -208,7 +303,7 @@
 <h2 id="VC担当角色"><a href="#VC担当角色" class="headerlink" title="VC担当角色"></a>VC担当角色</h2><p>VC定义方法和属性管理界面视图、处理事件、负责视图之间切换、协调不同应用不同部分。应用继承UIViewController添加自定义的代码实现定制行为。</p>
 <h4 id="View管理"><a href="#View管理" class="headerlink" title="View管理"></a>View管理</h4><p>负责管理view层次结构，每个VC有一个根视图用于添加需要显示的子内容视图。VC一直引用根视图，根视图对每一个添加的子视图都是强引用。</p>
 <p>内容VC管理根视图内全部的子视图。容器VC仅管理自身的根视图和全部子VC的根视图。容器VC只对子VC的根视图位置和大小进行管理，子VC的内容全部由相应的VC控制管理。</p>
-<h4 id="数据配置"><a href="#数据配置" class="headerlink" title="数据配置"></a>数据配置</h4><p>VC在管理的视图与应用的数据之间扮演一个中介者的作用。UIViewController的属性和方法用管理应用的内容呈现，当我们继承UIViewController使用时，添加适当的变量对数据进行管理。同时，在VC内我们必须保持数据对象与VC关系的独立性。大概关系如下：<br><img src="./vc_PG/vc_PG_F1_3.jpg" alt="vc_PG_F1_3"></p>
+<h4 id="数据配置"><a href="#数据配置" class="headerlink" title="数据配置"></a>数据配置</h4><p>VC在管理的视图与应用的数据之间扮演一个中介者的作用。UIViewController的属性和方法用管理应用的内容呈现，当我们继承UIViewController使用时，添加适当的变量对数据进行管理。同时，在VC内我们必须保持数据对象与VC关系的独立性。大概关系如下：<br><img src="http://7xsq10.com2.z0.glb.clouddn.com/vc_PG_F1_3.jpg" alt="vc_PG_F1_3"></p>
 <h4 id="用户交互"><a href="#用户交互" class="headerlink" title="用户交互"></a>用户交互</h4><p>虽然VC作为一个响应者对象，并且有能力处理从响应都链传递过来的事件，但是VC一般情况下是不会直接处理的。相反地，由视图处理相应的事件，并用delegate或者target-Action的方法转化成处理方法。</p>
 <h4 id="资源管理"><a href="#资源管理" class="headerlink" title="资源管理"></a>资源管理</h4><p>在VC里，几乎所有的资源都是自动管理的，对于一部分由程序代码创建的资源，需要由程序代码进行控制释放。</p>
 <p>当内存收到内存告警时，需要对不使用或者能够重新创建的资源进行释放，避免因为内存的原因造成程序Crash。</p>
@@ -361,7 +456,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/20/ViewController-PG/" data-id="cinbftvsk001kw8zlo04cq6tx" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/20/ViewController-PG/" data-id="cinbsbv9j001fsgzlljdx0tpb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -507,7 +602,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/18/View-PG/" data-id="cinbftvsc001cw8zl3xu97w9v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/18/View-PG/" data-id="cinbsbv980018sgzlvsyptaux" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -651,7 +746,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/12/Concurrency-PG/" data-id="cinbftvqk0004w8zlgk6r6obu" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/12/Concurrency-PG/" data-id="cinbsbv7z0004sgzlvzgjwt23" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -770,7 +865,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/11/RunLoop/" data-id="cinbftvs00010w8zl3ls8dh1f" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/11/RunLoop/" data-id="cinbsbv940013sgzlzeiu424v" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -848,7 +943,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cinbftvrb000hw8zl8k2x5qz4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cinbsbv8g000dsgzloe2tygs1" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -1005,7 +1100,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="cinbftvr9000ew8zl9xjczqlf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="cinbsbv8i000gsgzl4yh8y3xf" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -1088,7 +1183,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cinbftvqn0006w8zl8n1e3d7v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cinbsbv8a000csgzlpdogxsh2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -1177,50 +1272,10 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cinbftvry000ww8zlg87rozx3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/06/OC-运行时概记/" data-id="cinbsbv8r000msgzlxxscr9nn" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-责任链" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/06/责任链/" class="article-date">
-  <time datetime="2016-04-06T07:24:25.000Z" itemprop="datePublished">2016-04-06</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/04/06/责任链/">责任链</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>//职责链是使多个对象都有机会处理请求，从而避免请求的发送者和接受者之间的耦合关系。<br>//将这个对象连成一条链，并沿着这条链传递该请求，直到有一个对象处理他为止。</p>
-<p>//对象本身要经过什么处理是通过每个链上元素通过运行态来决定的，决定的因素是取决于对象的属性或者一些其他方面的策略。<br>//用户无论是从哪一个节点作为他的请求头节点，最终用户都可以得到一个请求的反馈。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line">struct LeaveRequest &#123;</span><br><span class="line">    var id : Int</span><br><span class="line">    var day : Float</span><br><span class="line">    var reason : String</span><br><span class="line">    </span><br><span class="line">    func checkReason() &#123;</span><br><span class="line">        print(reason)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">protocol LeaveHandler &#123;</span><br><span class="line">    var nextLevel : LeaveHandler? &#123;get set&#125;</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request : LeaveRequest) -&gt; Bool</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">extension LeaveHandler &#123;</span><br><span class="line">    mutating func setNextLevel(next : LeaveHandler) &#123;</span><br><span class="line">        self.nextLevel = next</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func nextLevelHandler(request : LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        if let next = nextLevel &#123;</span><br><span class="line">            return next.handlerLeaveRequest(request)</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return false</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request : LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        return nextLevelHandler(request)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct Boss : LeaveHandler &#123;</span><br><span class="line">    var name : String</span><br><span class="line">    internal var nextLevel : LeaveHandler?</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request: LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        if 4 &lt; request.day &amp;&amp; request.day &lt; 7 &#123;</span><br><span class="line">            request.checkReason()</span><br><span class="line">            return true</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            print(&quot;No Rule ...&quot;)</span><br><span class="line">            return false</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct HR : LeaveHandler &#123;</span><br><span class="line">    var name : String</span><br><span class="line">    internal var nextLevel : LeaveHandler?</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request: LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        if 2 &lt; request.day &amp;&amp; request.day &lt;= 4 &#123;</span><br><span class="line">            request.checkReason()</span><br><span class="line">            </span><br><span class="line">            return true</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return nextLevelHandler(request)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct PM : LeaveHandler &#123;</span><br><span class="line">    var name : String</span><br><span class="line">    internal var nextLevel : LeaveHandler?</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request: LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        if 1 &lt; request.day &amp;&amp; request.day &lt;= 2 &#123;</span><br><span class="line">            request.checkReason()</span><br><span class="line">            return true</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return nextLevelHandler(request)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct Leader : LeaveHandler &#123;</span><br><span class="line">    var name : String</span><br><span class="line">    internal var nextLevel : LeaveHandler?</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request: LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        if request.day &lt;= 1 &#123;</span><br><span class="line">            request.checkReason()</span><br><span class="line">            return true</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return nextLevelHandler(request)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let boss = Boss(name: &quot;Boss&quot;, nextLevel: nil)</span><br><span class="line">let hr = HR(name: &quot;HR&quot;, nextLevel: boss)</span><br><span class="line">let pm = PM(name: &quot;PM&quot;, nextLevel: hr)</span><br><span class="line">let leader = Leader(name: &quot;leader&quot;, nextLevel: pm)</span><br><span class="line"></span><br><span class="line">let leaveRequest = LeaveRequest(id: 1, day: 3, reason: &quot;个人原因&quot;)</span><br><span class="line">leader.handlerLeaveRequest(leaveRequest)</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cinbftvt1001zw8zlnwu0tjr6" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
 
     </footer>
   </div>
@@ -1244,7 +1299,7 @@ if source != nil {
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -1262,7 +1317,7 @@ if source != nil {
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -1272,6 +1327,10 @@ if source != nil {
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/04/22/ViewController3-PG/">ViewController3-PG</a>
+          </li>
         
           <li>
             <a href="/2016/04/21/ViewController2-PG/">ViewController2-PG</a>
@@ -1287,10 +1346,6 @@ if source != nil {
         
           <li>
             <a href="/2016/04/12/Concurrency-PG/">Concurrency-PG</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/11/RunLoop/">RunLoop</a>
           </li>
         
       </ul>

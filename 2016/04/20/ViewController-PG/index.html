@@ -15,14 +15,14 @@ VC担当角色VC定义方法和属性管理界面视图、处理事件、负责�
 <meta property="og:description" content="view Controllers作为应用的结构基础，每个VC管理应用的用户界面并且管理界面与底层数据的交互，同时负责处理用户界面之间的过渡。
 有两种类型的VC：1.承载内容VC：作为主要的VC类型，管理应用的内容呈现。2.容器VC：集合子VC的信息，协调子VC的切换与呈现。
 VC担当角色VC定义方法和属性管理界面视图、处理事件、负责视图之间切换、协调不同应用不同部分。应用继承UIViewContr">
-<meta property="og:image" content="http://yoursite.com/./vc_PG/vc_PG_F1_3.jpg">
-<meta property="og:updated_time" content="2016-04-21T15:06:36.000Z">
+<meta property="og:image" content="http://7xsq10.com2.z0.glb.clouddn.com/vc_PG_F1_3.jpg">
+<meta property="og:updated_time" content="2016-04-22T14:00:04.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ViewController-PG">
 <meta name="twitter:description" content="view Controllers作为应用的结构基础，每个VC管理应用的用户界面并且管理界面与底层数据的交互，同时负责处理用户界面之间的过渡。
 有两种类型的VC：1.承载内容VC：作为主要的VC类型，管理应用的内容呈现。2.容器VC：集合子VC的信息，协调子VC的切换与呈现。
 VC担当角色VC定义方法和属性管理界面视图、处理事件、负责视图之间切换、协调不同应用不同部分。应用继承UIViewContr">
-<meta name="twitter:image" content="http://yoursite.com/./vc_PG/vc_PG_F1_3.jpg">
+<meta name="twitter:image" content="http://7xsq10.com2.z0.glb.clouddn.com/vc_PG_F1_3.jpg">
   
     <link rel="alternative" href="/atom.xml" title="天晷" type="application/atom+xml">
   
@@ -99,7 +99,7 @@ VC担当角色VC定义方法和属性管理界面视图、处理事件、负责�
 <h2 id="VC担当角色"><a href="#VC担当角色" class="headerlink" title="VC担当角色"></a>VC担当角色</h2><p>VC定义方法和属性管理界面视图、处理事件、负责视图之间切换、协调不同应用不同部分。应用继承UIViewController添加自定义的代码实现定制行为。</p>
 <h4 id="View管理"><a href="#View管理" class="headerlink" title="View管理"></a>View管理</h4><p>负责管理view层次结构，每个VC有一个根视图用于添加需要显示的子内容视图。VC一直引用根视图，根视图对每一个添加的子视图都是强引用。</p>
 <p>内容VC管理根视图内全部的子视图。容器VC仅管理自身的根视图和全部子VC的根视图。容器VC只对子VC的根视图位置和大小进行管理，子VC的内容全部由相应的VC控制管理。</p>
-<h4 id="数据配置"><a href="#数据配置" class="headerlink" title="数据配置"></a>数据配置</h4><p>VC在管理的视图与应用的数据之间扮演一个中介者的作用。UIViewController的属性和方法用管理应用的内容呈现，当我们继承UIViewController使用时，添加适当的变量对数据进行管理。同时，在VC内我们必须保持数据对象与VC关系的独立性。大概关系如下：<br><img src="./vc_PG/vc_PG_F1_3.jpg" alt="vc_PG_F1_3"></p>
+<h4 id="数据配置"><a href="#数据配置" class="headerlink" title="数据配置"></a>数据配置</h4><p>VC在管理的视图与应用的数据之间扮演一个中介者的作用。UIViewController的属性和方法用管理应用的内容呈现，当我们继承UIViewController使用时，添加适当的变量对数据进行管理。同时，在VC内我们必须保持数据对象与VC关系的独立性。大概关系如下：<br><img src="http://7xsq10.com2.z0.glb.clouddn.com/vc_PG_F1_3.jpg" alt="vc_PG_F1_3"></p>
 <h4 id="用户交互"><a href="#用户交互" class="headerlink" title="用户交互"></a>用户交互</h4><p>虽然VC作为一个响应者对象，并且有能力处理从响应都链传递过来的事件，但是VC一般情况下是不会直接处理的。相反地，由视图处理相应的事件，并用delegate或者target-Action的方法转化成处理方法。</p>
 <h4 id="资源管理"><a href="#资源管理" class="headerlink" title="资源管理"></a>资源管理</h4><p>在VC里，几乎所有的资源都是自动管理的，对于一部分由程序代码创建的资源，需要由程序代码进行控制释放。</p>
 <p>当内存收到内存告警时，需要对不使用或者能够重新创建的资源进行释放，避免因为内存的原因造成程序Crash。</p>
@@ -252,7 +252,7 @@ VC担当角色VC定义方法和属性管理界面视图、处理事件、负责�
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/20/ViewController-PG/" data-id="cinbftvsk001kw8zlo04cq6tx" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/20/ViewController-PG/" data-id="cinbsbv9j001fsgzlljdx0tpb" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -293,7 +293,7 @@ VC担当角色VC定义方法和属性管理界面视图、处理事件、负责�
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -311,7 +311,7 @@ VC担当角色VC定义方法和属性管理界面视图、处理事件、负责�
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -321,6 +321,10 @@ VC担当角色VC定义方法和属性管理界面视图、处理事件、负责�
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/04/22/ViewController3-PG/">ViewController3-PG</a>
+          </li>
         
           <li>
             <a href="/2016/04/21/ViewController2-PG/">ViewController2-PG</a>
@@ -336,10 +340,6 @@ VC担当角色VC定义方法和属性管理界面视图、处理事件、负责�
         
           <li>
             <a href="/2016/04/12/Concurrency-PG/">Concurrency-PG</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/11/RunLoop/">RunLoop</a>
           </li>
         
       </ul>

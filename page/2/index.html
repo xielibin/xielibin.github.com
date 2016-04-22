@@ -65,6 +65,46 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-责任链" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/06/责任链/" class="article-date">
+  <time datetime="2016-04-06T07:24:25.000Z" itemprop="datePublished">2016-04-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/04/06/责任链/">责任链</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>//职责链是使多个对象都有机会处理请求，从而避免请求的发送者和接受者之间的耦合关系。<br>//将这个对象连成一条链，并沿着这条链传递该请求，直到有一个对象处理他为止。</p>
+<p>//对象本身要经过什么处理是通过每个链上元素通过运行态来决定的，决定的因素是取决于对象的属性或者一些其他方面的策略。<br>//用户无论是从哪一个节点作为他的请求头节点，最终用户都可以得到一个请求的反馈。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line">struct LeaveRequest &#123;</span><br><span class="line">    var id : Int</span><br><span class="line">    var day : Float</span><br><span class="line">    var reason : String</span><br><span class="line">    </span><br><span class="line">    func checkReason() &#123;</span><br><span class="line">        print(reason)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">protocol LeaveHandler &#123;</span><br><span class="line">    var nextLevel : LeaveHandler? &#123;get set&#125;</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request : LeaveRequest) -&gt; Bool</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">extension LeaveHandler &#123;</span><br><span class="line">    mutating func setNextLevel(next : LeaveHandler) &#123;</span><br><span class="line">        self.nextLevel = next</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func nextLevelHandler(request : LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        if let next = nextLevel &#123;</span><br><span class="line">            return next.handlerLeaveRequest(request)</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return false</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request : LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        return nextLevelHandler(request)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct Boss : LeaveHandler &#123;</span><br><span class="line">    var name : String</span><br><span class="line">    internal var nextLevel : LeaveHandler?</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request: LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        if 4 &lt; request.day &amp;&amp; request.day &lt; 7 &#123;</span><br><span class="line">            request.checkReason()</span><br><span class="line">            return true</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            print(&quot;No Rule ...&quot;)</span><br><span class="line">            return false</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct HR : LeaveHandler &#123;</span><br><span class="line">    var name : String</span><br><span class="line">    internal var nextLevel : LeaveHandler?</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request: LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        if 2 &lt; request.day &amp;&amp; request.day &lt;= 4 &#123;</span><br><span class="line">            request.checkReason()</span><br><span class="line">            </span><br><span class="line">            return true</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return nextLevelHandler(request)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct PM : LeaveHandler &#123;</span><br><span class="line">    var name : String</span><br><span class="line">    internal var nextLevel : LeaveHandler?</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request: LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        if 1 &lt; request.day &amp;&amp; request.day &lt;= 2 &#123;</span><br><span class="line">            request.checkReason()</span><br><span class="line">            return true</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return nextLevelHandler(request)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">struct Leader : LeaveHandler &#123;</span><br><span class="line">    var name : String</span><br><span class="line">    internal var nextLevel : LeaveHandler?</span><br><span class="line">    </span><br><span class="line">    func handlerLeaveRequest(request: LeaveRequest) -&gt; Bool &#123;</span><br><span class="line">        if request.day &lt;= 1 &#123;</span><br><span class="line">            request.checkReason()</span><br><span class="line">            return true</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return nextLevelHandler(request)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let boss = Boss(name: &quot;Boss&quot;, nextLevel: nil)</span><br><span class="line">let hr = HR(name: &quot;HR&quot;, nextLevel: boss)</span><br><span class="line">let pm = PM(name: &quot;PM&quot;, nextLevel: hr)</span><br><span class="line">let leader = Leader(name: &quot;leader&quot;, nextLevel: pm)</span><br><span class="line"></span><br><span class="line">let leaveRequest = LeaveRequest(id: 1, day: 3, reason: &quot;个人原因&quot;)</span><br><span class="line">leader.handlerLeaveRequest(leaveRequest)</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/06/责任链/" data-id="cinbsbv9x001rsgzlmtu8cqq8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Unicode-UFT8-概记" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/04/05/Unicode-UFT8-概记/" class="article-date">
@@ -104,7 +144,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cinbftvs50015w8zluxqoinps" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/05/Unicode-UFT8-概记/" data-id="cinbsbv960015sgzlobcpz5jn" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Other/">Other</a></li></ul>
@@ -237,7 +277,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cinbftvrr000qw8zln5ccgxmr" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/04/Revel-Filter-Chain/" data-id="cinbsbv8u000qsgzl1fbf2wwm" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -306,7 +346,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cinbftvq40000w8zllj6a324z" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/AOP/" data-id="cinbsbv7n0000sgzlaumgm4p3" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -349,7 +389,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/策略模式/" data-id="cinbftvsg001hw8zl70eijam7" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/策略模式/" data-id="cinbsbv9t001msgzl8oupdgfv" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pattern/">Pattern</a></li></ul>
@@ -402,7 +442,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/03/错误处理-railway-oriented-programming/" data-id="cinbftvsy001ww8zlyfyocfkk" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/03/错误处理-railway-oriented-programming/" data-id="cinbsbva1001usgzlx42m6eua" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -459,7 +499,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/31/Revel-Server-Run/" data-id="cinbftvrv000uw8zls60g43p3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/31/Revel-Server-Run/" data-id="cinbsbv8w000tsgzlyjr30njv" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
@@ -558,7 +598,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/30/Bond-BindTo-实现/" data-id="cinbftvqh0003w8zlr1jqylff" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/30/Bond-BindTo-实现/" data-id="cinbsbv7y0003sgzlex3616jl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
@@ -629,7 +669,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/30/Linux-Server-Install/" data-id="cinbftvrk000lw8zljdpkgj0k" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/30/Linux-Server-Install/" data-id="cinbsbv8n000hsgzltafgfzfu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OS/">OS</a></li></ul>
@@ -680,93 +720,10 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/29/Mustache-模板解析/" data-id="cinbftvro000nw8zlvz7wty73" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/03/29/Mustache-模板解析/" data-id="cinbsbv8p000ksgzl5eufoxha" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/后端/">后端</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Bond-Chain调用" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/03/29/Bond-Chain调用/" class="article-date">
-  <time datetime="2016-03-29T08:04:30.000Z" itemprop="datePublished">2016-03-29</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/03/29/Bond-Chain调用/">Bond-Chain调用</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在说明几个链式调用方法之前必须得明白链式调用的定义，如何实现链式调用。在Swift中Array里map、flatMap是满足链式调用的。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">let arr = [1, 2, 3]</span><br><span class="line">let res = arr.map &#123; (i) -&gt; String in</span><br><span class="line">    return &quot;\(i)&quot;</span><br><span class="line">    &#125; .map &#123; (index) -&gt; String in</span><br><span class="line">        return &quot;index:&quot; + index</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">print(res)  //&quot;[&quot;index:1&quot;, &quot;index:2&quot;, &quot;index:3&quot;]\n&quot;</span><br></pre></td></tr></table></figure>
-<p>大家请观摩 @唐巧 的烧脑体操（五）(<a href="http://www.infoq.com/cn/articles/swift-brain-gym-monad)里对链式调用实现的讲解。" target="_blank" rel="external">http://www.infoq.com/cn/articles/swift-brain-gym-monad)里对链式调用实现的讲解。</a></p>
-<p>在Wiki上关于Monad的解释：</p>
-<p>In functional programming, a monad is a structure that represents computations defined as sequences of steps: a type with a monad structure defines what it means to chain operations, or nest functions of that type together. This allows the programmer to build pipelines that process data in a series of steps (also called actions), in which each action is decorated with additional processing rules provided by the monad.</p>
-<p>操作方式：<br>A monad is created by defining a type constructor M and two operations, bind and return (where return is often also called unit):</p>
-<p>The return operation takes a value from a plain type and puts it into a container using the constructor, creating a monadic value: M a.<br>The bind operation “&gt;&gt;=” takes as its arguments a monadic value M a and a function (a → M b) that can transform the value.<br>The bind operator unwraps the plain value a embedded in its input monadic value M a, and feeds it to the function.<br>The function then creates a new monadic value M b that can be fed to the next bind operators composed in the pipeline.</p>
-<p><em>一定要先理解chain调用的原理，这个很重要，不然在swift的道路上往后走多少都将是徒劳，个人见解</em></p>
-<p><em>同时补一句，目前烧脑体操系列出的其它节讲的内容也比较细致，前去观摩吧！！！</em></p>
-<hr>
-<h2 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h2><p>实现代码在 protocol EventProducerType 的扩展里：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">/// Transformes each event by the given `transform` function.</span><br><span class="line">public func map&lt;T&gt;(transform: EventType -&gt; T) -&gt; EventProducer&lt;T&gt; &#123;</span><br><span class="line">  return EventProducer(replayLength: replayLength) &#123; sink in</span><br><span class="line">    return observe &#123; event in</span><br><span class="line">      sink(transform(event))</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>有了对chain调用的理解，就知道目的是返回一个和调用着本身相同，只是Wrapped Value类型上的区别。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">//   public typealias Sink = Event -&gt; Void  //是一个Func定义,作为回调</span><br><span class="line"></span><br><span class="line">public func map&lt;T&gt;(transform: EventType -&gt; T) -&gt; EventProducer&lt;T&gt; &#123;</span><br><span class="line">	var producer : (Sink -&gt; DisposableType?)?</span><br><span class="line"></span><br><span class="line">	producer = &#123; sink -&gt; DisposableType? in</span><br><span class="line">      	return self.observe &#123; event -&gt; Void in</span><br><span class="line">      		let transed = transform(event)</span><br><span class="line">        	sink(transed)</span><br><span class="line">      	&#125;</span><br><span class="line">	&#125; //此处注册一个观察者Block对象，当主题分发事件时，observer接收event, 调用transform转换，再回调sink</span><br><span class="line">	</span><br><span class="line">	return EventProducer(replayLength: self.replayLength, producer: producer) //lifecycle 是默认值 .Managed</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>分析EventProducer init方法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">  public init(replayLength: Int = 0, lifecycle: EventProducerLifecycle = .Managed, @noescape producer: Sink -&gt; DisposableType?) &#123;</span><br><span class="line">    self.lifecycle = lifecycle  // ...</span><br><span class="line">    </span><br><span class="line">    let tmpSelfReference = Reference(self)</span><br><span class="line">    tmpSelfReference.release()</span><br><span class="line">    </span><br><span class="line">    if replayLength &gt; 0 &#123;</span><br><span class="line">      replayBuffer = Buffer(size: replayLength)</span><br><span class="line">    &#125;  // ...</span><br><span class="line">    </span><br><span class="line">    let disposable = producer &#123; event in</span><br><span class="line">      tmpSelfReference.object?.next(event)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    if let disposable = disposable &#123;</span><br><span class="line">      deinitDisposable += disposable</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    self.selfReference = tmpSelfReference</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">let tmpSelfReference = Reference(self)</span><br><span class="line">tmpSelfReference.release()</span><br></pre></td></tr></table></figure>
-<p>让对象本身成为无强引用，如果不再追加其它操作，后续会自动释放。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">public final class Reference&lt;T: AnyObject&gt; &#123;</span><br><span class="line">  </span><br><span class="line">  /// Encapsulated optional object.</span><br><span class="line">  public weak var object: T?</span><br><span class="line">  </span><br><span class="line">  /// Used to strongly reference (retain) encapsulated object.</span><br><span class="line">  private var strongReference: T?</span><br><span class="line">  </span><br><span class="line">  /// Creates the wrapper and strongly references the given object.</span><br><span class="line">  public init(_ object: T) &#123;</span><br><span class="line">    self.object = object</span><br><span class="line">    self.strongReference = object</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  /// Relinquishes strong reference to the object, but keeps weak one.</span><br><span class="line">  /// If object it not strongly referenced by anyone else, it will be deallocated.</span><br><span class="line">  public func release() &#123;</span><br><span class="line">    strongReference = nil</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  /// Re-establishes a strong reference to the object if it&apos;s still alive,</span><br><span class="line">  /// otherwise it doesn&apos;t do anything useful.</span><br><span class="line">  public func retain() &#123;</span><br><span class="line">    strongReference = object</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="调用"><a href="#调用" class="headerlink" title="调用"></a>调用</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">let disposable = producer &#123; event in</span><br><span class="line">  tmpSelfReference.object?.next(event)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>转成：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var producerInit : (Sink -&gt; DisposableType?)?</span><br><span class="line">producerInit = producer</span><br><span class="line">let sink : (Event -&gt; Void) = &#123; Event -&gt; Void in</span><br><span class="line">	tmpSelfReference.object?.next(event)   //自己变成主题对象，在拿到事件后，分发事件</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">producerInit(sink)</span><br></pre></td></tr></table></figure>
-<h5 id="事件流"><a href="#事件流" class="headerlink" title="事件流"></a>事件流</h5><p>1.存在的主要对象1 -&gt; 注册 观察对象1 ，观察对象1 -&gt; 持有对新建 主题对象2 的弱引用<br>2.主题对象1 分发事件，-&gt; 观察对象1 接收事件，-&gt; 主要对象1 将事件 转化成（EventType -&gt; T） 事件T ， -&gt; 观察对象1 传递事件T 给主题对象2， -&gt; 主题对象2 接收事件T， -&gt; next(T) 分发事件</p>
-<h2 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h2><p>与map区别在于 transfrom(转化) 变成了 includeEvent(过滤)。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if includeEvent(event) &#123;</span><br><span class="line">  sink(event)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>主题对象1 分发的事件值 经过 includeEvent 计算满足条件 返回true 则 传递事件。 否则 停止流程。</p>
-<h2 id="deliverOn"><a href="#deliverOn" class="headerlink" title="deliverOn"></a>deliverOn</h2><p>与map 区别 传入一个 Queue作为事件异步分发队列。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">queue.async &#123;</span><br><span class="line">  sink(event)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="throttle"><a href="#throttle" class="headerlink" title="throttle"></a>throttle</h2><p>正如名字一样作开头用处，和filter区别过滤条件 在于这个是关闭固定时间，然后分发最新一次事件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">public func throttle(seconds: Queue.TimeInterval, queue: Queue) -&gt; EventProducer&lt;EventType&gt; &#123;</span><br><span class="line">  return EventProducer(replayLength: replayLength) &#123; sink in</span><br><span class="line">    var shouldDispatch: Bool = true</span><br><span class="line">    var lastEvent: EventType! = nil</span><br><span class="line">    return observe &#123; event in</span><br><span class="line">      lastEvent = event</span><br><span class="line">      if shouldDispatch &#123;</span><br><span class="line">        shouldDispatch = false</span><br><span class="line">        queue.after(seconds) &#123;</span><br><span class="line">          sink(lastEvent)</span><br><span class="line">          lastEvent = nil</span><br><span class="line">          shouldDispatch = true</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里定义了两个变量让 观察对象1 持有分别用于记录最新事件 lastEvent， 判定是否可以分发 shouldDispatch；并且此处是传入的Queue内分发。</p>
-<h2 id="skip"><a href="#skip" class="headerlink" title="skip"></a>skip</h2><p>事发定义跳过多少次事件分发。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public func skip(var count: Int) -&gt; EventProducer&lt;EventType&gt; &#123;</span><br><span class="line">  return EventProducer(replayLength: max(replayLength - count, 0)) &#123; sink in</span><br><span class="line">    return observe &#123; event in</span><br><span class="line">      if count &gt; 0 &#123;</span><br><span class="line">        count--</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        sink(event)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>直接将count参数申明为var 作为变量让 观察对象1 持有，记录跳过情况。</p>
-<h2 id="startWith"><a href="#startWith" class="headerlink" title="startWith"></a>startWith</h2><p>定义一个必须要先分发一次的初始事件值，先sink一次。</p>
-<h2 id="combineLatestWith"><a href="#combineLatestWith" class="headerlink" title="combineLatestWith"></a>combineLatestWith</h2><p>这是一个很为重要的功能，比如 可以合成多个条件来 最张决定 一个关口是否能够开启</p>
-<p>常用例子：<br>名字 和 Email 都不能为空，将两个条件合成 作为判定 提交是否 enable。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">public func combineLatestWith&lt;U: EventProducerType&gt;(other: U) -&gt; EventProducer&lt;(EventType, U.EventType)&gt; &#123;</span><br><span class="line">  return EventProducer(replayLength: min(replayLength + other.replayLength, 1)) &#123; sink in</span><br><span class="line">    var myEvent: EventType! = nil</span><br><span class="line">    var itsEvent: U.EventType! = nil</span><br><span class="line">    </span><br><span class="line">    let onBothNext = &#123; () -&gt; Void in</span><br><span class="line">      if let myEvent = myEvent, let itsEvent = itsEvent &#123;</span><br><span class="line">        sink((myEvent, itsEvent))</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    let myDisposable = observe &#123; event in</span><br><span class="line">      myEvent = event</span><br><span class="line">      onBothNext()</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    let itsDisposable = other.observe &#123; event in</span><br><span class="line">      itsEvent = event</span><br><span class="line">      onBothNext()</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    return CompositeDisposable([myDisposable, itsDisposable])</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>定义两个变量 myEvent 和 itsEvent 作为存储最新事件值。</li>
-<li>定义一个onBothNext 的 闭包 持有 两个变量， 并当两个变量都有值时 调用sink 触发事件分发。</li>
-<li>注册自己的 观察闭包对象 赋值新值 调用onBothNext</li>
-<li>注册要合成的 另一个主题对象 的 观察闭包对象  赋值新值 调用onBothNext</li>
-</ol>
-<h3 id="flatMap-reduce"><a href="#flatMap-reduce" class="headerlink" title="flatMap reduce"></a>flatMap reduce</h3><p>这两个功能是放在最后的，目前没发现太好的运用场景。<br><em>说明：这里在说库中Array的用法 </em><br>在库Array里这两个功能的运用场景还是非常强大的， flatMap 会将 nil 过虑掉； reduce 求和较为方便</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/03/29/Bond-Chain调用/" data-id="cinbftvqa0001w8zla9ut8pvj" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Swift/">Swift</a></li></ul>
 
     </footer>
   </div>
@@ -790,7 +747,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -808,7 +765,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">15</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -818,6 +775,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/04/22/ViewController3-PG/">ViewController3-PG</a>
+          </li>
         
           <li>
             <a href="/2016/04/21/ViewController2-PG/">ViewController2-PG</a>
@@ -833,10 +794,6 @@
         
           <li>
             <a href="/2016/04/12/Concurrency-PG/">Concurrency-PG</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/11/RunLoop/">RunLoop</a>
           </li>
         
       </ul>
