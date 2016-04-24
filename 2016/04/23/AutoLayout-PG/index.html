@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>AutoLayout_PG | 天晷</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="理解自动布局AutoLayout是通过设置在视图上的约束，动态的计算视图层次里所有视图位置和大小的布局方式。基于约束进行布局设计可以让应用界面动态响应external和internal changes。
+External Changes外部变化通常发生在父视图大小或者外形变化时，以下是通常的变化场景：
+
+window size更新（OS X）。
+Split View状态切换。
+设备旋转。
+状态栏位">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AutoLayout_PG">
+<meta property="og:url" content="http://yoursite.com/2016/04/23/AutoLayout-PG/index.html">
+<meta property="og:site_name" content="天晷">
+<meta property="og:description" content="理解自动布局AutoLayout是通过设置在视图上的约束，动态的计算视图层次里所有视图位置和大小的布局方式。基于约束进行布局设计可以让应用界面动态响应external和internal changes。
+External Changes外部变化通常发生在父视图大小或者外形变化时，以下是通常的变化场景：
+
+window size更新（OS X）。
+Split View状态切换。
+设备旋转。
+状态栏位">
+<meta property="og:image" content="http://7xsq10.com2.z0.glb.clouddn.com/AutoLayout_equation_F.jpg">
+<meta property="og:image" content="http://7xsq10.com2.z0.glb.clouddn.com/AutoLayout_attributes_F.jpg">
+<meta property="og:image" content="http://7xsq10.com2.z0.glb.clouddn.com/AutoLayout_IntrinsicContentSize_F1.jpg">
+<meta property="og:updated_time" content="2016-04-24T09:51:15.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AutoLayout_PG">
+<meta name="twitter:description" content="理解自动布局AutoLayout是通过设置在视图上的约束，动态的计算视图层次里所有视图位置和大小的布局方式。基于约束进行布局设计可以让应用界面动态响应external和internal changes。
+External Changes外部变化通常发生在父视图大小或者外形变化时，以下是通常的变化场景：
+
+window size更新（OS X）。
+Split View状态切换。
+设备旋转。
+状态栏位">
+<meta name="twitter:image" content="http://7xsq10.com2.z0.glb.clouddn.com/AutoLayout_equation_F.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="天晷" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天晷</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">脑容量有限，清理出来装灵感吧！</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-AutoLayout-PG" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/04/23/AutoLayout-PG/" class="article-date">
+  <time datetime="2016-04-23T09:28:24.000Z" itemprop="datePublished">2016-04-23</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      AutoLayout_PG
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="理解自动布局"><a href="#理解自动布局" class="headerlink" title="理解自动布局"></a>理解自动布局</h2><p>AutoLayout是通过设置在视图上的约束，动态的计算视图层次里所有视图位置和大小的布局方式。基于约束进行布局设计可以让应用界面动态响应external和internal changes。</p>
+<h4 id="External-Changes"><a href="#External-Changes" class="headerlink" title="External Changes"></a>External Changes</h4><p><strong>外部变化</strong>通常发生在父视图大小或者外形变化时，以下是通常的变化场景：</p>
+<ol>
+<li>window size更新（OS X）。</li>
+<li>Split View状态切换。</li>
+<li>设备旋转。</li>
+<li>状态栏位置发生变化。</li>
+<li>支持不同的size classes。</li>
+<li>支持不同的屏幕尺寸。</li>
+</ol>
+<h4 id="Internal-Changes"><a href="#Internal-Changes" class="headerlink" title="Internal Changes"></a>Internal Changes</h4><p><strong>内部变化</strong>通常是用户界面视图或者Control控件的大小变化，以下是通常变化场景：</p>
+<ol>
+<li>应用的显示内容发生变化。<strong>新的内容需要不同的布局，例如文本内容、或者图片</strong>。</li>
+<li>应用支持国际化。通常有三种场景会引起改变：（a）界面切换到不同的语言。（b）区域改变引起显示样式发生变化。（c）不同语言的显示方式。</li>
+<li>应用支持Dynamic Type。用户会改变Font Size等引起内容布局发生变化。</li>
+</ol>
+<h4 id="Auto-Layout-Versus-Frame-Based-Layout"><a href="#Auto-Layout-Versus-Frame-Based-Layout" class="headerlink" title="Auto Layout Versus Frame-Based Layout"></a>Auto Layout Versus Frame-Based Layout</h4><p>通常可以通过编辑确定frame、autoresizing masks、Auto Layout进行布局。</p>
+<ol>
+<li>直接设置frame可以动态且灵活的完成各种布局需求。但是如果需要完成自适应的布局，会带来相当大小的困难。</li>
+<li>应用可以通过autoresizing masks方式减少自适应布局的复杂度，但也只能响应外部改变。</li>
+<li>Auto Layout提出一种关系型的布局抽象概念，满足内部和外部改变布局的需要。</li>
+</ol>
+<h2 id="Anatomy-of-a-Constraint"><a href="#Anatomy-of-a-Constraint" class="headerlink" title="Anatomy of a Constraint"></a>Anatomy of a Constraint</h2><p>视图层次的布局约束被定义为一系列的线性方程式，每一个方程式表达了一个约束。通常约束定义了视图界面中两个元素（view或者Layout guide）的关系。</p>
+<p>方程式显示如下：</p>
+<p><img src="http://7xsq10.com2.z0.glb.clouddn.com/AutoLayout_equation_F.jpg" alt="AutoLayout_equation_F"></p>
+<p>其中每个部分定义如下：</p>
+<ol>
+<li>Item1：表示一个视图或者Layout guide。</li>
+<li>Attribute1：表示第一个元素需要被约束的属性。</li>
+<li>Relationship：表示两个元素被约束属性的关系。（ equal, greater than or equal, or less than or equal）</li>
+<li>Multiplier：被约束属性间关系的乘法因子。</li>
+<li>Item 2：表示界面中另一个视图或者Layout guide。</li>
+<li>Attribute 2：第二个元素被约束的属性。</li>
+<li>Constant：被约束属性间关系的常量因子。</li>
+</ol>
+<h4 id="Auto-Layout-Attributes"><a href="#Auto-Layout-Attributes" class="headerlink" title="Auto Layout Attributes"></a>Auto Layout Attributes</h4><p>属性被定义为用于约束的特征。通常情况下，包含四个edges（leading, trailing, top, and bottom）、高度、宽度、水平中心、垂直中心。</p>
+<p><img src="http://7xsq10.com2.z0.glb.clouddn.com/AutoLayout_attributes_F.jpg" alt="AutoLayout_attributes_F"></p>
+<h4 id="Constraint-Priorities"><a href="#Constraint-Priorities" class="headerlink" title="Constraint Priorities"></a>Constraint Priorities</h4><p>在默认情况下，Auto Layout必须创建明确清晰的约束布局。也可以创建一个可选的约束，每个约束的优先级在1到1000之间。<strong>优先级1000表示必须的约束，其它优先级表示可选的约束</strong>。</p>
+<p>当开始计算布局，Auto Layout尝试按照优先级由高到底用于计算布局。同时会跳过不能满足需要的约束。<strong>虽然可选约束不会被用于计算布局，但是依然会影响到布局。如果在尝试了所以约束后仍然不能明确布局，则系统选择一个最接近的约束作为计算依据进行布局</strong>。</p>
+<h4 id="Intrinsic-Content-Size"><a href="#Intrinsic-Content-Size" class="headerlink" title="Intrinsic Content Size"></a>Intrinsic Content Size</h4><p>Intrinsic Content Size可以称为固定内容大小，默认的UIView视图是没有Content Size的，像Image View或者 Label依赖于内容存在固定的内容大小。</p>
+<p>Auto Layout在不同维度上用一对约束来描述视图的固定内容大小：（a）content hugging使视图向内拉让视图恰好围绕在内容附近，（b）compression resistance使视图向外扩展避免内容被裁剪。如下图：</p>
+<p><img src="http://7xsq10.com2.z0.glb.clouddn.com/AutoLayout_IntrinsicContentSize_F1.jpg" alt="AutoLayout_IntrinsicContentSize_F1"></p>
+<p>这组约束定义如下，其中IntrinsicHeight and IntrinsicWidth描述固定内容大小：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// Compression Resistance</span><br><span class="line">View.height &gt;= 0.0 * NotAnAttribute + IntrinsicHeight</span><br><span class="line">View.width &gt;= 0.0 * NotAnAttribute + IntrinsicWidth</span><br><span class="line"> </span><br><span class="line">// Content Hugging</span><br><span class="line">View.height &lt;= 0.0 * NotAnAttribute + IntrinsicHeight</span><br><span class="line">View.width &lt;= 0.0 * NotAnAttribute + IntrinsicWidth</span><br></pre></td></tr></table></figure>
+<p>并且每个约束都有各自的优先级，hugging优先级为250，compression resistance优先级为750。所以拉伸视图比收缩视图容易。</p>
+<p>关于Setting Content-Hugging and Compression-Resistance Priorities，视图提供如下方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">@available(iOS 6.0, *)</span><br><span class="line">public func intrinsicContentSize() -&gt; CGSize</span><br><span class="line">@available(iOS 6.0, *)</span><br><span class="line">public func invalidateIntrinsicContentSize() // call this when something changes that affects the intrinsicContentSize.  Otherwise UIKit won&apos;t notice that it changed.  </span><br><span class="line"></span><br><span class="line">@available(iOS 6.0, *)</span><br><span class="line">public func contentHuggingPriorityForAxis(axis: UILayoutConstraintAxis) -&gt; UILayoutPriority</span><br><span class="line">@available(iOS 6.0, *)</span><br><span class="line">public func setContentHuggingPriority(priority: UILayoutPriority, forAxis axis: UILayoutConstraintAxis)</span><br><span class="line"></span><br><span class="line">@available(iOS 6.0, *)</span><br><span class="line">public func contentCompressionResistancePriorityForAxis(axis: UILayoutConstraintAxis) -&gt; UILayoutPriority</span><br><span class="line">@available(iOS 6.0, *)</span><br><span class="line">public func setContentCompressionResistancePriority(priority: UILayoutPriority, forAxis axis: UILayoutConstraintAxis)</span><br></pre></td></tr></table></figure>
+<h4 id="Intrinsic-Content-Size-Versus-Fitting-Size"><a href="#Intrinsic-Content-Size-Versus-Fitting-Size" class="headerlink" title="Intrinsic Content Size Versus Fitting Size"></a>Intrinsic Content Size Versus Fitting Size</h4><p><strong>固定内容大小</strong>作为自动布局的输入源，当一个视图存在固定内容尺寸时，框架生成相应的约束描述对应的尺寸并使用生成的约束进行布局。</p>
+<p><strong>Fitting Size</strong>则是作为自动布局引擎的输出。该尺寸基于视图的约束计算它的尺寸大小。UIView对Fitting Size提供以下方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@available(iOS 6.0, *)</span><br><span class="line">public func systemLayoutSizeFittingSize(targetSize: CGSize) -&gt; CGSize // Equivalent to sending -systemLayoutSizeFittingSize:withHorizontalFittingPriority:verticalFittingPriority: with UILayoutPriorityFittingSizeLevel for both priorities.</span><br><span class="line">@available(iOS 8.0, *)</span><br><span class="line">public func systemLayoutSizeFittingSize(targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -&gt; CGSize</span><br></pre></td></tr></table></figure>
+<h2 id="Debugging-Auto-Layout"><a href="#Debugging-Auto-Layout" class="headerlink" title="Debugging Auto Layout"></a>Debugging Auto Layout</h2><p>自动布局错误被细分为以下三种：</p>
+<ol>
+<li>Unsatisfiable Layouts：布局是无效的解决方案。</li>
+<li>Ambiguous Layouts：布局可能被解析成不同的解决方案。</li>
+<li>Logical Errors：布局的逻辑错误。</li>
+</ol>
+<h4 id="Unsatisfiable-Layouts"><a href="#Unsatisfiable-Layouts" class="headerlink" title="Unsatisfiable Layouts"></a>Unsatisfiable Layouts</h4><p>不满足需要的布局发生在系统不能通过当前提供的所有约束条件计算出一个布局方案，存在两个或者以上的约束不能同时存在的冲突。</p>
+<p>系统在运行时检测不中满足需要的布局，按照以下步骤执行：</p>
+<ol>
+<li>自动布局引擎标示冲突的约束。</li>
+<li>布局引擎打断冲突的约束并检验布局。系统一直打断冲突的约束直到找到一个有效的布局。</li>
+<li>布局引擎打印冲突和打断的约束到控制台。</li>
+</ol>
+<p>不满足需要的布局会导致不可知的界面效果，所以应用需要确定没有错误的布局在测试的时候，可以<strong>使用symbolic断点UIViewAlertForUnsatisfiableConstraints</strong>。</p>
+<h4 id="Ambiguous-Layouts"><a href="#Ambiguous-Layouts" class="headerlink" title="Ambiguous Layouts"></a>Ambiguous Layouts</h4><p>含糊不清的布局是系统需要两个或者更多的有效约束条件来计算布局方案。引起的原因有：</p>
+<ol>
+<li>需要附加的约束条件来唯一视图的大小和位置。</li>
+<li>当布局存在拥有相同的优先级的可选约束发生冲突，此时系统无法判定使用哪一种约束。</li>
+</ol>
+<p>虽然在设计时IB会对模糊布局给出警告。但是在运行时模糊的布局可能会按照预想或者不按照预想执行，并且不会有任何警告打印到控制台，也不能通过断点跟踪。因此，对于模糊布局是比较难检测的。</p>
+<p>不过UIView提供了辅助方法帮助标示模糊布局：</p>
+<ol>
+<li>调用hasAmbiguousLayout（）方法，如果返回YES则表明视图存在布局模糊。</li>
+<li>调用exerciseAmbiguityInLayout（）方法，会随机触发一个可行的约束产生一个有效的布局方案。</li>
+<li>调用constraintsAffectingLayoutForAxis:方法返回在特定方向上影响视图布局的所有约束。</li>
+</ol>
+<h4 id="Logical-Errors"><a href="#Logical-Errors" class="headerlink" title="Logical Errors"></a>Logical Errors</h4><p>逻辑错误被定义为Bugs。需要验证解决。</p>
+<h2 id="Advanced-Auto-Layout"><a href="#Advanced-Auto-Layout" class="headerlink" title="Advanced Auto Layout"></a>Advanced Auto Layout</h2><p>通常情况下，可以使用IB进行约束的设置、调试、修改。但同时也可以通过代码实现约束：（a）使用layout anchors。（b）使用NSLayoutConstraint类。（c）使用Visual Format Language。</p>
+<h4 id="Working-with-Scroll-Views"><a href="#Working-with-Scroll-Views" class="headerlink" title="Working with Scroll Views"></a>Working with Scroll Views</h4><p>要使用Scroll View控件时，需要定义Scroll View在父视图上的大小和位置，并且需要指定Scroll View的内容区域大小。</p>
+<p>以上特征都能使用Auto Layout实现，但是对于Scroll View系统对于约束条件的计算不同于平常，依据属性有不同的计算规则：</p>
+<ol>
+<li>用于Scroll View本身与其外部视图关系的约束条件，与正常约束计算规则相同。</li>
+<li>用于Scroll View本身与其内部视图关系的约束条件需要依据属性情况计算：（a）约束发生关联edges或者margins时，内容依附于scroll view内容区域。（b）约束发生关联height、width、centers时，则依附于scroll view的frame。</li>
+<li>同时也可以使用约束指定scroll view内部内容与外部视图关系，提供一个固定的位置使其悬浮与scroll view之上。</li>
+</ol>
+<h4 id="Working-with-Self-Sizing-Table-View-Cells"><a href="#Working-with-Self-Sizing-Table-View-Cells" class="headerlink" title="Working with Self-Sizing Table View Cells"></a>Working with Self-Sizing Table View Cells</h4><p>该特征不是默认启动的，需要设置table view的rowHeight属性为UITableViewAutomaticDimension，同时赋值给estimatedRowHeight属性且应当使用尽量准确的估值以增加用户体验。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tableView.estimatedRowHeight = 85.0</span><br><span class="line">tableView.rowHeight = UITableViewAutomaticDimension</span><br></pre></td></tr></table></figure>
+<h2 id="Changing-Constraints"><a href="#Changing-Constraints" class="headerlink" title="Changing Constraints"></a>Changing Constraints</h2><p>修改约束的底层数学表达式可以布局改变约束。通过以下方式改变单个或者多个约束条件：</p>
+<ol>
+<li>激活或者无效一个约束</li>
+<li>改变约束条件的常量因子</li>
+<li>改变约束条件的优先级</li>
+<li>从视图层次结构移出视图</li>
+</ol>
+<p>也可以通过设置控制器的属性或者修改视图层次结构来改变约束。需要考虑按照批次设置改变以提高性能。</p>
+<h4 id="Deferred-Layout-Pass"><a href="#Deferred-Layout-Pass" class="headerlink" title="Deferred Layout Pass"></a>Deferred Layout Pass</h4><p>Auto Layout安排布局事件传递在稍后的时间，而不是立即更新影响视图，延迟传递更新布局约束并计算视图层次的视图frame。</p>
+<p>程序也可以用setNeedsLayout或者setNeedsUpdateConstraints方法安排触重新布局延迟传递。</p>
+<p>延迟布局传递包括两种通过视图层次传递的方式：</p>
+<ol>
+<li>根据需要传递更新约束。</li>
+<li>根据需要传递布局响应视图frame的改变。</li>
+</ol>
+<h6 id="Update-Pass"><a href="#Update-Pass" class="headerlink" title="Update Pass"></a>Update Pass</h6><p>系统沿着视图层次结构依次调用视图控制器 updateViewConstraints方法，同时调用视图的updateConstraints方法。</p>
+<h6 id="Layout-Pass"><a href="#Layout-Pass" class="headerlink" title="Layout Pass"></a>Layout Pass</h6><p>系统沿着视图层次结构依次调用视图控制器viewWillLayoutSubviews方法，同时调用视图的layoutSubviews方法。默认情况下，layoutSubviews方法通过调用自动布局引擎为每个子视图计算并更新frame。</p>
+<p><strong>可以通过复写此方法修改布局</strong>。</p>
+<h6 id="Batching-Changes"><a href="#Batching-Changes" class="headerlink" title="Batching Changes"></a>Batching Changes</h6><p>应用通常总是立即更新约束并影响视图布局，延迟更新约束增加复杂度并难以理解。</p>
+<p>但有时出于性能方面的考虑，当有布局改变时需要按批次更新约束，比如在同一处改变约束太慢或者正在对视图布置其它的改变。</p>
+<p>通过调用setNeedsUpdateConstraints方法保持约束按照批次代替直接立即改变，并且可以通过复写updateConstraints方法修改约束条件（<strong>并且需要在方法的最后调用父类实现，且不能调用setNeedsUpdateConstraints方法调用循环</strong>）。</p>
+<h4 id="Custom-Layouts"><a href="#Custom-Layouts" class="headerlink" title="Custom Layouts"></a>Custom Layouts</h4><p>通过复写视图控制器的 viewWillLayoutSubviews方法或者视图的 layoutSubviews方法修改布局引擎的返回结果。</p>
+<p>在复写以上方法时，视图布局处于inconsistent状态（布局更改前后的中间状态），需要小心更改视图层次结构避免引起反馈循环。以下原则可以减少反馈循环的可能性：</p>
+<ol>
+<li>必须调用对应方法的父类实现。</li>
+<li>程序可以修改视图的子视图布局，但必须是在调用父类方法之前。</li>
+<li>不能修改子视图以外的其它视图。如果修改视图以外其它视力会导致反馈循环。</li>
+<li>不能在子类方法里调用 setNeedsUpdateConstraints方法。调用此方法会引起反馈循环。</li>
+<li>不能在子类方法里调用 setNeedsLayout方法。调用此方法会引起反馈循环。</li>
+<li>要小心的处理约束改变，不能意外的改变视图的子视图以外视图的布局。</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/04/23/AutoLayout-PG/" data-id="cineebz3l0003x4zlfid13liz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/04/22/ViewController3-PG/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">ViewController3-PG</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/OS/" style="font-size: 10px;">OS</a> <a href="/tags/Other/" style="font-size: 10px;">Other</a> <a href="/tags/Pattern/" style="font-size: 15px;">Pattern</a> <a href="/tags/Swift/" style="font-size: 17.5px;">Swift</a> <a href="/tags/iOS/" style="font-size: 20px;">iOS</a> <a href="/tags/后端/" style="font-size: 17.5px;">后端</a> <a href="/tags/工具/" style="font-size: 12.5px;">工具</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/04/23/AutoLayout-PG/">AutoLayout_PG</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/22/ViewController3-PG/">ViewController3-PG</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/21/ViewController2-PG/">ViewController2-PG</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/20/ViewController-PG/">ViewController-PG</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/18/View-PG/">View-PG</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2016 天晷<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

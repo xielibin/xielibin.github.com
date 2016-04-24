@@ -65,6 +65,102 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-运用github-pages发布本地hexo" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/03/运用github-pages发布本地hexo/" class="article-date">
+  <time datetime="2015-05-03T14:01:31.000Z" itemprop="datePublished">2015-05-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/03/运用github-pages发布本地hexo/">运用github pages发布本地hexo</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#设置GitHub</p>
+<ul>
+<li>github帐号就不用多说了，注册吧！</li>
+<li>建立与github用户名对应的仓库，仓库名为【your_user_name.github.io】（说明github.com已经废弃）。</li>
+<li>添加SSH公钥到github (虽然说这里添加了，最后在hexo deploy 时还是输入的用户名、密码发布的，奇怪）</li>
+</ul>
+<hr>
+<p>添加SSH公钥参考:github help -&gt; Generating SSH keys<br>URL:<a href="https://help.github.com/articles/generating-ssh-keys/" target="_blank" rel="external">https://help.github.com/articles/generating-ssh-keys/</a></p>
+<p>####步骤1：检查本地的SSH keys<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ls -al ~/.ssh</span><br><span class="line">#List the files in your .ssh directory. if they exist.</span><br></pre></td></tr></table></figure></p>
+<p>公钥与私钥情况</p>
+<blockquote>
+<p>id_ras  //私钥<br>id_ras.pub //公钥</p>
+</blockquote>
+<p>####步骤2：生成新的SSH key</p>
+<p>执行下面的命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ssh-keygen -t rsa -C &quot;your_email@example.com&quot;</span><br></pre></td></tr></table></figure></p>
+<p>保存至文件（默认是保存至~/.ssh/id_rsa，可以指定存储文件路径）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Enter file in which to save the key (/Users/you/.ssh/id_rsa): [Press enter]</span><br></pre></td></tr></table></figure></p>
+<p>设置passphrase（此处就直接回车吧）：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Enter passphrase (empty for no passphrase): [Type a passphrase]</span><br><span class="line"># Enter same passphrase again: [Type passphrase again]</span><br></pre></td></tr></table></figure></p>
+<p>在设置passphrase后，将打印出类似如下内容：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Your identification has been saved in /Users/you/.ssh/id_rsa.</span><br><span class="line"># Your public key has been saved in /Users/you/.ssh/id_rsa.pub.</span><br><span class="line"># The key fingerprint is:</span><br><span class="line"># 01:0f:f4:3b:ca:85:d6:17:a1:7d:f0:68:9d:f0:a2:db your_email@example.com</span><br></pre></td></tr></table></figure></p>
+<p>####步骤3：添加key至ssh-agent<br>To configure the ssh-agent program to use the SSH key you’ve generated:</p>
+<ul>
+<li><p>Ensure ssh-agent is enabled:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># start the ssh-agent in the background</span><br><span class="line">eval &quot;$(ssh-agent -s)&quot;</span><br><span class="line"># Agent pid 59566</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Add your generated SSH key to the ssh-agent:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-add ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>####步骤4：添加SSH key 至 github 帐户</p>
+<p>复制出刚才生成的公钥：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$pbcopy &lt; ~/.ssh/id_rsa.pub</span><br><span class="line"># Copies the contents of the id_rsa.pub file to your clipboard</span><br></pre></td></tr></table></figure></p>
+<p>在用户设置的SSH-keys里添加。</p>
+<p>####步骤5：测试连接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ssh -T git@github.com</span><br><span class="line"># Attempts to ssh to GitHub</span><br></pre></td></tr></table></figure>
+<hr>
+<p>#设置Github Pages</p>
+<ol>
+<li>进入【your_user_name.github.io】仓库</li>
+<li>点击仓库右侧的setting</li>
+<li>根据需要修改后，点击Automatic page generator</li>
+<li>根据需要修改后，点击continue to layouts</li>
+<li>最后点击publish。</li>
+<li>在浏览器中访问 <a href="http://your_user_name.github.io，可以看到github" target="_blank" rel="external">http://your_user_name.github.io，可以看到github</a> pages</li>
+</ol>
+<hr>
+<p>#hexo 部暑到 github</p>
+<p>先找到本地hexo目录下_config.yml文件，找到文件最后的内容：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## Docs: http://hexo.io/docs/deployment.html</span><br><span class="line">deploy:</span><br><span class="line">  type:</span><br></pre></td></tr></table></figure></p>
+<p>改为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## Docs: http://hexo.io/docs/deployment.html</span><br><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository: https://github.com/your_user_name/your_user_name.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure></p>
+<p>#####出现的问题</p>
+<ul>
+<li>由于我的node是3.x版本的所以type配置为git，看之前网上文章都说是配置为github，不知为何变了<br>直接设置为type: git 后运行 hexo deploy 会出现以下错误：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR Deployer not found: git</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>参考：<a href="http://blog.163.com/gis_warrior/blog/static/19361717320153100184696/" target="_blank" rel="external">http://blog.163.com/gis_warrior/blog/static/19361717320153100184696/</a><br>运行命令如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>参考其它文章都设置repository为git@github.com:your_user_name/your_user_name.github.io.git，但运行命令hexo deploy，hexo会generate, 但是最后报如下错误：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">create mode 100644 index.html</span><br><span class="line"> create mode 100644 js/script.js</span><br><span class="line"> delete mode 100644 placeholder</span><br><span class="line">Warning: Permanently added the RSA host key for IP address &apos;192.30.252.129&apos; to the list of known hosts.</span><br><span class="line">Permission denied (publickey).</span><br><span class="line">fatal: Could not read from remote repository.</span><br><span class="line"></span><br><span class="line">Please make sure you have the correct access rights</span><br><span class="line">and the repository exists.</span><br><span class="line">FATAL Something&apos;s wrong. Maybe you can find the solution here: http://hexo.io/docs/troubleshooting.html</span><br><span class="line">Error: Warning: Permanently added the RSA host key for IP address &apos;192.30.252.129&apos; to the list of known hosts.</span><br><span class="line">Permission denied (publickey).</span><br><span class="line">fatal: Could not read from remote repository.</span><br><span class="line"></span><br><span class="line">Please make sure you have the correct access rights</span><br><span class="line">and the repository exists.</span><br><span class="line"></span><br><span class="line">    at ChildProcess.&lt;anonymous&gt; (/Users/computer_user_name/Desktop/Blog_hexo/node_modules/hexo-deployer-git/node_modules/hexo-util/lib/spawn.js:42:17)</span><br><span class="line">    at ChildProcess.emit (events.js:110:17)</span><br><span class="line">    at maybeClose (child_process.js:1015:16)</span><br><span class="line">    at Socket.&lt;anonymous&gt; (child_process.js:1183:11)</span><br><span class="line">    at Socket.emit (events.js:107:17)</span><br><span class="line">    at Pipe.close (net.js:485:12)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>改为：repository: <a href="https://github.com/your_user_name/your_user_name.github.io.git" target="_blank" rel="external">https://github.com/your_user_name/your_user_name.github.io.git</a> 后运行 hexo deploy 正常。<br>只是此时让我输入github的用户名和密码，只输入一次，后面deploy都不用输入。不知是否是由于本人生成SSH key时未保存至~/.ssh/id_rsa中的原因。</p>
+<p>#最后测试<br>在浏览器中打开<a href="http://your_user_name.github.io，可以正常访问。" target="_blank" rel="external">http://your_user_name.github.io，可以正常访问。</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/03/运用github-pages发布本地hexo/" data-id="cineebz5h001zx4zlal758oz4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/05/03/hello-world/" class="article-date">
@@ -100,7 +196,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/hello-world/" data-id="cinbsbv9h001asgzl1iut1v19" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/03/hello-world/" data-id="cineebz50001ix4zlmeour0sz" class="article-share-link">Share</a>
       
       
     </footer>
@@ -152,7 +248,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/03/Hexo-安装与使用/" data-id="cinbsbv850008sgzlb4mutxks" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/03/Hexo-安装与使用/" data-id="cineebz3t0009x4zljwhgykqr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
@@ -179,7 +275,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/OS/">OS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Other/">Other</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pattern/">Pattern</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Swift/">Swift</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a><span class="tag-list-count">11</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/后端/">后端</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/工具/">工具</a><span class="tag-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -197,7 +293,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">16</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -207,6 +303,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/04/23/AutoLayout-PG/">AutoLayout_PG</a>
+          </li>
         
           <li>
             <a href="/2016/04/22/ViewController3-PG/">ViewController3-PG</a>
@@ -222,10 +322,6 @@
         
           <li>
             <a href="/2016/04/18/View-PG/">View-PG</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/12/Concurrency-PG/">Concurrency-PG</a>
           </li>
         
       </ul>
