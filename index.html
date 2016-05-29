@@ -65,6 +65,65 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-创建并使用Framework" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/05/29/创建并使用Framework/" class="article-date">
+  <time datetime="2016-05-29T09:57:54.000Z" itemprop="datePublished">2016-05-29</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/29/创建并使用Framework/">创建并使用Framework</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>apple官方指导文档地址：<a href="https://developer.apple.com/library/mac/documentation/MacOSX/Conceptual/BPFrameworks/Frameworks.html" target="_blank" rel="external">https://developer.apple.com/library/mac/documentation/MacOSX/Conceptual/BPFrameworks/Frameworks.html</a></p>
+<p> 记录Github上的例子，整个流程如下：<br> github地址：<a href="https://github.com/RadiusNetworks/swift-framework-example" target="_blank" rel="external">https://github.com/RadiusNetworks/swift-framework-example</a></p>
+<p>##SimpleFramework</p>
+<p>###Overview</p>
+<p>The purpose of this project is to demonstrate (and remember) how to create a Swift framework for iOS that in turn uses Objective-C code. Then, this framework is used by two different iOS apps – one Swift and one Objective-C.</p>
+<p>###Creating the Framework</p>
+<p>1.Create a new Xcode project.<br>2.Create a new Cocoa Touch framework target using Swift.<br>3.Create a new Objective C Cocoa Touch class named SFClass as a subclass of NSObject.<br>4.Select SFClass.h and make sure its Target Membership is SimpleFramework and “Public”. Turns out this is critical.<br>5.Add the following code to SFClass.h:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-(void) printMessage:(NSString *) message;</span><br></pre></td></tr></table></figure>
+<p>6.Add the following code to SFClass.m:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-(void) printMessage:(NSString *) message &#123;</span><br><span class="line">NSLog(@&quot;The message is %@&quot;, message);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>7.Create a new Swift class named SimpleClass as a subclass of NSObject and add the following code to SimpleClass.swift. Note the usage of public in front of the class, the initializer, and the printMessage method. This makes the class and methods available to those who consume the framework.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public class SimpleClass: NSObject &#123;</span><br><span class="line"></span><br><span class="line">var message: String</span><br><span class="line">var object: SFClass = SFClass()</span><br><span class="line"></span><br><span class="line">public init(_ newMessage: String) &#123;</span><br><span class="line">  self.message = newMessage</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">public func printMessage() &#123;</span><br><span class="line">  object.printMessage(self.message)</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>8.When you created the framework target, Xcode automatically created SimpleFramework.h for you. Add the following to that file:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;SFClass.h&quot;</span><br></pre></td></tr></table></figure>
+<p>###Consuming the Framework from a Swift app</p>
+<p>1.Create a new single-view iOS app target in the project and name it SwiftApp and use Swift.<br>2.Select the new target and go to the General settings. Under Embedded Binaries, click the + and add SimpleFramework.framework.<br>In the ViewController.swift file that was created, add the following line at the top:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import SimpleFramework</span><br></pre></td></tr></table></figure>
+<p>and the following method should replace the existing viewDidLoad:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">override func viewDidLoad() &#123;</span><br><span class="line">  super.viewDidLoad()</span><br><span class="line">  let sc = SimpleClass(&quot;Hello Swift framework from Swift!!!&quot;)</span><br><span class="line">  sc.printMessage()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>###Consuming the Framework from an Objective-C app</p>
+<p>1.Create a new single-view iOS app target in the project and name it ObjCApp and use Objective C.<br>2.Select the new target and go to the General settings. Under Embedded Binaries, click the + and add SimpleFramework.framework.<br>3.Under the Build Settings for the target, find the setting for Embedded Content Contains Swift Code and set it to Yes.<br>4.In the ViewController.m file that was created, add the following line at the top:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@import SimpleFramework;</span><br></pre></td></tr></table></figure>
+<p>and the following method should replace the existing viewDidLoad:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">[super viewDidLoad];</span><br><span class="line">SimpleClass *sc = [[SimpleClass alloc] init:@&quot;Hello Swift framework from Objective C!!!&quot;];</span><br><span class="line">[sc printMessage];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2016/05/29/创建并使用Framework/" data-id="ciosg7yfp001g24flufxmkuw2" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-AutoLayout-PG" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2016/04/23/AutoLayout-PG/" class="article-date">
@@ -209,7 +268,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/23/AutoLayout-PG/" data-id="cinkcpnle00012kfymu7xrgo3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/23/AutoLayout-PG/" data-id="ciosg7yd7000324flq6gbobeo" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -304,7 +363,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/22/ViewController3-PG/" data-id="cinkcpnmw001j2kfyywhz79vy" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/22/ViewController3-PG/" data-id="ciosg7yg1001s24fli4z6t9dt" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -420,7 +479,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/21/ViewController2-PG/" data-id="cinkcpnmu001h2kfyi6oa3e84" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/21/ViewController2-PG/" data-id="ciosg7yfx001o24flpet3urjz" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -612,7 +671,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/20/ViewController-PG/" data-id="cinkcpnmr001c2kfyh3xjk2pl" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/20/ViewController-PG/" data-id="ciosg7yfv001m24flmwmn9u2b" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -758,7 +817,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/18/View-PG/" data-id="cinkcpnmt001e2kfy4uj6y8d4" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/18/View-PG/" data-id="ciosg7yfs001l24fl9njyjqgc" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -902,7 +961,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/12/Concurrency-PG/" data-id="cinkcpnlq00082kfy1f7nmapd" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/12/Concurrency-PG/" data-id="ciosg7ydd000824fln0m4a0bj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -1021,7 +1080,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/11/RunLoop/" data-id="cinkcpnmk00152kfyzo6h16w3" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/11/RunLoop/" data-id="ciosg7yfk001a24fl6lkux65v" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -1099,7 +1158,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="cinkcpnm2000j2kfyblisq9ce" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/09/KVO-PG/" data-id="ciosg7yeu000r24flo6dbmdad" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -1256,90 +1315,7 @@ if source != nil {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="cinkcpnm1000h2kfy43igw0iu" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-EventHandler-PG" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2016/04/07/EventHandler-PG/" class="article-date">
-  <time datetime="2016-04-07T06:55:15.000Z" itemprop="datePublished">2016-04-07</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/04/07/EventHandler-PG/">EventHandler_PG</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>对事件的响应是应用的灵魂所在。</p>
-<p><strong>一个事件沿着特定的路径分发到可以响应处理它的对象上</strong>，首先，UIApplication对象从事件队列顶取出一个事件分发准备处理。分发到key window对象上，window将事件赋予一个初始化对象处理。实始化对象取决于事件的类型。</p>
-<ol>
-<li>点击事件：对于点击事件，window先向一个发生点击事件的view分发，此view称为hit-test view。寻找view的过程称为：hit-testing。</li>
-<li>Motion 和 远程 事件：window将事件发送到first responder处理。</li>
-</ol>
-<p>UIKit first sends the event to the object that is best suited to handle the event. For touch events, that object is the hit-test view, and for other events, that object is the first responder.</p>
-<h2 id="hit-testing"><a href="#hit-testing" class="headerlink" title="hit-testing"></a>hit-testing</h2><p><img src="http://7xsq10.com2.z0.glb.clouddn.com/2_1.jpg" alt="Figure2_1"></p>
-<p>如图，假设用户点击2-1上的E视图。iOS查找hit-test view检查顺序：</p>
-<ol>
-<li>touch事件在视图A内发生，所以检查视图B、C。</li>
-<li>touch事件没有在视图B内，在而视图C内，所以检查视图D、E。</li>
-<li>touch事件没有在视图D内，但在视图E内。</li>
-<li>在视力层次结构里，视图E是最底层的，所以视图变成hist-test view。</li>
-</ol>
-<p>hitTest:withEvent:方法返回hit-test view通过 CGPoint point 和 UIEvent。hitTest:withEvent:方法首先调用自己的pointInside:withEvent:方法。如果传入hitTest:withEvent:方法的point在视图之内，则pointInside:withEvent:返回YES。然后hitTest方法在子视图上递归调用hitTest方法。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class CustomHitTestView: UIView &#123;</span><br><span class="line">    </span><br><span class="line">    override func hitTest(point: CGPoint, withEvent event: UIEvent?) -&gt; UIView? &#123;</span><br><span class="line">        return self</span><br><span class="line">//        return super.hitTest(point, withEvent: event)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func pointInside(point: CGPoint, withEvent event: UIEvent?) -&gt; Bool &#123;</span><br><span class="line">        return super.pointInside(point, withEvent: event)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Regulating-the-Delivery-of-Touches-to-Views"><a href="#Regulating-the-Delivery-of-Touches-to-Views" class="headerlink" title="Regulating the Delivery of Touches to Views"></a>Regulating the Delivery of Touches to Views</h2><p>window首先将touch事件发送到任何依附于hit-test view（或者其父视图吗？）的Gesture。</p>
-<p><img src="http://7xsq10.com2.z0.glb.clouddn.com/1_5.jpg" alt="Figure1_5"></p>
-<p><strong>Gesture Recognizers Get the First Opportunity to Recognize a Touch</strong></p>
-<p>window延迟向view分发事件，让手势识别器有机会先分析touch。在延迟期间，如果手势识别器识别到touch手势，则window不会分发touch事件到view，并且会取消之前已经分发到view上和这个识别序列有关的touch object。</p>
-<h2 id="Creating-a-Custom-Gesture-Recognizer"><a href="#Creating-a-Custom-Gesture-Recognizer" class="headerlink" title="Creating a Custom Gesture Recognizer"></a>Creating a Custom Gesture Recognizer</h2><p>在自定义手势，则需要实现 UIGestureRecognizerSubclass 下的方法：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public func reset()</span><br><span class="line">public func touchesBegan(touches: Set&lt;UITouch&gt;, withEvent event: UIEvent)</span><br><span class="line">public func touchesMoved(touches: Set&lt;UITouch&gt;, withEvent event: UIEvent)</span><br><span class="line">public func touchesEnded(touches: Set&lt;UITouch&gt;, withEvent event: UIEvent)</span><br><span class="line">public func touchesCancelled(touches: Set&lt;UITouch&gt;, withEvent event: UIEvent)</span><br></pre></td></tr></table></figure>
-<p>Guide内的例子如下，不过官网上的代码有点Bug：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">import UIKit</span><br><span class="line">import UIKit.UIGestureRecognizerSubclass</span><br><span class="line"></span><br><span class="line">class CustomGestureRecognizer: UIGestureRecognizer &#123;</span><br><span class="line">    </span><br><span class="line">    private var midPoint = CGPointZero</span><br><span class="line">    var strokeUp = false</span><br><span class="line">    </span><br><span class="line">    override func reset() &#123;</span><br><span class="line">        super.reset()</span><br><span class="line">        </span><br><span class="line">        midPoint = CGPointZero</span><br><span class="line">        strokeUp = false</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func touchesBegan(touches: Set&lt;UITouch&gt;, withEvent event: UIEvent) &#123;</span><br><span class="line">        super.touchesBegan(touches, withEvent:event)</span><br><span class="line">        </span><br><span class="line">        if touches.count != 1 &#123;</span><br><span class="line">            state = .Failed</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func touchesMoved(touches: Set&lt;UITouch&gt;, withEvent event: UIEvent) &#123;</span><br><span class="line">        super.touchesMoved(touches, withEvent: event)</span><br><span class="line">        </span><br><span class="line">        guard state != .Failed else &#123;</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        let win = self.view?.window</span><br><span class="line">        let nowPoint = touches.first?.locationInView(win)</span><br><span class="line">        let prevPoint = touches.first?.previousLocationInView(win)</span><br><span class="line">        </span><br><span class="line">        guard let now = nowPoint, let prev = prevPoint where !strokeUp else &#123;</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        if now.x &gt;= prev.x &amp;&amp; now.y &gt;= prev.y &#123;</span><br><span class="line">            midPoint = now</span><br><span class="line">        &#125; else if now.x &gt;= midPoint.x &amp;&amp; now.y &lt;= midPoint.y &#123;</span><br><span class="line">            strokeUp = true</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            state = .Failed</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func touchesEnded(touches: Set&lt;UITouch&gt;, withEvent event: UIEvent) &#123;</span><br><span class="line">        super.touchesEnded(touches, withEvent: event)</span><br><span class="line">        </span><br><span class="line">        guard state == .Possible &amp;&amp; strokeUp else &#123;</span><br><span class="line">            return</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        state = UIGestureRecognizerState.Recognized</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    override func touchesCancelled(touches: Set&lt;UITouch&gt;, withEvent event: UIEvent) &#123;</span><br><span class="line">        super.touchesCancelled(touches, withEvent: event)</span><br><span class="line">        </span><br><span class="line">        midPoint = CGPointZero</span><br><span class="line">        strokeUp = false</span><br><span class="line">        state = .Failed</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>也可以参考这个例子 ： <a href="https://www.raywenderlich.com/104744/uigesturerecognizer-tutorial-creating-custom-recognizers" target="_blank" rel="external">https://www.raywenderlich.com/104744/uigesturerecognizer-tutorial-creating-custom-recognizers</a></p>
-<p><strong>在完成hit-testing 且没有手势识别后，view作为responser开始响应</strong></p>
-<h2 id="Responder-Object"><a href="#Responder-Object" class="headerlink" title="Responder Object"></a>Responder Object</h2><p>Responder Object是一个能够响应和处理事件的对象，UIResponder是所以Responder Object的基类。<br>一个对象成为First Responder需要做以下两个任务：</p>
-<ol>
-<li>Overriding the canBecomeFirstResponder method to return YES.</li>
-<li>Receiving a becomeFirstResponder message. If necessary, an object can send itself this message.</li>
-</ol>
-<h2 id="Responder-Chain"><a href="#Responder-Chain" class="headerlink" title="Responder Chain"></a>Responder Chain</h2><p>定义：The responder chain is a series of linked responder objects. It starts with the first responder and ends with the application object.</p>
-<p>作用：If the first responder cannot handle an event, it forwards the event to the next responder in the responder chain.</p>
-<p>响应链用于收下事件：</p>
-<ol>
-<li>点击事件，事件响应开始于 hit-test view。</li>
-<li>Motion：要处理shake-motion事件，第一响应者需要实现UIResponder下motionBegan:withEvent: or motionEnded:withEvent:方法。</li>
-<li>Remote：要处理remote事件，第一响应者必须实现UIResponder的 remoteControlReceivedWithEvent:  方法。</li>
-<li>Action Message：当操作一个Control，当添加Target并设置为nil时，这个message将沿着responder chain传递。</li>
-<li>Editing-menu Message。</li>
-<li>Text editing。</li>
-</ol>
-<h2 id="Responder-Chain-delivery-Path"><a href="#Responder-Chain-delivery-Path" class="headerlink" title="Responder Chain delivery Path"></a>Responder Chain delivery Path</h2><p>如果initial对象（hit-test view 或者 first Responder）不能处理事件，则将事件通过next Responder沿着Chain传递。每个Responder决定是否处理这个事件，或者沿着Chain继续传递下去。</p>
-<p><img src="http://7xsq10.com2.z0.glb.clouddn.com/2_2.jpg" alt="Figure2_2"></p>
-<p>参考官方文档链接：<a href="https://developer.apple.com/library/ios/documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009541" target="_blank" rel="external">https://developer.apple.com/library/ios/documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009541</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2016/04/07/EventHandler-PG/" data-id="cinkcpnlr00092kfyjxx0bd3n" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2016/04/08/KVC-PG/" data-id="ciosg7ydr000o24fltv7p44tj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
@@ -1384,7 +1360,7 @@ if source != nil {
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">17</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/03/">March 2016</a><span class="archive-list-count">12</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/08/">August 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">3</span></li></ul>
     </div>
   </div>
 
@@ -1394,6 +1370,10 @@ if source != nil {
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2016/05/29/创建并使用Framework/">创建并使用Framework</a>
+          </li>
         
           <li>
             <a href="/2016/04/23/AutoLayout-PG/">AutoLayout_PG</a>
@@ -1409,10 +1389,6 @@ if source != nil {
         
           <li>
             <a href="/2016/04/20/ViewController-PG/">ViewController-PG</a>
-          </li>
-        
-          <li>
-            <a href="/2016/04/18/View-PG/">View-PG</a>
           </li>
         
       </ul>
